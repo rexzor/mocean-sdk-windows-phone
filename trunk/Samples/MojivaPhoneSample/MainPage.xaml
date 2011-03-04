@@ -1,0 +1,25 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="MojivaPhoneSample.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d" shell:SystemTray.IsVisible="True" xmlns:my="clr-namespace:MojivaPhone;assembly=MojivaPhone" Loaded="PhoneApplicationPage_Loaded" d:DesignHeight="768" d:DesignWidth="480" xmlns:my1="clr-namespace:mmiWP7SDK;assembly=WP7SDK">
+
+    <Grid x:Name="ContentGrid" Grid.Row="1" Background="#FF00C600">
+		<TextBlock Height="82" HorizontalAlignment="Left" Margin="36,389,0,0" Name="textBlock1" Text="it is a app content" VerticalAlignment="Top" Width="432" FontSize="48" Foreground="#FFF51313" />
+		<my:AdView HorizontalAlignment="Left" Name="adViewControl" VerticalAlignment="Top" Height="160" Width="480" Background="Black" Margin="0,52,0,0" />
+		<TextBlock Height="46" HorizontalAlignment="Left" Margin="3,0,0,0" Name="textBlock2" Text="Default mOcean ad" VerticalAlignment="Top" Width="465" FontSize="36" />
+		<Button Content="ORMMA html banner" Height="76" HorizontalAlignment="Left" Margin="4,477,0,0" Name="btnOrmmaHtml" VerticalAlignment="Top" Width="312" HorizontalContentAlignment="Center" Click="btnOrmmaHtml_Click" BorderThickness="5" Background="#FF807777" Padding="0" />
+		<Button Content="ORMMA level 1" Height="76" HorizontalAlignment="Left" Margin="4,551,0,0" Name="btnOrmma1" VerticalAlignment="Top" Width="212" HorizontalContentAlignment="Center" Click="btnOrmma1_Click" BorderThickness="5" Background="#FF807777" Padding="0" />
+		<Button Content="ORMMA level 2" Height="76" HorizontalAlignment="Left" Margin="4,623,0,0" Name="btnOrmma2" VerticalAlignment="Top" Width="212" HorizontalContentAlignment="Center" Click="btnOrmma2_Click" BorderThickness="5" Background="#FF807777" Padding="0" />
+		<Button Content="ORMMA level 3" Height="76" HorizontalAlignment="Left" Margin="4,689,0,0" Name="btnOrmma3" VerticalAlignment="Top" Width="212" HorizontalContentAlignment="Center" Click="btnOrmma3_Click" BorderThickness="5" Background="#FF807777" Padding="0" />
+		<my:AdInterstitialView HorizontalAlignment="Left" Margin="444,46,0,0" Name="adInterstitial" VerticalAlignment="Top" Height="0" Width="0" />
+	</Grid>
+</phone:PhoneApplicationPage>
