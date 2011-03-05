@@ -73,6 +73,7 @@
     <Compile Include="CAccelerometer.cs" />
     <Compile Include="CAssetManager.cs" />
     <Compile Include="CExpandedView.cs" />
+    <Compile Include="CInternalBrowser.cs" />
     <Compile Include="CNativeAppManager.cs" />
     <Compile Include="CNetwork.cs" />
     <Compile Include="CPosition.cs" />

@@ -3,21 +3,13 @@
  * */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
+using System.IO.IsolatedStorage;
 
 namespace MojivaPhone
 {
-    public partial class frmBrowser : PhoneApplicationPage
+	public partial class frmBrowser : PhoneApplicationPage
     {
         protected String m_strUrl;
 
@@ -40,7 +32,7 @@ namespace MojivaPhone
             }
         }
 
-		private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
+		private void PhoneApplicationPage_Unloaded(object sender, RoutedEventArgs e)
 		{
 		}
     }

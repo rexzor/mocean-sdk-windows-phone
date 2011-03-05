@@ -250,6 +250,7 @@ namespace MojivaPhone
 		private CNativeAppManager nativeAppManager = null;
 		private CAssetManager assetManager = null;
 		private CVideoShower videoShower = null;
+		private CInternalBrowser internalBrowserController = null;
 
 		#endregion
 
@@ -1042,26 +1043,31 @@ namespace MojivaPhone
 			if (Owner != null)
 			{
 				Owner.OrientationChanged += new EventHandler<OrientationChangedEventArgs>(MainPage_OrientationChanged);
-				Owner.NavigationService.Navigated += new NavigatedEventHandler(NavigationService_Navigated);
+				Owner.BackKeyPress += new EventHandler<System.ComponentModel.CancelEventArgs>(Owner_BackKeyPress);
 			}
 
 			accelerometer = new CAccelerometer(fireEventDelegate);
 			nativeAppManager = new CNativeAppManager();
 			assetManager = new CAssetManager(fireEventDelegate, ASSETS_ROOT_DIR);
 			videoShower = new CVideoShower();
-			videoShower.AdNavigate += new EventHandler<StringEventArgs>(VideoShower_AdNavigate);
+			//videoShower.AdNavigate += new EventHandler<StringEventArgs>(VideoShower_AdNavigate);
+
+			if (_internalBrowser)
+			{
+				internalBrowserController = new CInternalBrowser();
+			}
 		}
 
-		private void VideoShower_AdNavigate(object sender, StringEventArgs e)
-		{
-			System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
-			{
-				_navigating = false;
-				m_webBrowser.Navigate(new Uri(e.Value, UriKind.RelativeOrAbsolute));
-				
-			}
-			);
-		}
+// 		private void VideoShower_AdNavigate(object sender, StringEventArgs e)
+// 		{
+// 			System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
+// 			{
+// 				_navigating = false;
+// 				m_webBrowser.Navigate(new Uri(e.Value, UriKind.RelativeOrAbsolute));
+// 				
+// 			}
+// 			);
+// 		}
 
 		private void InitAdServerRequest()
 		{
@@ -1105,7 +1111,7 @@ namespace MojivaPhone
 			adserverRequest.setAdserverURL(_adServerUrl);
 			adserverRequest.setOutputFormat((int)_key);
 			adserverRequest.SetCustomParameters(_customParameters);
-			//adserverRequest.setVersion("0");
+			adserverRequest.setVersion("2.0");
 
 			Debug.WriteLine("InitAdServerRequest end");
 		}
@@ -1484,7 +1490,9 @@ namespace MojivaPhone
 				SetReloadTimer(_reloadPeriod);
 			}
 			else
+			{
 				SetReloadTimer(1000);
+			}
 		}
 
 		private delegate void SetReloadTimerDelegate(int nInterval);
@@ -2001,13 +2009,20 @@ namespace MojivaPhone
 			}
 		}
 
-		private void NavigationService_Navigated(object sender, NavigationEventArgs e)
+		private void Owner_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			if (e.Content == Owner)
+			if (internalBrowserController != null && internalBrowserController.IsShow)
 			{
+				internalBrowserController.Closed += new EventHandler<StringEventArgs>(internalBrowserController_Closed);
+				internalBrowserController.Close();
+				e.Cancel = true;
 			}
 		}
 
+		private void internalBrowserController_Closed(object sender, StringEventArgs e)
+		{
+			OnAdWebViewClosing(e.Value);
+		}
 
 		#endregion
 
@@ -2021,20 +2036,26 @@ namespace MojivaPhone
 				if (_internalBrowser)
 				{
 					OnAdNavigateBanner(e.Uri.ToString());
-					Owner.NavigationService.Navigate(new Uri("/MojivaPhone;component/frmBrowser.xaml?val=" + e.Uri.ToString(), UriKind.Relative));
+// 					if (Owner != null)
+// 					{
+// 						Owner.NavigationService.Navigate(new Uri("/MojivaPhone;component/frmBrowser.xaml?val=" + e.Uri.ToString(), UriKind.Relative));
+// 					}
+
+					if (internalBrowserController != null && Owner != null)
+					{
+						internalBrowserController.Show(e.Uri.ToString());
+					}
+					e.Cancel = true;
 				}
 				else
 				{
 					OpenExternalUrl(e.Uri.ToString());
 				}
 			}
-			else _navigating = false;
-
-			//System.PlatformID;
-
-			//UserExtendedProperties.
-			//DeviceExtendedProperties.
-			
+			else
+			{
+				_navigating = false;
+			}
 		}
 
 		#endregion

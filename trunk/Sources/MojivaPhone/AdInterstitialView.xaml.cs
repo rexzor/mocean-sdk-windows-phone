@@ -122,10 +122,10 @@ namespace MojivaPhone
 			LayoutRoot.Visibility = System.Windows.Visibility.Collapsed;
 		}
 
-		public void Show()
+		public void Run()
 		{
 			InitAdProperties();
-			Run();
+			base.Run();
 
 			LayoutRoot.Visibility = System.Windows.Visibility.Visible;
 			closeBtn.Visibility = System.Windows.Visibility.Collapsed;
@@ -139,7 +139,7 @@ namespace MojivaPhone
 
 			LayoutRoot.Visibility = System.Windows.Visibility.Collapsed;
 
-			if (Owner.ApplicationBar != null)
+			if (Owner != null && Owner.ApplicationBar != null)
 			{
 				Owner.ApplicationBar.IsVisible = true;
 			}
@@ -161,7 +161,7 @@ namespace MojivaPhone
 			Margin = new System.Windows.Thickness(0);
 			Resize((int)System.Windows.Application.Current.RootVisual.RenderSize.Width - 0, (int)System.Windows.Application.Current.RootVisual.RenderSize.Height - 0);
 
-			if (Owner.ApplicationBar != null)
+			if (Owner != null && Owner.ApplicationBar != null)
 			{
 				Owner.ApplicationBar.IsVisible = false;
 			}
@@ -231,12 +231,11 @@ namespace MojivaPhone
 				closeBtn.Width = bmpImg.PixelWidth;
 				closeBtn.Height = bmpImg.PixelHeight;
 			};
-
+*/
 			brush.ImageFailed += (sender, evt) =>
 			{
 				InitDefaultCloseBtn();
 			};
- */
 		}
 
 		private void ProcessAdTimerEvent(object sender)

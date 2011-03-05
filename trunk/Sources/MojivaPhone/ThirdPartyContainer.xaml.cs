@@ -14,7 +14,7 @@ using mmiWP7SDK;
 
 namespace MojivaPhone
 {
-	partial class ThirdPartyContainer : UserControl
+	public partial class ThirdPartyContainer : UserControl
 	{
 		private const string CONTENT_BEGIN = "<!-- client_side_external_campaign";
 		private const string CONTENT_END = "-->";
@@ -36,7 +36,7 @@ namespace MojivaPhone
 		/// <summary>
 		/// Event that is raised when external campaign ad shown successfully
 		/// </summary>
-		public event EventHandler<EventArgs> AdSuccess
+		internal event EventHandler<EventArgs> AdSuccess
 		{
 			add { AdSuccessEvent += value; }
 			remove { AdSuccessEvent -= value; }
