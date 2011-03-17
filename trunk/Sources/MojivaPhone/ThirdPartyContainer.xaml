@@ -11,7 +11,7 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
 	d:DesignHeight="800" d:DesignWidth="480">
 
-	<StackPanel x:Name="LayoutRoot" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="480" Background="#249D9B9B" Height="800" Loaded="LayoutRoot_Loaded" IsHitTestVisible="False">
-		<MMAdView:MMAdView Name="mMAdView" Apid="0" Width="0" Height="0" RefreshTimer="-1" AdType="MMBannerAdTop" />
+	<StackPanel x:Name="LayoutRoot" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="480" Background="#249D9B9B" Height="800" Loaded="LayoutRoot_Loaded" IsHitTestVisible="True">
+		<MMAdView:MMAdView Name="mMAdView" Apid="0" Width="480" Height="800" RefreshTimer="-1" AdType="MMBannerAdTop" />
 	</StackPanel>
 </UserControl>

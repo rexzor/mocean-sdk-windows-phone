@@ -40,8 +40,8 @@ namespace MojivaPhoneSample
 			adViewControl.AdvertiserId = "1111";
 			adViewControl.GroupCode = "2222";
 			adViewControl.Run();
-
-//*
+			
+/*
 			adInterstitial.ZoneId = "16112";
 			adInterstitial.SiteId = "8061";
             adInterstitial.Owner = this;
@@ -65,10 +65,11 @@ namespace MojivaPhoneSample
 			adInterstitial.CloseButtonTextColor = Colors.Red;
 			adInterstitial.CloseButtonBackgroundColor = Colors.Cyan;
 			adInterstitial.CloseButtonSize = new Size(180, 180);
-			adInterstitial.CloseButtonImage = "http://ru.www.mozilla.com/img/covehead/firefox/survey/thanks-background.png";
+			//adInterstitial.CloseButtonImage = "http://ru.www.mozilla.com/img/covehead/firefox/survey/thanks-background.png";
+			adInterstitial.CloseButtonImage = "SplashScreenImage.jpg";
 			adInterstitial.CloseButtonSelectedImage = "image";
 			adInterstitial.CloseButtonText = "close";
-            //adInterstitial.Run();
+            adInterstitial.Run();
 //*/
         }
 

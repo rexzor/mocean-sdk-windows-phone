@@ -10,7 +10,8 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
-    mc:Ignorable="d" shell:SystemTray.IsVisible="True" xmlns:my="clr-namespace:MojivaPhone;assembly=MojivaPhone" Loaded="PhoneApplicationPage_Loaded" d:DesignHeight="768" d:DesignWidth="480" xmlns:my1="clr-namespace:mmiWP7SDK;assembly=WP7SDK">
+    mc:Ignorable="d" shell:SystemTray.IsVisible="True"
+	xmlns:my="clr-namespace:MojivaPhone;assembly=MojivaPhone" Loaded="PhoneApplicationPage_Loaded" d:DesignHeight="768" d:DesignWidth="480">
 
     <Grid x:Name="ContentGrid" Grid.Row="1" Background="#FF00C600">
 		<TextBlock Height="82" HorizontalAlignment="Left" Margin="36,389,0,0" Name="textBlock1" Text="it is a app content" VerticalAlignment="Top" Width="432" FontSize="48" Foreground="#FFF51313" />

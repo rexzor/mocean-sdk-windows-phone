@@ -12,27 +12,17 @@ namespace MojivaPhone
 {
 	internal class CNetwork
 	{
-		private FireEventDelegate fireEventDelegate = null;
+		static CNetwork instance = null;
+		static readonly object padlock = new object();
+
 		private Thread networkCheckThread = null;
 		private NetworkInterfaceType currType = NetworkInterfaceType.None;
 		private NetworkInterfaceType lastType = NetworkInterfaceType.None;
 		private const int NETWORK_CHECK_PERIOD = 100;
 		private event EventHandler NetworkChangeEvent;
 
-		public CNetwork()
+		CNetwork()
 		{
-			currType = NetworkInterface.NetworkInterfaceType;
-			lastType = NetworkInterface.NetworkInterfaceType;
-
-			networkCheckThread = new Thread(new ThreadStart(NetWorkCheckProc));
-			networkCheckThread.Name = "networkCheckThread";
-			networkCheckThread.Start();
-		}
-
-		public CNetwork(FireEventDelegate fireEventDelegate)
-		{
-			this.fireEventDelegate = fireEventDelegate;
-
 			currType = NetworkInterface.NetworkInterfaceType;
 			lastType = NetworkInterface.NetworkInterfaceType;
 
@@ -54,8 +44,29 @@ namespace MojivaPhone
 			{
 				networkCheckThread = null;
 			}
+		}
 
-			fireEventDelegate = null;
+		public static CNetwork Instance
+		{
+			get
+			{
+				lock (padlock)
+				{
+					if (instance == null)
+					{
+						instance = new CNetwork();
+					}
+					return instance;
+				}
+			}
+		}
+
+		public static void Release()
+		{
+			if (instance != null)
+			{
+				instance = null;
+			}
 		}
 
 		private void NetWorkCheckProc()

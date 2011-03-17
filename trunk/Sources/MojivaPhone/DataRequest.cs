@@ -22,7 +22,6 @@ namespace MojivaPhone
             if (res.IsCompleted)
             {
                 HttpWebResponse result = (HttpWebResponse)req.EndGetResponse(res);
-
             }
         }
 
@@ -125,6 +124,5 @@ namespace MojivaPhone
 
             return bytez.ToArray();
         }
-
 	}
 }

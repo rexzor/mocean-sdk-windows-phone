@@ -72,6 +72,7 @@
     <Compile Include="AutoDetectParameters.cs" />
     <Compile Include="CAccelerometer.cs" />
     <Compile Include="CAssetManager.cs" />
+    <Compile Include="CThirdParty.cs" />
     <Compile Include="CExpandedView.cs" />
     <Compile Include="CInternalBrowser.cs" />
     <Compile Include="CNativeAppManager.cs" />
@@ -80,9 +81,6 @@
     <Compile Include="CProperties.cs" />
     <Compile Include="CVideoShower.cs" />
     <Compile Include="DataRequest.cs" />
-    <Compile Include="frmBrowser.xaml.cs">
-      <DependentUpon>frmBrowser.xaml</DependentUpon>
-    </Compile>
     <Compile Include="HttpWebRequestSync.cs" />
     <Compile Include="MD5.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,10 +101,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AdView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="frmBrowser.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

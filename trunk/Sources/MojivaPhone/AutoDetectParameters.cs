@@ -16,12 +16,12 @@ namespace MojivaPhone
     /// </summary>
     internal sealed class AutoDetectParameters
     {
-        static readonly object padlock = new object(); 
+        static readonly object padlock = new object();
         static AutoDetectParameters instance = null;
         private bool _haveGps = false;
         IGeoPositionWatcher<GeoCoordinate> _watcher;
         GeoPosition<GeoCoordinate> _position;
-		private CNetwork network;
+		//private CNetwork network;
 
         private String _networkOperatorName;
         private String _country;
@@ -48,12 +48,6 @@ namespace MojivaPhone
            
             _watcher.Start();
         }
-
-		private void StartNetworkService()
-		{
-			network = new CNetwork();
-			network.NetWorkChange += new EventHandler(NetWorkChanged);
-		}
 
         private void OnGetLatitude(EventArgs e)
         {
@@ -122,8 +116,9 @@ namespace MojivaPhone
 
         AutoDetectParameters()
         {
-			StartNetworkService();
             StartLocationService();
+
+			CNetwork.Instance.NetWorkChange += new EventHandler(NetWorkChanged);
 
             _autoDetectThread = new Thread(new ThreadStart(AutoDetectParametersThreadProc));
             _autoDetectThread.Start();
@@ -131,6 +126,19 @@ namespace MojivaPhone
 
         ~AutoDetectParameters()
         {
+			CNetwork.Release();
+
+			try
+			{
+				_autoDetectThread.Abort();
+				_autoDetectThread.Join();
+			}
+			catch (System.Exception /*ex*/)
+			{}
+			finally
+			{
+				_autoDetectThread = null;
+			}
         }
 
         public static AutoDetectParameters Instance
@@ -224,7 +232,7 @@ namespace MojivaPhone
 		{
 			get 
 			{
-				return network.GetStatus();
+				return CNetwork.Instance.GetStatus();
 			}
 		}
 
@@ -266,7 +274,7 @@ namespace MojivaPhone
 
             try
             {
-                String ip = DataRequest.ReadStringData("http://whatismyip.org").Trim();
+				String ip = DataRequest.ReadStringData("http://www.whatismyip.com/automation/n09230945.asp").Trim();
                 if (!String.IsNullOrEmpty(ip))
                 {
                     _ipaddress = ip;

@@ -259,7 +259,8 @@ namespace MojivaPhone
             try
             {
                 // Start the asynchronous operation to get the response
-                request.BeginGetResponse(new AsyncCallback(GetResponseCallback), request);
+                //request.BeginGetResponse(new AsyncCallback(GetResponseCallback), request);
+				request.BeginGetResponse(GetResponseCallback, request);
 
                 getResponseDone.WaitOne();
 
@@ -271,6 +272,11 @@ namespace MojivaPhone
             catch(Exception)
             {
             }
+
+// 			for (int i = 0; i < result.Headers.AllKeys.Length; i++)
+// 			{
+// 				System.Diagnostics.Debug.WriteLine("header:" + result.Headers.AllKeys[i]);
+// 			}
 
             return result;
         }

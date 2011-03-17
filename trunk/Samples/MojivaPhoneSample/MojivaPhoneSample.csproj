@@ -79,7 +79,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
     <Reference Include="System.Xml" />
-    <Reference Include="WP7SDK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -111,11 +110,10 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Images\test.png" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MojivaPhone\MojivaPhone.csproj">
+    <ProjectReference Include="..\..\Sources\MojivaPhone\MojivaPhone.csproj">
       <Project>{5F3521B3-B147-4965-842C-7C5652E2E5A8}</Project>
       <Name>MojivaPhone</Name>
     </ProjectReference>

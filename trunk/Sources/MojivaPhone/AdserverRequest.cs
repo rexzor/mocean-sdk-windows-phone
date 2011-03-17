@@ -15,6 +15,8 @@ namespace MojivaPhone
     internal class AdserverRequest: Object
     {
         #region "Variables"
+		static AdserverRequest instance = null;
+		static readonly object padlock = new object();
         private Dictionary<String, String> parameters = new Dictionary<String, String>();
         private Dictionary<String, String> _customParams = new Dictionary<String, String>();
         private String parameter_site = "site";
@@ -57,22 +59,39 @@ namespace MojivaPhone
 		private List<String> exCampaignIds = new List<String>();
         #endregion
 
-// #if MOCEAN
-// 	private String adserverURL = "http://ads.mocean.mobi/ad";
-// #else
-// 	private String adserverURL = "http://ads.mojiva.com/ad";	
-// #endif
-
 		private String adserverURL = String.Empty;
 
-
-	/// <summary>
+		/// <summary>
         /// Class constructor
         /// </summary>
-	    public AdserverRequest()
+	    AdserverRequest()
         {
             SetupAutodetectParameters();
         }
+
+		public static AdserverRequest Instance
+		{
+			get
+			{
+				lock (padlock)
+				{
+					if (instance == null)
+					{
+						instance = new AdserverRequest();
+					}
+					return instance;
+				}
+			}
+		}
+
+		public static void Release()
+		{
+			AutoDetectParameters.Release();
+			if (instance != null)
+			{
+				instance = null;
+			}
+		}
 
         /// <summary>
         /// Sets up autodetect parameters (if user omitted them)

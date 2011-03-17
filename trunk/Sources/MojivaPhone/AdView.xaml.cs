@@ -184,7 +184,7 @@ namespace MojivaPhone
 		private static String TARGET_TOP_CONST = "_top";
 
 		private static String SETTINGS_IS_FIRST_APP_LAUNCH = "isFirstAppLaunch";
-		private static String FIRST_APP_LAUNCH_URL = "http://www.moceanmobile.com/appconversion.php";		
+		private static String FIRST_APP_LAUNCH_URL = "http://www.moceanmobile.com/appconversion.php";
 		private static int AD_RELOAD_PERIOD = 120000; //in milliseconds
 
 		private const string ASSETS_ROOT_DIR = "assets";
@@ -195,7 +195,7 @@ namespace MojivaPhone
 		private ManualResetEvent threadStop = new ManualResetEvent(false);
 		private Thread contentThread;
 		private Timer reloadTimer;
-		internal AdserverRequest adserverRequest;
+		//internal AdserverRequest adserverRequest = null;
 #if USE_CACHE
 		internal bool _useCache = false;
 #endif
@@ -972,8 +972,6 @@ namespace MojivaPhone
 			fireEventDelegate = new FireEventDelegate(FireEvent);
 
 			AutoDetectParameters.Instance.GetNetwork += new EventHandler(NetworkChanged);
-
-			thirdPartyContainer.ExCampaignAdd += new EventHandler<StringEventArgs>(ThirdPartyContainer_ExCampaignAdd);
 		}
 
 		/// <summary>
@@ -1001,7 +999,6 @@ namespace MojivaPhone
 				}
 			}
 
-			InitAdServerRequest();
 			AutoDetectParameters.Instance.GetLatitude += new EventHandler(OnUpdateLocation);
 			AutoDetectParameters.Instance.GetLongitude += new EventHandler(OnUpdateLocation);
 			AutoDetectParameters.Instance.GetCourse += new EventHandler(OnUpdateCourse);
@@ -1069,51 +1066,51 @@ namespace MojivaPhone
 // 			);
 // 		}
 
-		private void InitAdServerRequest()
+		private void InitAdserverRequest()
 		{
-			Debug.WriteLine("InitAdServerRequest begin");
-			if (adserverRequest == null)
-			{
-				adserverRequest = new AdserverRequest();
-			}
-			
-			adserverRequest.setSite(_site);
-			//adserverRequest.setIp(_ip);
-			adserverRequest.setUa(_ua);
-			adserverRequest.setUrl(_url);
-			adserverRequest.setKeywords(_keywords);
-			adserverRequest.setPremium(Convert.ToInt32(_premium));
-			adserverRequest.setZone(_zone);
-			adserverRequest.setTestModeEnabled(_testModeEnabled);
-			adserverRequest.setCount(_count);
-			adserverRequest.setCountry(_country);
-			adserverRequest.setRegion(_region);
-			adserverRequest.setCity(_city);
-			adserverRequest.setArea(_area);
-			adserverRequest.setMetro(_metro);
-			adserverRequest.setZip(_zip);
-			adserverRequest.SizeRequired = _sizeRequired;
-			adserverRequest.setAdstype(Convert.ToInt32(_adstype));
-			//adserverRequest.setOver18(Convert.ToInt32(_over18));
-			adserverRequest.setLatitude(_latitude);
-			adserverRequest.setLongitude(_longitude);
-			//adserverRequest.setTextborderEnabled(_textBorderEnabled);
-			//adserverRequest.setParamBorder(_paramBorder);
-			adserverRequest.setParamBG(_paramBG);
-			adserverRequest.setParamLINK(_paramLink);
-			adserverRequest.setCarrier(_carrier);
-			adserverRequest.setImageMinWidth(_imageMinWidth);
-			adserverRequest.setImageMinHeight(_imageMinHeight);
-			adserverRequest.setImageMaxWidth(_imageMaxWidth);
-			adserverRequest.setImageMaxHeight(_imageMaxHeight);
-			adserverRequest.setTarget(_target);
-			//adserverRequest.setPixelModeEnabled(_pixelModeEnabled);
-			adserverRequest.setAdserverURL(_adServerUrl);
-			adserverRequest.setOutputFormat((int)_key);
-			adserverRequest.SetCustomParameters(_customParameters);
-			adserverRequest.setVersion("2.0");
+			Debug.WriteLine("InitAdserverRequest.Instance begin");
+// 			if (adserverRequest == null)
+// 			{
+// 				adserverRequest = new AdserverRequest();
+// 			}
 
-			Debug.WriteLine("InitAdServerRequest end");
+			AdserverRequest.Instance.setSite(_site);
+			//AdserverRequest.Instance.setIp(_ip);
+			AdserverRequest.Instance.setUa(_ua);
+			AdserverRequest.Instance.setUrl(_url);
+			AdserverRequest.Instance.setKeywords(_keywords);
+			AdserverRequest.Instance.setPremium(Convert.ToInt32(_premium));
+			AdserverRequest.Instance.setZone(_zone);
+			AdserverRequest.Instance.setTestModeEnabled(_testModeEnabled);
+			AdserverRequest.Instance.setCount(_count);
+			AdserverRequest.Instance.setCountry(_country);
+			AdserverRequest.Instance.setRegion(_region);
+			AdserverRequest.Instance.setCity(_city);
+			AdserverRequest.Instance.setArea(_area);
+			AdserverRequest.Instance.setMetro(_metro);
+			AdserverRequest.Instance.setZip(_zip);
+			AdserverRequest.Instance.SizeRequired = _sizeRequired;
+			AdserverRequest.Instance.setAdstype(Convert.ToInt32(_adstype));
+			//AdserverRequest.Instance.setOver18(Convert.ToInt32(_over18));
+			AdserverRequest.Instance.setLatitude(_latitude);
+			AdserverRequest.Instance.setLongitude(_longitude);
+			//AdserverRequest.Instance.setTextborderEnabled(_textBorderEnabled);
+			//AdserverRequest.Instance.setParamBorder(_paramBorder);
+			AdserverRequest.Instance.setParamBG(_paramBG);
+			AdserverRequest.Instance.setParamLINK(_paramLink);
+			AdserverRequest.Instance.setCarrier(_carrier);
+			AdserverRequest.Instance.setImageMinWidth(_imageMinWidth);
+			AdserverRequest.Instance.setImageMinHeight(_imageMinHeight);
+			AdserverRequest.Instance.setImageMaxWidth(_imageMaxWidth);
+			AdserverRequest.Instance.setImageMaxHeight(_imageMaxHeight);
+			AdserverRequest.Instance.setTarget(_target);
+			//AdserverRequest.Instance.setPixelModeEnabled(_pixelModeEnabled);
+			AdserverRequest.Instance.setAdserverURL(_adServerUrl);
+			AdserverRequest.Instance.setOutputFormat((int)_key);
+			AdserverRequest.Instance.SetCustomParameters(_customParameters);
+			AdserverRequest.Instance.setVersion("2.0");
+
+			Debug.WriteLine("InitAdserverRequest end");
 		}
 
 		/// <summary>
@@ -1128,7 +1125,7 @@ namespace MojivaPhone
 				pars.Add(value[f], value[f + 1]);
 			}
 
-			adserverRequest.SetCustomParameters(pars);
+			AdserverRequest.Instance.SetCustomParameters(pars);
 		}
 
 		/// <summary>
@@ -1139,7 +1136,7 @@ namespace MojivaPhone
 		/// <return></return>
 		void SetCustomParameter(String strName, String strValue)
 		{
-			adserverRequest.SetCustomParameter(strName, strValue);
+			AdserverRequest.Instance.SetCustomParameter(strName, strValue);
 		}
 
 		/// <summary>
@@ -1149,7 +1146,7 @@ namespace MojivaPhone
 		/// <return>TRUE if found and removed, otherwise FALSE</return>
 		bool RemoveCustomParameter(String strName)
 		{
-			return adserverRequest.RemoveCustomParameter(strName);
+			return AdserverRequest.Instance.RemoveCustomParameter(strName);
 		}
 
 		/// <summary>
@@ -1159,7 +1156,7 @@ namespace MojivaPhone
 		/// <return>TRUE if found and removed, otherwise FALSE</return>
 		bool RemoveCustomParameter(int nIdx)
 		{
-			return adserverRequest.RemoveCustomParameter(nIdx);
+			return AdserverRequest.Instance.RemoveCustomParameter(nIdx);
 		}
 
 		/// <summary>
@@ -1169,7 +1166,7 @@ namespace MojivaPhone
 		/// <return>Custom parameter value (if found, otherwise empty string)</return>
 		String GetCustomParameter(String strName)
 		{
-			return adserverRequest.GetCustomParameter(strName);
+			return AdserverRequest.Instance.GetCustomParameter(strName);
 		}
 
 		/// <summary>
@@ -1179,7 +1176,7 @@ namespace MojivaPhone
 		/// <return>Custom parameter value (if found, otherwise empty string)</return>
 		String GetCustomParameter(int nIdx)
 		{
-			return adserverRequest.GetCustomParameter(nIdx);
+			return AdserverRequest.Instance.GetCustomParameter(nIdx);
 		}
 
 		/// <summary>
@@ -1187,7 +1184,7 @@ namespace MojivaPhone
 		/// </summary>
 		public void Update()
 		{
-			InitAdServerRequest();
+			InitAdserverRequest();
 			contentThread = new Thread(new ThreadStart(ContentThreadProc));
 			if (!contentThread.IsAlive) contentThread.Start();
 		}
@@ -1199,6 +1196,7 @@ namespace MojivaPhone
 		/// 
 		~AdView()
 		{
+			CThirdPartyManager.Release();
 			AutoDetectParameters.Release();
 			m_webBrowser.Navigating -= new EventHandler<NavigatingEventArgs>(AdViewControl_Navigating);
 		}
@@ -1309,15 +1307,15 @@ namespace MojivaPhone
 
 		private void OnUpdateLocation(object sender, EventArgs e)
 		{
-			Latitude = adserverRequest.getLatitude();
-			Longitude = adserverRequest.getLongitude();
+			Latitude = AdserverRequest.Instance.getLatitude();
+			Longitude = AdserverRequest.Instance.getLongitude();
 			string accuracy = AutoDetectParameters.Instance.Accuracy.ToString();
 			FireEvent("locationChange", new string[] { Latitude, Longitude, accuracy });
 		}
 
 		private void OnUpdateCourse(object sender, EventArgs e)
 		{
-			Course = adserverRequest.getCourse();
+			Course = AdserverRequest.Instance.getCourse();
 			FireEvent("headingChange", new string[] { Course });
 		}
 
@@ -1437,26 +1435,24 @@ namespace MojivaPhone
 					}
 				}
 #endif
-//*
+				//*
 				try
 				{
-					if (adserverRequest != null)
+					InitAdserverRequest();
+					string url = AdserverRequest.Instance.createURL();
+					Debug.WriteLine(url);
+
+					OnAdDownloadBegin();
+
+					data = DataRequest.ReadStringData(url);
+					if (data.Length > 0)
 					{
-						string url = adserverRequest.createURL();
-						Debug.WriteLine(url);
-
-						OnAdDownloadBegin();
-
-						data = DataRequest.ReadStringData(url);
-						if (data.Length > 0)
-						{
-							data = replaceImages(data);
-							OnAdDownloadEnd();
-						}
-						else
-						{
-							OnAdDownloadError("error downloading ad");
-						}
+						data = replaceImages(data);
+						OnAdDownloadEnd();
+					}
+					else
+					{
+						OnAdDownloadError("error downloading ad");
 					}
 				}
 				catch (Exception)
@@ -1467,14 +1463,19 @@ namespace MojivaPhone
 				{
 					if ((data != null) && (data.Length > 0))
 					{
-						//data = data + "<a href=\"http://ya.ru\"><video height=\'480\" width=\"480\' src=\"http://www.jhepple.com/SampleMovies/niceday.wmv\" /></a>";
-
 						videoShower.SearchPage(data);
-						thirdPartyContainer.SearchPage(data);
+						if (CThirdPartyManager.IsExternalCampaignContent(data))
+						{
+							thirdPartyContainer.Run(data);
+						}
+						else
+						{
+							thirdPartyContainer.Hide();
+						}
 
 						data = "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\" \"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\"><head>" +
 							ormmaLibText +
-							"</head><body style=\"margin: 0px; padding: 0px; width: 100%; height: 100%\">" + data;
+							"</head><body style=\"margin: 0px; padding: 0px; width: 100%; height: 100%\">" + data + "</body></html>";
 
 						saveCache(idCache, data);
 						SetDocumentPath(idCache);
@@ -2001,14 +2002,6 @@ namespace MojivaPhone
 			accelerometer.StartShakeListener();
 		}
 
-		private void ThirdPartyContainer_ExCampaignAdd(object sender, StringEventArgs e)
-		{
-			if (adserverRequest != null)
-			{
-				adserverRequest.AddExCampaign(e.Value);
-			}
-		}
-
 		private void Owner_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			if (internalBrowserController != null && internalBrowserController.IsShow)
@@ -2032,15 +2025,9 @@ namespace MojivaPhone
 		{
 			if (!_navigating)
 			{
-				//e.Cancel = true;
 				if (_internalBrowser)
 				{
 					OnAdNavigateBanner(e.Uri.ToString());
-// 					if (Owner != null)
-// 					{
-// 						Owner.NavigationService.Navigate(new Uri("/MojivaPhone;component/frmBrowser.xaml?val=" + e.Uri.ToString(), UriKind.Relative));
-// 					}
-
 					if (internalBrowserController != null && Owner != null)
 					{
 						internalBrowserController.Show(e.Uri.ToString());
