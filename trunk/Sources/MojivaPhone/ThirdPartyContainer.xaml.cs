@@ -30,12 +30,15 @@ namespace MojivaPhone
 			LayoutRoot.Height = renderSize.Height;
 		}
 
-		public void Run(string pageContent)
+		public bool ContainExternalCampaign(string pageContent)
 		{
-			Deployment.Current.Dispatcher.BeginInvoke(() => this.Visibility = Visibility.Visible);
+			return CSLThirdPartyManager.ContainExternalCampaign(pageContent);
+		}
 
-			CSLThirdPartyManager.Instance.SetMMAdView(mMAdView);
-			CSLThirdPartyManager.Instance.Run(pageContent);
+		public void ShowCreate(string pageContent)
+		{
+			CSLThirdPartyManager.Create(mMAdView, pageContent);
+			Deployment.Current.Dispatcher.BeginInvoke(() => this.Visibility = Visibility.Visible);
 		}
 
 		public void Hide()
@@ -43,31 +46,59 @@ namespace MojivaPhone
 			Deployment.Current.Dispatcher.BeginInvoke(() => this.Visibility = Visibility.Collapsed);
 		}
 
-		private class CSLThirdPartyManager : CThirdPartyManager
+		public void Stop()
 		{
-			private CSLThirdPartyManager()
-			{}
+			CSLThirdPartyManager.Release();
+			Hide();
+		}
 
-			public static new CSLThirdPartyManager Instance
+		private class CSLThirdPartyManager : CBaseThirdPartyManager
+		{
+			private MMAdView adView = null;
+
+			private CSLThirdPartyManager(MMAdView mmAdView)
+			{
+				adView = mmAdView;
+			}
+
+			private static CSLThirdPartyManager Instance
 			{
 				get
 				{
 					lock (padlock)
 					{
-						if (instance == null)
-						{
-							instance = new CSLThirdPartyManager();
-						}
 						return (CSLThirdPartyManager)instance;
+					}
+				}
+				set
+				{
+					lock (padlock)
+					{
+						instance = value;
 					}
 				}
 			}
 
-			public void SetMMAdView(MMAdView mmAdView)
+			public static new bool ContainExternalCampaign(string pageContent)
 			{
-				Instance.millennialAdView = new CSLMillennialAdView(mmAdView);
-				Instance.millennialAdView.AdViewSuccess += new EventHandler(MillennialAdViewSuccess);
-				Instance.millennialAdView.AdViewFailure += new EventHandler(MillennialAdViewFailure);
+				return CBaseThirdPartyManager.ContainExternalCampaign(pageContent);
+			}
+
+			public static void Create(MMAdView mmAdView, string pageContent)
+			{
+				if (Instance == null)
+				{
+					Instance = new CSLThirdPartyManager(mmAdView);
+					Instance.Run(pageContent);
+				}
+			}
+
+			protected override void RunMillennialAdView(XElement externalParamsNode)
+			{
+				millennialAdView = new CSLMillennialAdView(adView);
+				millennialAdView.AdViewSuccess += new EventHandler(MillennialAdViewSuccess);
+				millennialAdView.AdViewFailure += new EventHandler(MillennialAdViewFailure);
+				millennialAdView.Run(externalParamsNode);
 			}
 		}
 
@@ -130,8 +161,6 @@ namespace MojivaPhone
 
 					if (property != null)
 					{
-						System.Diagnostics.Debug.WriteLine("finded property " + property.Name);
-
 						try
 						{
 							if (property.PropertyType.BaseType == typeof(Enum))

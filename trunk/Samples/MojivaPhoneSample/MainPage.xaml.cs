@@ -28,8 +28,8 @@ namespace MojivaPhoneSample
 
         private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
 		{
-			adViewControl.ZoneId = "20249";
-			adViewControl.SiteId = "8061";
+			adViewControl.Zone = 17324;
+			adViewControl.Site = 8061;
 			adViewControl.Owner = this;
 
 #if DEBUG
@@ -42,8 +42,8 @@ namespace MojivaPhoneSample
 			adViewControl.Run();
 			
 /*
-			adInterstitial.ZoneId = "16112";
-			adInterstitial.SiteId = "8061";
+			adInterstitial.ZoneId = 16112;
+			adInterstitial.SiteId = 8061;
             adInterstitial.Owner = this;
             //adInterstitial.UseCache = true;
 
@@ -75,8 +75,8 @@ namespace MojivaPhoneSample
 
 		private void btnOrmmaHtml_Click(object sender, RoutedEventArgs e)
 		{
-			adViewControl.ZoneId = "17490";
-			adViewControl.SiteId = "8061";
+			adViewControl.Zone = 17490;
+			adViewControl.Site = 8061;
 			adViewControl.Update();
 
 			textBlock2.Text = "ORMMA HTML banner";
@@ -84,8 +84,8 @@ namespace MojivaPhoneSample
 
 		private void btnOrmma1_Click(object sender, RoutedEventArgs e)
 		{
-			adViewControl.ZoneId = "17487";
-			adViewControl.SiteId = "8061";
+			adViewControl.Zone = 17487;
+			adViewControl.Site = 8061;
 			adViewControl.Update();
 
 			textBlock2.Text = "ORMMA level 1";
@@ -93,8 +93,8 @@ namespace MojivaPhoneSample
 
 		private void btnOrmma2_Click(object sender, RoutedEventArgs e)
 		{
-			adViewControl.ZoneId = "17488";
-			adViewControl.SiteId = "8061";
+			adViewControl.Zone = 17488;
+			adViewControl.Site = 8061;
 			adViewControl.Update();
 
 			textBlock2.Text = "ORMMA level 2";
@@ -102,8 +102,8 @@ namespace MojivaPhoneSample
 
 		private void btnOrmma3_Click(object sender, RoutedEventArgs e)
 		{
-			adViewControl.ZoneId = "17489";
-			adViewControl.SiteId = "8061";
+			adViewControl.Zone = 17489;
+			adViewControl.Site = 8061;
 			adViewControl.Update();
 
 			textBlock2.Text = "ORMMA level 3";

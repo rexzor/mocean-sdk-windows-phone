@@ -189,6 +189,9 @@ namespace MojivaPhone
 
 		private const string ASSETS_ROOT_DIR = "assets";
 		private const string ASSETS_INDEX_FILENAME = "index.htm";
+
+		private const int DEFAULT_SITE_ID = 8061;
+		private const int DEFAULT_ZONE_ID = 20249;
 		#endregion
 
 		#region "Variables"
@@ -262,13 +265,9 @@ namespace MojivaPhone
 		/// </summary>
 		public bool UseCache
 		{
-			get
-			{
-				return _useCache;
+			get { return _useCache;
 			}
-			set
-			{
-				_useCache = value;
+			set { _useCache = value;
 			}
 		}
 #endif
@@ -280,14 +279,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		internal int ViewId
 		{
-			get
-			{
-				return _viewId;
-			}
-			set
-			{
-				_viewId = value;
-			}
+			get { return _viewId; }
+			set { _viewId = value; }
 		}
 
 		/// <summary>
@@ -297,14 +290,8 @@ namespace MojivaPhone
 		/// </summary>
 		public bool InternalBrowser
 		{
-			get
-			{
-				return _internalBrowser;
-			}
-			set
-			{
-				_internalBrowser = value;
-			}
+			get { return _internalBrowser; }
+			set { _internalBrowser = value; }
 		}
 
 		/// <summary>
@@ -313,14 +300,8 @@ namespace MojivaPhone
 		/// </summary>
 		public Image DefaultImage
 		{
-			get
-			{
-				return _defaultImage;
-			}
-			set
-			{
-				_defaultImage = value;
-			}
+			get { return _defaultImage; }
+			set { _defaultImage = value; }
 		}
 
 		/// <summary>
@@ -329,10 +310,7 @@ namespace MojivaPhone
 		/// </summary>
 		public int UpdateTime
 		{
-			get
-			{
-				return _reloadPeriod/1000;
-			}
+			get { return _reloadPeriod/1000; }
 			set
 			{
 				if (value == 0)
@@ -353,14 +331,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public String AppId
 		{
-			get
-			{
-				return _appId;
-			}
-			set
-			{
-				_appId = value;
-			}
+			get { return _appId; }
+			set { _appId = value; }
 		}
 
 		/// <summary>
@@ -369,14 +341,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public String Campaign
 		{
-			get
-			{
-				return _campaign;
-			}
-			set
-			{
-				_campaign = value;
-			}
+			get { return _campaign; }
+			set { _campaign = value; }
 		}
 
 		/// <summary>
@@ -387,44 +353,44 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public int Mode
 		{
-			get
-			{
-				return (int)_mode;
-			}
-			set
-			{
-				_mode = (ADS_MODE)value;
-			}
+			get { return (int)_mode; }
+			set { _mode = (ADS_MODE)value; }
 		}
 
 		/// <summary>
 		/// The id of the publisher site.
 		/// </summary>
-		public String SiteId
+		public int Site
 		{
 			get
 			{
-				return _site;
+				try
+				{
+					return Int32.Parse(_site);
+				}
+				catch (System.Exception /*ex*/)
+				{}
+				return DEFAULT_SITE_ID;
 			}
-			set
-			{
-				_site = value;
-			}
+			set { _site = value.ToString(); }
 		}
 
 		/// <summary>
 		/// The id of the zone of publisher site.
 		/// </summary>
-		public String ZoneId
+		public int Zone
 		{
 			get
 			{
-				return _zone;
+				try
+				{
+					return Int32.Parse(_zone);
+				}
+				catch (System.Exception /*ex*/)
+				{}
+				return DEFAULT_ZONE_ID;
 			}
-			set
-			{
-				_zone = value;
-			}
+			set { _zone = value.ToString(); }
 		}
 
 		/// <summary>
@@ -434,14 +400,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public String Ip
 		{
-			get
-			{
-				return _ip;
-			}
-			set
-			{
-				_ip = value;
-			}
+			get { return _ip; }
+			set { _ip = value; }
 		}
 
 		/// <summary>
@@ -449,14 +409,8 @@ namespace MojivaPhone
 		/// </summary>
 		public String Keywords
 		{
-			get
-			{
-				return _keywords;
-			}
-			set
-			{
-				_keywords = value;
-			}
+			get { return _keywords; }
+			set { _keywords = value; }
 		}
 
 		/// <summary>
@@ -467,14 +421,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public int Type
 		{
-			get
-			{
-				return (int)_adstype;
-			}
-			set
-			{
-				_adstype = (ADS_TYPE)value;
-			}
+			get { return (int)_adstype; }
+			set { _adstype = (ADS_TYPE)value; }
 		}
 
 		/// <summary>
@@ -484,14 +432,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public int Over18
 		{
-			get
-			{
-				return (int)_over18;
-			}
-			set
-			{
-				_over18 = (OVER_18_TYPE)value;
-			}
+			get { return (int)_over18; }
+			set { _over18 = (OVER_18_TYPE)value; }
 		}
 
 		/// <summary>
@@ -500,14 +442,8 @@ namespace MojivaPhone
 		/// </summary>
 		public String Latitude
 		{
-			get
-			{
-				return _latitude;
-			}
-			set
-			{
-				_latitude = value;
-			}
+			get { return _latitude; }
+			set { _latitude = value; }
 		}
 
 		/// <summary>
@@ -516,14 +452,8 @@ namespace MojivaPhone
 		/// </summary>
 		public String Longitude
 		{
-			get
-			{
-				return _longitude;
-			}
-			set
-			{
-				_longitude = value;
-			}
+			get { return _longitude; }
+			set { _longitude = value; }
 		}
 
 		/// <summary>
@@ -532,14 +462,8 @@ namespace MojivaPhone
 		/// </summary>
 		public String Course
 		{
-			get
-			{
-				return _course;
-			}
-			set
-			{
-				_course = value;
-			}
+			get { return _course; }
+			set { _course = value; }
 		}
 
 		/// <summary>
@@ -548,14 +472,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete and autodetected. Don't use it")]
 		public String UserAgent
 		{
-			get
-			{
-				return _ua;
-			}
-			set
-			{
-				_ua = value;
-			}
+			get { return _ua; }
+			set { _ua = value; }
 		}
 
 		/// <summary>
@@ -564,10 +482,7 @@ namespace MojivaPhone
 		/// </summary>
 		public String Premium
 		{
-			get
-			{
-				return _premium.ToString();
-			}
+			get { return _premium.ToString(); }
 			set
 			{
 				try
@@ -588,14 +503,8 @@ namespace MojivaPhone
 		/// </summary>
 		public int OutputFormat
 		{
-			get
-			{
-				return (int)_key;
-			}
-			set
-			{
-				_key = (OUTPUT_FORMAT)value;
-			}
+			get { return (int)_key; }
+			set { _key = (OUTPUT_FORMAT)value; }
 		}
 
 		/// <summary>
@@ -603,14 +512,8 @@ namespace MojivaPhone
 		/// </summary>
 		public bool Test
 		{
-			get
-			{
-				return _testModeEnabled;
-			}
-			set
-			{
-				_testModeEnabled = value;
-			}
+			get { return _testModeEnabled; }
+			set { _testModeEnabled = value; }
 		}
 
 		/// <summary>
@@ -620,14 +523,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public int Count
 		{
-			get
-			{
-				return _count;
-			}
-			set
-			{
-				_count = value;
-			}
+			get { return _count; }
+			set { _count = value; }
 		}
 
 		/// <summary>
@@ -636,14 +533,8 @@ namespace MojivaPhone
 		/// </summary>
 		public String Country
 		{
-			get
-			{
-				return _country;
-			}
-			set
-			{
-				_country = value;
-			}
+			get { return _country; }
+			set { _country = value; }
 		}
 
 		/// <summary>
@@ -651,14 +542,8 @@ namespace MojivaPhone
 		/// </summary>
 		public String Region
 		{
-			get
-			{
-				return _region;
-			}
-			set
-			{
-				_region = value;
-			}
+			get { return _region; }
+			set { _region = value; }
 		}
 
 		/// <summary>
@@ -731,14 +616,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public bool TextBorderEnabled
 		{
-			get
-			{
-				return _textBorderEnabled;
-			}
-			set
-			{
-				_textBorderEnabled = value;
-			}
+			get { return _textBorderEnabled; }
+			set { _textBorderEnabled = value; }
 		}
 
 		/// <summary>
@@ -747,14 +626,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public Color BorderColor
 		{
-			get
-			{
-				return ColorFromRgb(_paramBorder);
-			}
-			set
-			{
-				_paramBorder = ColorToRgb(value);
-			}
+			get { return ColorFromRgb(_paramBorder); }
+			set { _paramBorder = ColorToRgb(value); }
 		}
 
 		/// <summary>
@@ -762,14 +635,8 @@ namespace MojivaPhone
 		/// </summary>
 		public Color BackgroundColor
 		{
-			get
-			{
-				return ColorFromRgb(_paramBG);
-			}
-			set
-			{
-				_paramBG = ColorToRgb(value);
-			}
+			get { return ColorFromRgb(_paramBG); }
+			set { _paramBG = ColorToRgb(value); }
 		}
 
 		/// <summary>
@@ -777,14 +644,8 @@ namespace MojivaPhone
 		/// </summary>
 		public Color TextColor
 		{
-			get
-			{
-				return ColorFromRgb(_paramLink);
-			}
-			set
-			{
-				_paramLink = ColorToRgb( value );
-			}
+			get { return ColorFromRgb(_paramLink); }
+			set { _paramLink = ColorToRgb( value ); }
 		}
 
 		/// <summary>
@@ -793,14 +654,8 @@ namespace MojivaPhone
 		/// </summary>
 		public String Carrier
 		{
-			get
-			{
-				return _carrier;
-			}
-			set
-			{
-				_carrier = value;
-			}
+			get { return _carrier; }
+			set { _carrier = value; }
 		}
 
 		/// <summary>
@@ -808,14 +663,8 @@ namespace MojivaPhone
 		/// </summary>
 		public int MinSizeX
 		{
-			get
-			{
-				return _imageMinWidth;
-			}
-			set
-			{
-				_imageMinWidth = value;
-			}
+			get { return _imageMinWidth; }
+			set { _imageMinWidth = value; }
 		}
 
 		/// <summary>
@@ -823,14 +672,8 @@ namespace MojivaPhone
 		/// </summary>
 		public int MinSizeY
 		{
-			get
-			{
-				return _imageMinHeight;
-			}
-			set
-			{
-				_imageMinHeight = value;
-			}
+			get { return _imageMinHeight; }
+			set { _imageMinHeight = value; }
 		}
 
 		/// <summary>
@@ -838,14 +681,8 @@ namespace MojivaPhone
 		/// </summary>
 		public int MaxSizeX
 		{
-			get
-			{
-				return _imageMaxWidth;
-			}
-			set
-			{
-				_imageMaxWidth = value;
-			}
+			get { return _imageMaxWidth; }
+			set { _imageMaxWidth = value; }
 		}
 
 		/// <summary>
@@ -853,14 +690,8 @@ namespace MojivaPhone
 		/// </summary>
 		public int MaxSizeY
 		{
-			get
-			{
-				return _imageMaxHeight;
-			}
-			set
-			{
-				_imageMaxHeight = value;
-			}
+			get { return _imageMaxHeight; }
+			set { _imageMaxHeight = value; }
 		}
 
 		/// <summary>
@@ -907,14 +738,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public String SiteUrl
 		{
-			get
-			{
-				return _url;
-			}
-			set
-			{
-				_url = value;
-			}
+			get { return _url; }
+			set { _url = value; }
 		}
 
 		/// <summary>
@@ -924,14 +749,8 @@ namespace MojivaPhone
 		[Obsolete("This property is obsolete. Don't use it")]
 		public bool PixelModeEnabled
 		{
-			get
-			{
-				return _pixelModeEnabled;
-			}
-			set
-			{
-				_pixelModeEnabled = value;
-			}
+			get { return _pixelModeEnabled; }
+			set { _pixelModeEnabled = value; }
 		}
 
 		public PhoneApplicationPage Owner
@@ -977,7 +796,7 @@ namespace MojivaPhone
 		/// <summary>
 		/// Run the advertisement (should be called to run banner)
 		/// </summary>
-		public void Run()
+		public virtual void Run()
 		{
 			InitOrmmaLibrary();
 			//StreamReader reader = new StreamReader(Microsoft.Xna.Framework.TitleContainer.OpenStream("html/test_ad_level1.htm"));
@@ -1047,24 +866,12 @@ namespace MojivaPhone
 			nativeAppManager = new CNativeAppManager();
 			assetManager = new CAssetManager(fireEventDelegate, ASSETS_ROOT_DIR);
 			videoShower = new CVideoShower();
-			//videoShower.AdNavigate += new EventHandler<StringEventArgs>(VideoShower_AdNavigate);
 
 			if (_internalBrowser)
 			{
 				internalBrowserController = new CInternalBrowser();
 			}
 		}
-
-// 		private void VideoShower_AdNavigate(object sender, StringEventArgs e)
-// 		{
-// 			System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() =>
-// 			{
-// 				_navigating = false;
-// 				m_webBrowser.Navigate(new Uri(e.Value, UriKind.RelativeOrAbsolute));
-// 				
-// 			}
-// 			);
-// 		}
 
 		private void InitAdserverRequest()
 		{
@@ -1196,7 +1003,7 @@ namespace MojivaPhone
 		/// 
 		~AdView()
 		{
-			CThirdPartyManager.Release();
+			thirdPartyContainer.Stop();
 			AutoDetectParameters.Release();
 			m_webBrowser.Navigating -= new EventHandler<NavigatingEventArgs>(AdViewControl_Navigating);
 		}
@@ -1463,10 +1270,10 @@ namespace MojivaPhone
 				{
 					if ((data != null) && (data.Length > 0))
 					{
-						videoShower.SearchPage(data);
-						if (CThirdPartyManager.IsExternalCampaignContent(data))
+						//videoShower.SearchPage(data);
+						if (thirdPartyContainer.ContainExternalCampaign(data))
 						{
-							thirdPartyContainer.Run(data);
+							thirdPartyContainer.ShowCreate(data);
 						}
 						else
 						{
@@ -2095,14 +1902,8 @@ namespace MojivaPhone
 		/// </summary>
 		public event EventHandler<StringEventArgs> AdNavigateBanner
 		{
-			add
-			{
-				AdNavigateBannerEvent += value;
-			}
-			remove
-			{
-				AdNavigateBannerEvent -= value;
-			}
+			add { AdNavigateBannerEvent += value; }
+			remove { AdNavigateBannerEvent -= value; }
 		}
 
 		/// <summary>
@@ -2146,14 +1947,8 @@ namespace MojivaPhone
 		/// </summary>
 		public event EventHandler GetLatitude
 		{
-			add
-			{
-				AutoDetectParameters.Instance.GetLatitude += value;
-			}
-			remove
-			{
-				AutoDetectParameters.Instance.GetLatitude -= value;
-			}
+			add { AutoDetectParameters.Instance.GetLatitude += value; }
+			remove { AutoDetectParameters.Instance.GetLatitude -= value;}
 		}
 
 		/// <summary>
@@ -2161,14 +1956,8 @@ namespace MojivaPhone
 		/// </summary>
 		public event EventHandler GetLongitude
 		{
-			add
-			{
-				AutoDetectParameters.Instance.GetLongitude += value;
-			}
-			remove
-			{
-				AutoDetectParameters.Instance.GetLongitude -= value;
-			}
+			add { AutoDetectParameters.Instance.GetLongitude += value; }
+			remove { AutoDetectParameters.Instance.GetLongitude -= value; }
 		}
 
 		/// <summary>
@@ -2176,14 +1965,8 @@ namespace MojivaPhone
 		/// </summary>
 		public event EventHandler GetIp
 		{
-			add
-			{
-				AutoDetectParameters.Instance.GetIp += value;
-			}
-			remove
-			{
-				AutoDetectParameters.Instance.GetIp -= value;
-			}
+			add { AutoDetectParameters.Instance.GetIp += value; }
+			remove { AutoDetectParameters.Instance.GetIp -= value; }
 		}
 
 		/// <summary>
@@ -2191,14 +1974,8 @@ namespace MojivaPhone
 		/// </summary>
 		public event EventHandler GetCarrier
 		{
-			add
-			{
-				AutoDetectParameters.Instance.GetCarrier += value;
-			}
-			remove
-			{
-				AutoDetectParameters.Instance.GetCarrier -= value;
-			}
+			add { AutoDetectParameters.Instance.GetCarrier += value; }
+			remove{ AutoDetectParameters.Instance.GetCarrier -= value; }
 		}
 
 		/// <summary>
@@ -2206,14 +1983,8 @@ namespace MojivaPhone
 		/// </summary>
 		public event EventHandler GetCountry
 		{
-			add
-			{
-				AutoDetectParameters.Instance.GetCountry += value;
-			}
-			remove
-			{
-				AutoDetectParameters.Instance.GetCountry -= value;
-			}
+			add { AutoDetectParameters.Instance.GetCountry += value; }
+			remove { AutoDetectParameters.Instance.GetCountry -= value; }
 		}
 
 		#endregion

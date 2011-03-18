@@ -8,9 +8,9 @@ using System.Collections.Generic;
 
 namespace MojivaPhone
 {
-	internal class CThirdPartyManager
+	internal class CBaseThirdPartyManager
 	{
-		protected static CThirdPartyManager instance = null;
+		protected static CBaseThirdPartyManager instance = null;
 		protected static readonly object padlock = new object();
 
 		#region "Constants"
@@ -31,34 +31,15 @@ namespace MojivaPhone
 		protected CMillennialAdView millennialAdView = null;
 		#endregion
 
-		protected CThirdPartyManager()
-		{
-			millennialAdView = new CMillennialAdView();
-			millennialAdView.AdViewSuccess += new EventHandler(MillennialAdViewSuccess);
-			millennialAdView.AdViewFailure += new EventHandler(MillennialAdViewFailure);
-		}
-
-		public static CThirdPartyManager Instance
-		{
-			get
-			{
-				lock (padlock)
-				{
-					if (instance == null)
-					{
-						instance = new CThirdPartyManager();
-					}
-					return instance;
-				}
-			}
-		}
+		protected CBaseThirdPartyManager()
+		{}
 
 		public static void Release()
 		{
 			instance = null;
 		}
 
-		public static bool IsExternalCampaignContent(string pageContent)
+		protected static bool ContainExternalCampaign(string pageContent)
 		{
 			pageContent = pageContent.Trim();
 
@@ -123,7 +104,7 @@ namespace MojivaPhone
 							case MILLENNIAL_TYPE_NAME:
 								if (externalParamsNode != null)
 								{
-									millennialAdView.Run(externalParamsNode);
+									RunMillennialAdView(externalParamsNode);
 								}
 								break;
 							default:
@@ -134,8 +115,16 @@ namespace MojivaPhone
 			}
 			catch (System.Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
+				System.Diagnostics.Debug.WriteLine("Exception: " + ex.Message);
 			}
+		}
+
+		protected virtual void RunMillennialAdView(XElement externalParamsNode)
+		{
+			millennialAdView = new CMillennialAdView();
+			millennialAdView.AdViewSuccess += new EventHandler(MillennialAdViewSuccess);
+			millennialAdView.AdViewFailure += new EventHandler(MillennialAdViewFailure);
+			millennialAdView.Run(externalParamsNode);
 		}
 
 		protected void MillennialAdViewSuccess(object sender, EventArgs e)
@@ -236,6 +225,6 @@ namespace MojivaPhone
 		}
 
 		protected virtual void RunAd()
-		{}
+		{ }
 	}
 }

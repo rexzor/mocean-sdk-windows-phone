@@ -68,7 +68,7 @@ namespace MojivaPhone
 			try
             {
                 HttpWebRequestSync req = (HttpWebRequestSync)HttpWebRequestSync.Create(address);
-                req.Method = "GET";
+                req.Method = "POST";
                 //req.ContentType = "text/xml; encoding='utf-8'";
                 //req.UserAgent = "Mozilla";
 

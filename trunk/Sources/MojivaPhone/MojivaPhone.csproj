@@ -72,7 +72,7 @@
     <Compile Include="AutoDetectParameters.cs" />
     <Compile Include="CAccelerometer.cs" />
     <Compile Include="CAssetManager.cs" />
-    <Compile Include="CThirdParty.cs" />
+    <Compile Include="CBaseThirdParty.cs" />
     <Compile Include="CExpandedView.cs" />
     <Compile Include="CInternalBrowser.cs" />
     <Compile Include="CNativeAppManager.cs" />

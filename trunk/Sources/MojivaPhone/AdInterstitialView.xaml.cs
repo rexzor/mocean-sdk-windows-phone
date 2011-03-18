@@ -122,7 +122,7 @@ namespace MojivaPhone
 			LayoutRoot.Visibility = System.Windows.Visibility.Collapsed;
 		}
 
-		public void Run()
+		public override void Run()
 		{
 			InitAdProperties();
 			base.Run();
