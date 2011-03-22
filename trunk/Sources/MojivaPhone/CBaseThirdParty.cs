@@ -3,8 +3,8 @@
  * */
 
 using System;
-using System.Xml.Linq;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace MojivaPhone
 {
@@ -31,6 +31,15 @@ namespace MojivaPhone
 		protected CMillennialAdView millennialAdView = null;
 		#endregion
 
+		#region "Events"
+		private event EventHandler<StringEventArgs> AddExCampaignEvent;
+		public event EventHandler<StringEventArgs> AddExCampaign
+		{
+			add { AddExCampaignEvent += value; }
+			remove { AddExCampaignEvent -= value; }
+		}
+		#endregion
+
 		protected CBaseThirdPartyManager()
 		{}
 
@@ -39,7 +48,7 @@ namespace MojivaPhone
 			instance = null;
 		}
 
-		protected static bool ContainExternalCampaign(string pageContent)
+		public static bool ContainExternalCampaign(string pageContent)
 		{
 			pageContent = pageContent.Trim();
 
@@ -139,7 +148,7 @@ namespace MojivaPhone
 		{
 			if (!String.IsNullOrEmpty(campaignId))
 			{
-				AdserverRequest.Instance.AddExCampaign(campaignId);
+				AddExCampaignEvent(this, new StringEventArgs(campaignId));
 			}
 		}
 	}

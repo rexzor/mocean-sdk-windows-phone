@@ -21,6 +21,5 @@
 		<Button Content="ORMMA level 1" Height="76" HorizontalAlignment="Left" Margin="4,551,0,0" Name="btnOrmma1" VerticalAlignment="Top" Width="212" HorizontalContentAlignment="Center" Click="btnOrmma1_Click" BorderThickness="5" Background="#FF807777" Padding="0" />
 		<Button Content="ORMMA level 2" Height="76" HorizontalAlignment="Left" Margin="4,623,0,0" Name="btnOrmma2" VerticalAlignment="Top" Width="212" HorizontalContentAlignment="Center" Click="btnOrmma2_Click" BorderThickness="5" Background="#FF807777" Padding="0" />
 		<Button Content="ORMMA level 3" Height="76" HorizontalAlignment="Left" Margin="4,689,0,0" Name="btnOrmma3" VerticalAlignment="Top" Width="212" HorizontalContentAlignment="Center" Click="btnOrmma3_Click" BorderThickness="5" Background="#FF807777" Padding="0" />
-		<my:AdInterstitialView HorizontalAlignment="Left" Margin="444,46,0,0" Name="adInterstitial" VerticalAlignment="Top" Height="0" Width="0" />
 	</Grid>
 </phone:PhoneApplicationPage>

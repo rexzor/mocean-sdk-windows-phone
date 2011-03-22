@@ -4,9 +4,8 @@
 
 using System;
 using System.Windows;
-using Microsoft.Xna.Framework;
 using Microsoft.Devices.Sensors;
-using System.Threading;
+using Microsoft.Xna.Framework;
 
 namespace MojivaPhone
 {
@@ -40,14 +39,12 @@ namespace MojivaPhone
 		public void StartAccelListener()
 		{
 			acc.ReadingChanged += new EventHandler<AccelerometerReadingEventArgs>(Accel_ReadingChanged);
-			//System.Diagnostics.Debug.WriteLine("StartAccelListener");
 		}
 
 		public void StopAccelListener()
 		{
 			acc.ReadingChanged -= new EventHandler<AccelerometerReadingEventArgs>(Accel_ReadingChanged);
 			tilt = new Vector3(0);
-			//System.Diagnostics.Debug.WriteLine("StopAccelListener");
 		}
 
 		public void StartShakeListener()
@@ -112,7 +109,6 @@ namespace MojivaPhone
 				{
 					Deployment.Current.Dispatcher.BeginInvoke(() => fireEventDelegate("tiltChange", TiltToStringArr()));
 				}
-				//System.Diagnostics.Debug.WriteLine("acc_ReadingChanged " + tilt.ToString());
 
 				AccelerometerReadingEventArgs reading = e;
 				try

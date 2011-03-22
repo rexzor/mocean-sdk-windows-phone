@@ -55,7 +55,7 @@ namespace MojivaPhoneXNASample
 			// TODO: use this.Content to load your game content here
 			ad = new AdView(8061, 20249, this);
 			ad.UpdateTime = 10;
-			ad.Location = new Point(100, 100);
+			ad.Location = new Point(0, 0);
 			ad.AdvertiserId = "1234";
 			ad.GroupCode = "5678";
 			ad.Run();

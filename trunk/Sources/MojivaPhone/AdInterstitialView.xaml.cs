@@ -2,9 +2,9 @@
  * © 2010-2011 mOcean Mobile. A subsidiary of Mojiva, Inc. All Rights Reserved.
  * */
 
-using System.Windows.Media;
 using System;
 using System.Windows;
+using System.Windows.Media;
 
 namespace MojivaPhone
 {

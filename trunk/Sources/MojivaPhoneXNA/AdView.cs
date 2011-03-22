@@ -4,19 +4,19 @@
 
 using System;
 using System.IO;
+using System.IO.IsolatedStorage;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.Phone.Info;
+using Microsoft.Phone.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
-using Microsoft.Phone.Tasks;
-using Microsoft.Phone.Info;
-using System.IO.IsolatedStorage;
-using System.Net;
 
 namespace MojivaPhone
 {
-	public delegate void FireEventDelegate(string eventName, string[] args);
+	internal delegate void FireEventDelegate(string eventName, string[] args);
 
 	public class AdView
 	{
@@ -81,6 +81,10 @@ namespace MojivaPhone
 		private Rectangle adRect = Rectangle.Empty;
 		private Timer updateTimer = null;
 		private volatile AD_STATE adState = AD_STATE.NULL;
+
+		private AdserverRequest adserverRequest = null;
+		private CThirdPartyManager thirdPartyManager = null;
+
 		#endregion
 
 		#region "Public methods"
@@ -126,7 +130,10 @@ namespace MojivaPhone
 				break;
 			}
 
-			CThirdPartyManager.Update(gameTime);
+			if (thirdPartyManager != null)
+			{
+				thirdPartyManager.Update(gameTime);
+			}
 		}
 
 		public void Draw(GameTime gameTime)
@@ -150,7 +157,10 @@ namespace MojivaPhone
 						break;
 				}
 
-				CThirdPartyManager.Draw(gameTime);
+				if (thirdPartyManager != null)
+				{
+					thirdPartyManager.Draw(gameTime);
+				}
 
 				spriteBatch.End();
 			}
@@ -170,9 +180,7 @@ namespace MojivaPhone
 				contentThread = null;
 			}
 
-			AdserverRequest.Release();
 			CThirdPartyManager.Release();
-			System.Diagnostics.Debug.WriteLine("~AdView !!! ");
 		}
 		#endregion
 
@@ -185,33 +193,14 @@ namespace MojivaPhone
 		private void ContentThreadProc()
 		{
 			InitAdServerRequest();
-			string url = AdserverRequest.Instance.createURL();
+			string url = adserverRequest.createURL();
 			System.Diagnostics.Debug.WriteLine("url:" + url);
 
 			adState = AD_STATE.DOWNLOAD_PAGE;
 			OnAdDownloadBegin();
 			string adContent = DataRequest.ReadStringData(url);
-			//string adContent = "<a href=\"proof\"><img src=\"http://www.google.ru/intl/ru_ALL/images/logos/images_logo_lg.gif\"></a><a href=\"href_page2\"><img src=\"picture2\"></a>";
 
-/*
-			adContent = "<!-- client_side_external_campaign " +
-						"<external_campaign version=\"1.0\"> " +
-							"<campaign_id>17413</campaign_id> " +
-							"<type>Millennial</type> " +
-							"<external_params> " +
-								"<param name=\"id\">36672</param> " +
-								"<param name=\"adType\">MMBannerAdTop</param> " +
-								"<param name=\"zip\">424038</param> " +
-								"<param name=\"long\">37.6156</param> " +
-								"<param name=\"lat\">55.752197</param> " +
-								"<param name=\"education\">PhD</param> " +
-								"<param name=\"ethnicity\">Japanese</param> " +
-								"<param name=\"marital\">Single</param> " +
-							"</external_params> " +
-							"<track_url>http://ads1.mocean.mobi/img/13fca890-3a68-11e0-ae75-001d096a03fe</track_url> " +
-						"</external_campaign> " +
-						"--> ";
-//*/
+			int currUpdateTime = updateTime;
 
 			if (!String.IsNullOrEmpty(adContent))
 			{
@@ -219,7 +208,14 @@ namespace MojivaPhone
 
 				if (CThirdPartyManager.ContainExternalCampaign(adContent))
 				{
-					CThirdPartyManager.Create(game.GraphicsDevice, new Vector2(adRect.X, adRect.Y), adContent);
+					if (thirdPartyManager == null)
+					{
+						thirdPartyManager = new CThirdPartyManager(game.GraphicsDevice, new Vector2(adRect.X, adRect.Y), adContent);
+					}
+
+					thirdPartyManager.AddExCampaign += new EventHandler<StringEventArgs>(ThirdPartyManager_AddExCampaign);
+					thirdPartyManager.Run(adContent);
+					currUpdateTime = Timeout.Infinite;
 				}
 
 				adState = AD_STATE.DOWNLOAD_IMAGE;
@@ -229,8 +225,6 @@ namespace MojivaPhone
 
 				if (finded)
 				{
-					System.Diagnostics.Debug.WriteLine("linkHref: " + linkHref);
-					System.Diagnostics.Debug.WriteLine("linkImgSrc: " + linkImgSrc);
 					adHref = linkHref;
 
 					try
@@ -254,8 +248,14 @@ namespace MojivaPhone
 			else
 			{
 				OnAdDownloadError("error downloading ad");
-				updateTime = Timeout.Infinite;
+				currUpdateTime = Timeout.Infinite;
 			}
+			SetUpdateTimer(currUpdateTime);
+		}
+
+		private void ThirdPartyManager_AddExCampaign(object sender, StringEventArgs e)
+		{
+			adserverRequest.AddExCampaign(e.Value);
 			SetUpdateTimer(updateTime);
 		}
 
@@ -320,34 +320,39 @@ namespace MojivaPhone
 
 		private void InitAdServerRequest()
 		{
-			AdserverRequest.Instance.setSite(site);
-			AdserverRequest.Instance.setUa(userAgent);
-			AdserverRequest.Instance.setKeywords(keywords);
-			AdserverRequest.Instance.setPremium(Convert.ToInt32(premium));
-			AdserverRequest.Instance.setZone(zone);
-			AdserverRequest.Instance.setTestModeEnabled(test);
-			AdserverRequest.Instance.setCount(count);
-			AdserverRequest.Instance.setCountry(country);
-			AdserverRequest.Instance.setRegion(region);
-			AdserverRequest.Instance.setCity(city);
-			AdserverRequest.Instance.setArea(area);
-			AdserverRequest.Instance.setMetro(metro);
-			AdserverRequest.Instance.setZip(zip);
-			AdserverRequest.Instance.SizeRequired = sizeRequired;
-			AdserverRequest.Instance.setAdstype(Convert.ToInt32(adstype));
-			AdserverRequest.Instance.setLatitude(latitude);
-			AdserverRequest.Instance.setLongitude(longitude);
- 			AdserverRequest.Instance.setParamBG(backgroundColor);
- 			AdserverRequest.Instance.setParamLINK(textColor);
-			AdserverRequest.Instance.setCarrier(carrier);
-			AdserverRequest.Instance.setImageMinWidth(minSizeX);
-			AdserverRequest.Instance.setImageMinHeight(minSizeY);
-			AdserverRequest.Instance.setImageMaxWidth(maxSizeX);
-			AdserverRequest.Instance.setImageMaxHeight(maxSizeY);
-			AdserverRequest.Instance.setAdserverURL(adServerUrl);
-			AdserverRequest.Instance.setOutputFormat((int)key);
-			AdserverRequest.Instance.SetCustomParameters(customParameters);
-			AdserverRequest.Instance.setVersion(version);
+			if (adserverRequest == null)
+			{
+				adserverRequest = new AdserverRequest();
+			}
+
+			adserverRequest.setSite(site);
+			adserverRequest.setUa(userAgent);
+			adserverRequest.setKeywords(keywords);
+			adserverRequest.setPremium(Convert.ToInt32(premium));
+			adserverRequest.setZone(zone);
+			adserverRequest.setTestModeEnabled(test);
+			adserverRequest.setCount(count);
+			adserverRequest.setCountry(country);
+			adserverRequest.setRegion(region);
+			adserverRequest.setCity(city);
+			adserverRequest.setArea(area);
+			adserverRequest.setMetro(metro);
+			adserverRequest.setZip(zip);
+			adserverRequest.SizeRequired = sizeRequired;
+			adserverRequest.setAdstype(Convert.ToInt32(adstype));
+			adserverRequest.setLatitude(latitude);
+			adserverRequest.setLongitude(longitude);
+ 			adserverRequest.setParamBG(backgroundColor);
+ 			adserverRequest.setParamLINK(textColor);
+			adserverRequest.setCarrier(carrier);
+			adserverRequest.setImageMinWidth(minSizeX);
+			adserverRequest.setImageMinHeight(minSizeY);
+			adserverRequest.setImageMaxWidth(maxSizeX);
+			adserverRequest.setImageMaxHeight(maxSizeY);
+			adserverRequest.setAdserverURL(adServerUrl);
+			adserverRequest.setOutputFormat((int)key);
+			adserverRequest.SetCustomParameters(customParameters);
+			adserverRequest.setVersion(version);
 		}
 
 		private bool TryFindImgLinks(string adContent, out string linkHref, out string linkImgSrc)
@@ -420,7 +425,6 @@ namespace MojivaPhone
 				{
 					if (adRect.Contains(new Point((int)touchLocation.Position.X, (int)touchLocation.Position.Y)))
 					{
-						//System.Diagnostics.Debug.WriteLine("ACHTUNG !!! " + touchLocation.Position);
 						adState = AD_STATE.PRESSED;
 						OnAdClick();
 					}
@@ -432,6 +436,7 @@ namespace MojivaPhone
 		{
 			if (!String.IsNullOrEmpty(adHref))
 			{
+				SetUpdateTimer(Timeout.Infinite);
 				OnAdNavigateBanner(adHref);
 				WebBrowserTask task = new WebBrowserTask();
 				task.URL = adHref;

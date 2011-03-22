@@ -3,13 +3,13 @@
  * */
 
 using System;
+using System.IO;
 using System.Net;
 using System.Threading;
-using System.IO;
 
 namespace MojivaPhone
 {
-    public class HttpWebRequestSync
+    internal class HttpWebRequestSync
     {
         private ManualResetEvent getRequestDone = new ManualResetEvent(false);
         private ManualResetEvent getResponseDone = new ManualResetEvent(false);

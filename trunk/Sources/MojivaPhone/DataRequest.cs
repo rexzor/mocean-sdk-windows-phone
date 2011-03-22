@@ -4,13 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Net;
 using System.IO;
-using System.Xml;
-using System.Runtime.InteropServices;
-using System.Windows.Input;
-using System.Windows;
+using System.Net;
+using System.Text;
 
 namespace MojivaPhone
 {
@@ -34,8 +30,6 @@ namespace MojivaPhone
             {
                 HttpWebRequestSync req = (HttpWebRequestSync)HttpWebRequestSync.Create(address);
                 req.Method = "GET";
-                //req.ContentType = "text/xml; encoding='utf-8'";
-                //req.UserAgent = "Mozilla";
 
                 HttpWebResponse result = (HttpWebResponse)req.GetResponse();
 
@@ -69,8 +63,6 @@ namespace MojivaPhone
             {
                 HttpWebRequestSync req = (HttpWebRequestSync)HttpWebRequestSync.Create(address);
                 req.Method = "POST";
-                //req.ContentType = "text/xml; encoding='utf-8'";
-                //req.UserAgent = "Mozilla";
 
                 Byte[] bytes = Encoding.UTF8.GetBytes(strRequest);
                 req.ContentLength = bytes.Length;
@@ -92,8 +84,6 @@ namespace MojivaPhone
             {
                 HttpWebRequestSync req = (HttpWebRequestSync)HttpWebRequestSync.Create(address);
                 req.Method = "GET";
-                //req.ContentType = "text/xml; encoding='utf-8'";
-                //req.UserAgent = "Mozilla";
 
 
                 HttpWebResponse result = (HttpWebResponse)req.GetResponse();

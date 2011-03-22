@@ -3,12 +3,12 @@
  * */
 
 using System;
-using System.Net;
-using System.Windows;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
-using System.Collections.Generic;
+using System.Net;
 using System.Threading;
+using System.Windows;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 
@@ -59,15 +59,6 @@ namespace MojivaPhone
 				isFileStorage = false;
 			}
 
-/*
-			if (PhoneApplicationService.Current.StartupMode == StartupMode.Activate)
-			{
-				ReadBackupedAssets();
-			}
-
-			PhoneApplicationService.Current.Activated += new EventHandler<ActivatedEventArgs>(Application_Activated);
-			PhoneApplicationService.Current.Deactivated += new EventHandler<DeactivatedEventArgs>(Application_Deactivated);
-//*/
 			StartAssetStoring();
 		}
 
@@ -138,21 +129,6 @@ namespace MojivaPhone
 
 				Deployment.Current.Dispatcher.BeginInvoke(() => fireEventDelegate("assetRemoved", new string[] { alias }));
 				assetsStored.Remove(alias);
-
-				// if folder empty, delete them
-				/*
-								string folderPattern = fullFilePath.Substring(0, fullFilePath.LastIndexOf('/')) + "/*";
-								string[] dirs = fileStorage.GetDirectoryNames(folderPattern);
-								string[] files = fileStorage.GetFileNames(folderPattern);
-
-								if (dirs.Length == 0 && files.Length == 0)
-								{
-									fileStorage.DeleteDirectory(fullFilePath.Substring(0, fullFilePath.LastIndexOf('/')));
-								}
-								else
-								{
-								}
-				*/
 			}
 			catch (System.Exception /*ex*/)
 			{ }
@@ -164,12 +140,6 @@ namespace MojivaPhone
 			{
 				RemoveAsset(alias);
 			}
-
-			/*			try
-						{ fileStorage.Remove();	}
-						catch (System.Exception ex)
-						{}
-			*/
 		}
 
 		public string GetAssetURL(string alias)
@@ -295,7 +265,6 @@ namespace MojivaPhone
 
 		~CAssetManager()
 		{
-			//fileStorage.Remove();
 			fileStorage.Dispose();
 			assetsPool.Clear();
 			assetsStored.Clear();
@@ -392,7 +361,6 @@ namespace MojivaPhone
 				}
 				catch (System.Exception /*ex*/)
 				{ }
-				//System.Diagnostics.Debug.WriteLine("STORED alias: " + asset.alias + ", url: " + asset.url);
 			}
 
 			lock (assetsPool)
@@ -402,7 +370,6 @@ namespace MojivaPhone
 
 			Deployment.Current.Dispatcher.BeginInvoke(() => fireEventDelegate("assetReady", new string[] { asset.alias }));
 			addingAsset = null;
-			System.Diagnostics.Debug.WriteLine("\n STORED asset: " + asset.alias);
 		}
 
 		private void StoreScreenShotAsset(CAsset asset)
@@ -475,21 +442,6 @@ namespace MojivaPhone
 			}
 		}
 
-		private void Application_Activated(object sender, ActivatedEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine("\n Activated \n");
-			// 			for (int i = 0; i < assetsPool.Count; i++)
-			// 			{
-			// 				System.Diagnostics.Debug.WriteLine(assetsPool[i].alias + " " + assetsPool[i].url);
-			// 			}
-		}
-
-		private void Application_Deactivated(object sender, DeactivatedEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine("\n De Activated \n");
-			//BackupAssets();
-		}
-
 		private string GetFullFilePath(string fileName)
 		{
 			return assetsRootDir + "/" + fileName.Trim().TrimStart(new char[] { '/' });
@@ -539,7 +491,6 @@ namespace MojivaPhone
 				fs = fileStorage.OpenFile(fullfilePath, FileMode.Create);
 				fs.Write(content, 0, content.Length);
 
-				//Test();
 				return true;
 			}
 			catch
@@ -589,10 +540,6 @@ namespace MojivaPhone
 			}
 
 			SaveTextFile(ASSETS_BACKUP_FILENAME, assetsBackup);
-		}
-
-		private void ReadBackupedAssets()
-		{
 		}
 
 		private class CDeviceState

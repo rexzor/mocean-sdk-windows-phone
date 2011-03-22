@@ -17,64 +17,25 @@ namespace MojivaPhone
 		private GraphicsDevice graphicsDevice = null;
 		private Vector2 position = Vector2.Zero;
 
-		private CThirdPartyManager()
+		public CThirdPartyManager(GraphicsDevice graphicsDevice, Vector2 position, string adContent)
 		{
+			this.graphicsDevice = graphicsDevice;
+			this.position = position;
 		}
 
-		private static CThirdPartyManager Instance
+		public void Update(GameTime gameTime)
 		{
-			get
+			if (millennialAdView != null)
 			{
-				lock (padlock)
-				{
-					return (CThirdPartyManager)instance;
-				}
-			}
-			set
-			{
-				lock (padlock)
-				{
-					instance = value;
-				}
+				((CXNAMillennialAdView)millennialAdView).Update(gameTime);
 			}
 		}
 
-		public static new bool ContainExternalCampaign(string adContent)
+		public void Draw(GameTime gameTime)
 		{
-			return CBaseThirdPartyManager.ContainExternalCampaign(adContent);
-		}
-
-		public static void Create(GraphicsDevice graphicsDevice, Vector2 position, string adContent)
-		{
-			if (Instance == null)
+			if (millennialAdView != null)
 			{
-				Instance = new CThirdPartyManager();
-				Instance.graphicsDevice = graphicsDevice;
-				Instance.position = position;
-				Instance.Run(adContent);
-			}
-		}
-
-		public static void Update(GameTime gameTime)
-		{
-			if (Instance != null)
-			{
-				if (Instance.millennialAdView != null)
-				{
-					((CXNAMillennialAdView)Instance.millennialAdView).Update(gameTime);
-				}
-
-			}
-		}
-
-		public static void Draw(GameTime gameTime)
-		{
-			if (Instance != null)
-			{
-				if (Instance.millennialAdView != null)
-				{
-					((CXNAMillennialAdView)Instance.millennialAdView).Draw(gameTime);
-				}
+				((CXNAMillennialAdView)millennialAdView).Draw(gameTime);
 			}
 		}
 
@@ -119,7 +80,6 @@ namespace MojivaPhone
 				adView = new MMAdView(graphicsDevice, position, adPlacement);
 				adView.MMAdSuccess += new EventHandler(AdView_MMAdSuccess);
 				adView.MMAdFailure += new EventHandler(AdView_MMAdFailure);
-				adView.RefreshTimer = 5;
 			}
 
 			private void AdView_MMAdSuccess(object sender, EventArgs e)

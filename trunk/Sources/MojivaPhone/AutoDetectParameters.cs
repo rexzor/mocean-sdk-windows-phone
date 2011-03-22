@@ -3,8 +3,6 @@
  * */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Device.Location;
 using System.Globalization;
 using System.Threading;
@@ -21,7 +19,6 @@ namespace MojivaPhone
         private bool _haveGps = false;
         IGeoPositionWatcher<GeoCoordinate> _watcher;
         GeoPosition<GeoCoordinate> _position;
-		//private CNetwork network;
 
         private String _networkOperatorName;
         private String _country;

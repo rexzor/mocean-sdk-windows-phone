@@ -11,10 +11,11 @@
 	xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
 	xmlns:x1="http://schemas.microsoft.com/client/2007"
 	xmlns:x2="http://schemas.microsoft.com/client/2007"
-	xmlns:my="clr-namespace:MojivaPhone">
+	xmlns:my="clr-namespace:MojivaPhone"
+	xmlns:MMAdView="clr-namespace:mmiWP7SDK;assembly=WP7SDK">
     
-    <Grid x:Name="LayoutRoot" ShowGridLines="False" DataContext="{Binding}" Background="#FFD4D421">
-        <phone:WebBrowser HorizontalAlignment="Left" Name="m_webBrowser" VerticalAlignment="Top" Height="480" Width="480" IsScriptEnabled="True" Background="#AB6F6F6F" />
-		<my:ThirdPartyContainer x:Name="thirdPartyContainer" HorizontalAlignment="Left" VerticalAlignment="Top" Height="480" Width="480" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" />
+    <Grid x:Name="LayoutRoot" ShowGridLines="False" DataContext="{Binding}" Background="Transparent">
+		<phone:WebBrowser HorizontalAlignment="Left" Name="m_webBrowser" VerticalAlignment="Top" Height="480" Width="480" IsScriptEnabled="True" Background="Transparent" />
+		<MMAdView:MMAdView Name="mMAdView" Apid="0" Width="480" Height="480" RefreshTimer="-1" AdType="MMBannerAdTop" />
 	</Grid>
 </UserControl>

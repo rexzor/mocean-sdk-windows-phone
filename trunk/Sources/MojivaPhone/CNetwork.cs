@@ -3,10 +3,8 @@
  * */
 
 using System;
-using System.Net;
-using System.Windows;
-using Microsoft.Phone.Net.NetworkInformation;
 using System.Threading;
+using Microsoft.Phone.Net.NetworkInformation;
 
 namespace MojivaPhone
 {
@@ -77,7 +75,6 @@ namespace MojivaPhone
 
 				if (lastType != currType)
 				{
-					//System.Diagnostics.Debug.WriteLine("send offline msg time: " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + ":" + DateTime.Now.Millisecond);
 					OnNetworkChanged();
 				}
 
@@ -93,14 +90,12 @@ namespace MojivaPhone
 			{
 				NetworkChangeEvent(this, EventArgs.Empty);
 			}
-
-			//Deployment.Current.Dispatcher.BeginInvoke(() => fireEventDelegate("networkChange", new string[] { Microsoft.Phone.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable().ToString(), GetStatus() }));
 		}
 
 		public string GetStatus()
 		{
 			string netWorkStatus = "offline";
-			//*
+
 			NetworkInterfaceType lastType = NetworkInterface.NetworkInterfaceType;
 
 			switch (lastType)
@@ -118,7 +113,7 @@ namespace MojivaPhone
 					netWorkStatus = "unknown";
 					break;
 			}
-			//*/
+
 			return netWorkStatus;
 		}
 

@@ -3,6 +3,7 @@
  * */
 
 using Microsoft.Xna.Framework;
+
 namespace MojivaPhone
 {
 	public class AdInterstitialView : AdView

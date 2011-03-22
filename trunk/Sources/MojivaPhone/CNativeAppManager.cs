@@ -2,9 +2,6 @@
  * © 2010-2011 mOcean Mobile. A subsidiary of Mojiva, Inc. All Rights Reserved.
  * */
 
-using System;
-using System.Net;
-using System.Windows;
 using System.Collections.Generic;
 using Microsoft.Phone.Tasks;
 

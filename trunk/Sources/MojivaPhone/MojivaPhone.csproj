@@ -77,8 +77,8 @@
     <Compile Include="CInternalBrowser.cs" />
     <Compile Include="CNativeAppManager.cs" />
     <Compile Include="CNetwork.cs" />
-    <Compile Include="CPosition.cs" />
     <Compile Include="CProperties.cs" />
+    <Compile Include="CThirdPartyManager.cs" />
     <Compile Include="CVideoShower.cs" />
     <Compile Include="DataRequest.cs" />
     <Compile Include="HttpWebRequestSync.cs" />
@@ -90,10 +90,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="StringEventArgs.cs" />
-    <Compile Include="ThirdPartyContainer.xaml.cs">
-      <DependentUpon>ThirdPartyContainer.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="AdInterstitialView.xaml">
@@ -103,10 +99,6 @@
     <Page Include="AdView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ThirdPartyContainer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
