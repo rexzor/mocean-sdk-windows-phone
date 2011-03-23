@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneSample", "MojivaPhoneSample\MojivaPhoneSample.csproj", "{74CB6E31-5676-4C48-82AA-3F1BFBEA3286}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneSLSample", "MojivaPhoneSLSample\MojivaPhoneSLSample.csproj", "{74CB6E31-5676-4C48-82AA-3F1BFBEA3286}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhone", "..\Sources\MojivaPhone\MojivaPhone.csproj", "{5F3521B3-B147-4965-842C-7C5652E2E5A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneSL", "MojivaPhoneSL\MojivaPhoneSL.csproj", "{5F3521B3-B147-4965-842C-7C5652E2E5A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

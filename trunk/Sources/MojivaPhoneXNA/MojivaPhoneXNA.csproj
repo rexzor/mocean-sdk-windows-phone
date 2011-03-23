@@ -90,28 +90,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\MojivaPhone\AdserverRequest.cs">
+    <Compile Include="..\MojivaPhoneSL\AdserverRequest.cs">
       <Link>AdserverRequest.cs</Link>
     </Compile>
-    <Compile Include="..\MojivaPhone\AutoDetectParameters.cs">
+    <Compile Include="..\MojivaPhoneSL\AutoDetectParameters.cs">
       <Link>AutoDetectParameters.cs</Link>
     </Compile>
-    <Compile Include="..\MojivaPhone\CBaseThirdParty.cs">
+    <Compile Include="..\MojivaPhoneSL\CBaseThirdParty.cs">
       <Link>CBaseThirdParty.cs</Link>
     </Compile>
-    <Compile Include="..\MojivaPhone\CNetwork.cs">
+    <Compile Include="..\MojivaPhoneSL\CNetwork.cs">
       <Link>CNetwork.cs</Link>
     </Compile>
-    <Compile Include="..\MojivaPhone\DataRequest.cs">
+    <Compile Include="..\MojivaPhoneSL\DataRequest.cs">
       <Link>DataRequest.cs</Link>
     </Compile>
-    <Compile Include="..\MojivaPhone\HttpWebRequestSync.cs">
+    <Compile Include="..\MojivaPhoneSL\HttpWebRequestSync.cs">
       <Link>HttpWebRequestSync.cs</Link>
     </Compile>
-    <Compile Include="..\MojivaPhone\MD5.cs">
+    <Compile Include="..\MojivaPhoneSL\MD5.cs">
       <Link>MD5.cs</Link>
     </Compile>
-    <Compile Include="..\MojivaPhone\StringEventArgs.cs">
+    <Compile Include="..\MojivaPhoneSL\StringEventArgs.cs">
       <Link>StringEventArgs.cs</Link>
     </Compile>
     <Compile Include="AdInterstitialView.cs" />

@@ -113,7 +113,7 @@
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Sources\MojivaPhone\MojivaPhone.csproj">
+    <ProjectReference Include="..\MojivaPhoneSL\MojivaPhoneSL.csproj">
       <Project>{5F3521B3-B147-4965-842C-7C5652E2E5A8}</Project>
       <Name>MojivaPhone</Name>
     </ProjectReference>

@@ -108,14 +108,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Sources\MojivaPhoneXNA\MojivaPhoneXNA.csproj">
+    <ProjectReference Include="..\MojivaPhoneXNA\MojivaPhoneXNA.csproj">
       <Project>{3E204802-796E-45E2-9FC0-865E9F7F84FF}</Project>
       <Name>MojivaPhoneXNA</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MojivaPhoneXNASampleContent\MojivaPhoneXNASampleContent.contentproj">
-      <Project>{15A8D976-6DA9-4648-A483-990B169688AF}</Project>
-      <Name>MojivaPhoneXNASampleContent %28Content%29</Name>
-      <XnaReferenceType>Content</XnaReferenceType>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

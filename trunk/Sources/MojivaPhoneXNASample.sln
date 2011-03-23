@@ -1,14 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneXNASample", "MojivaPhoneXNASample\MojivaPhoneXNASample\MojivaPhoneXNASample.csproj", "{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3E204802-796E-45E2-9FC0-865E9F7F84FF} = {3E204802-796E-45E2-9FC0-865E9F7F84FF}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneXNASample", "MojivaPhoneXNASample\MojivaPhoneXNASample.csproj", "{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneXNASampleContent", "MojivaPhoneXNASample\MojivaPhoneXNASampleContent\MojivaPhoneXNASampleContent.contentproj", "{15A8D976-6DA9-4648-A483-990B169688AF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneXNA", "..\Sources\MojivaPhoneXNA\MojivaPhoneXNA.csproj", "{3E204802-796E-45E2-9FC0-865E9F7F84FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneXNA", "MojivaPhoneXNA\MojivaPhoneXNA.csproj", "{3E204802-796E-45E2-9FC0-865E9F7F84FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,8 +17,6 @@ Global
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Release|Windows Phone.Build.0 = Release|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
-		{15A8D976-6DA9-4648-A483-990B169688AF}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
-		{15A8D976-6DA9-4648-A483-990B169688AF}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
 		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
 		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
 		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
