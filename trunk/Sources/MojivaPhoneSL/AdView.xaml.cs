@@ -1248,14 +1248,14 @@ namespace MojivaPhone
 					OnAdDownloadBegin();
 
 					data = DataRequest.ReadStringData(url);
-					if (data.Length > 0)
+					if (data == "<!-- invalid params -->")
+					{
+						OnAdDownloadError(data);
+					}
+					else if (data.Length > 0)
 					{
 						data = replaceImages(data);
 						OnAdDownloadEnd();
-					}
-					else
-					{
-						OnAdDownloadError("error downloading ad");
 					}
 				}
 				catch (Exception /*ex*/)
@@ -1291,10 +1291,6 @@ namespace MojivaPhone
 
 						saveCache(idCache, data);
 						SetDocumentPath(idCache);
-					}
-					else
-					{
-						currUpdateTime = Timeout.Infinite;
 					}
 				}
 				catch (Exception /*ex*/)
@@ -1844,8 +1840,8 @@ namespace MojivaPhone
 			{
 				if (_internalBrowser)
 				{
-					OnAdNavigateBanner(e.Uri.ToString());
-					if (internalBrowserController != null && Owner != null)
+					bool isNaviHandled = OnAdNavigateBanner(e.Uri.ToString());
+					if (!isNaviHandled && internalBrowserController != null && Owner != null)
 					{
 						internalBrowserController.Show(e.Uri.ToString());
 					}
@@ -1865,11 +1861,14 @@ namespace MojivaPhone
 		#endregion
 
 		#region "Events"
+		public delegate bool AdNavigateBannerDelegate(String url);
+		private event AdNavigateBannerDelegate AdNavigateBannerEvent;
+		
+
 		private event EventHandler AdDownloadBeginEvent;
 		private event EventHandler AdDownloadEndEvent;
 		private event EventHandler<StringEventArgs> AdDownloadErrorEvent;
 		private event EventHandler<StringEventArgs> AdWebViewClosingEvent;
-		private event EventHandler<StringEventArgs> AdNavigateBannerEvent;
 
 		private void OnAdDownloadBegin()
 		{
@@ -1899,18 +1898,21 @@ namespace MojivaPhone
 			}
 		}
 
-		private void OnAdNavigateBanner(string url)
+		private bool OnAdNavigateBanner(string url)
 		{
 			if (AdNavigateBannerEvent != null)
 			{
-				AdNavigateBannerEvent(this, new StringEventArgs(url));
+				return AdNavigateBannerEvent(url);
 			}
+
+			return false;
 		}
+
 
 		/// <summary>
 		/// This event fired after user clicks the banner (only if InternalBrowser property has been set to True).
 		/// </summary>
-		public event EventHandler<StringEventArgs> AdNavigateBanner
+		public event AdNavigateBannerDelegate AdNavigateBanner
 		{
 			add { AdNavigateBannerEvent += value; }
 			remove { AdNavigateBannerEvent -= value; }
