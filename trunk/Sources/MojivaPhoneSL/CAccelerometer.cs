@@ -75,11 +75,10 @@ namespace MojivaPhone
 			{
 				acc.Stop();
 			}
-			catch
-			{ }
+			catch (System.Exception /*ex*/)
+			{}
 			finally
 			{
-				acc.Dispose();
 				acc = null;
 			}
 

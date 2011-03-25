@@ -17,7 +17,7 @@ namespace MojivaPhoneSample
 
 		private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
 		{
-			adViewControl.Zone = 17324;
+			adViewControl.Zone = 20249;
 			adViewControl.Site = 8061;
 			adViewControl.Owner = this;
 			adViewControl.InternalBrowser = true;

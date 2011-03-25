@@ -19,14 +19,14 @@ namespace MojivaPhone
 			AdInterstitialCloseButtonPositionRight = 8,
 		};
 
-		private const int DEFAULT_CLOSE_BUTTON_WIDTH = 60;
-		private const int DEFAULT_CLOSE_BUTTON_HEIGHT = 60;
-		private const string DEFAULT_CLOSE_BUTTON_CONTENT = "X";
+		private const int DEFAULT_CLOSE_BUTTON_WIDTH = 173;
+		private const int DEFAULT_CLOSE_BUTTON_HEIGHT = 173;
+		private const string DEFAULT_CLOSE_BUTTON_CONTENT = "";
 
 		#region "Variables"
 		private AdInterstitialCloseButtonPosition closeButtonPosition = AdInterstitialCloseButtonPosition.AdInterstitialCloseButtonPositionTop | AdInterstitialCloseButtonPosition.AdInterstitialCloseButtonPositionRight;
 		private uint showCloseButtonTime = 0;
-		private uint autoCloseInterstitialTime = 0;
+		private uint autoCloseInterstitialTime = System.UInt32.MaxValue;
 		private Color closeButtonTextColor = Color.FromArgb(0, 0, 0, 0);
 		private Color closeButtonBackgroundColor = Color.FromArgb(0, 0, 0, 0);
 		private string closeButtonImage = null;
@@ -52,7 +52,7 @@ namespace MojivaPhone
 		}
 		public uint AutoCloseInterstitialTime
 		{
-			get { return autoCloseInterstitialTime/1000; }
+			get { return autoCloseInterstitialTime / 1000; }
 			set
 			{
 				autoCloseInterstitialTime = value * 1000;
@@ -87,7 +87,7 @@ namespace MojivaPhone
 		[Obsolete("This property is not supported.")]
 		public string CloseButtonSelectedImage
 		{
-			set{}
+			set { }
 		}
 		public string CloseButtonText
 		{
@@ -136,6 +136,7 @@ namespace MojivaPhone
 		public void Close()
 		{
 			adTimer.Dispose();
+			closeBtnTimer.Dispose();
 
 			LayoutRoot.Visibility = System.Windows.Visibility.Collapsed;
 
@@ -167,8 +168,7 @@ namespace MojivaPhone
 			}
 			Microsoft.Phone.Shell.SystemTray.IsVisible = isShowPhoneStatusBar;
 
-			InitDefaultCloseBtn();
- 			SetCloseBtnImage(closeButtonImage);
+			InitCloseButton();
 		}
 
 		private void InitShowTimers()
@@ -179,10 +179,10 @@ namespace MojivaPhone
 
 		private void ProcessCloseBtnTimerEvent(object sender)
 		{
-			System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() => ShowCloseBtn());
+			Deployment.Current.Dispatcher.BeginInvoke(() => ShowCloseBtn());
 		}
 
-		private void InitDefaultCloseBtn()
+		private void InitCloseButton()
 		{
 			closeBtn.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
 			closeBtn.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
@@ -201,41 +201,37 @@ namespace MojivaPhone
 
 			closeBtn.Content = closeButtonText;
 			closeBtn.Opacity = (double)closeButtonTransparency / 255.0d;
+			closeBtn.Width = closeButtonSize.Width;
+			closeBtn.Height = closeButtonSize.Height;
 
-			closeBtn.Width = CloseButtonSize.Width;
-			closeBtn.Height = CloseButtonSize.Height;
-
+			TrySetCloseBtnImage();
 			InitCloseBtnPosition();
 		}
-		private void ShowCloseBtn()
+
+		private void TrySetCloseBtnImage()
 		{
-			closeBtnTimer.Dispose();
-			closeBtn.Visibility = System.Windows.Visibility.Visible;
-		}
-		private void SetCloseBtnImage(string uri)
-		{
-			if (String.IsNullOrEmpty(uri))
+			if (String.IsNullOrEmpty(closeButtonImage))
 			{
 				return;
 			}
 
 			var brush = new System.Windows.Media.ImageBrush();
-			var bmpImg = new System.Windows.Media.Imaging.BitmapImage(new System.Uri(uri, System.UriKind.RelativeOrAbsolute));
-
+			var bmpImg = new System.Windows.Media.Imaging.BitmapImage(new System.Uri(closeButtonImage, System.UriKind.RelativeOrAbsolute));
+			bmpImg.ImageFailed += (s, evt) =>
+			{
+				if (closeButtonBackgroundColor != null)
+				{
+					closeBtn.Background = new System.Windows.Media.SolidColorBrush(closeButtonBackgroundColor);
+				}
+			};
 			brush.ImageSource = bmpImg;
 			closeBtn.Background = brush;
+		}
 
-/*			brush.ImageOpened += (sender, evt) =>
-			{
-				closeBtn.Content = System.String.Empty;
-				closeBtn.Width = bmpImg.PixelWidth;
-				closeBtn.Height = bmpImg.PixelHeight;
-			};
-*/
-			brush.ImageFailed += (sender, evt) =>
-			{
-				InitDefaultCloseBtn();
-			};
+		private void ShowCloseBtn()
+		{
+			closeBtnTimer.Dispose();
+			closeBtn.Visibility = System.Windows.Visibility.Visible;
 		}
 
 		private void ProcessAdTimerEvent(object sender)
@@ -281,8 +277,8 @@ namespace MojivaPhone
 					break;
 				case AdInterstitialCloseButtonPosition.AdInterstitialCloseButtonPositionCenter:
 				default:
-					closeBtn.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-					closeBtn.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+					closeBtn.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+					closeBtn.VerticalAlignment = System.Windows.VerticalAlignment.Top;
 					break;
 			}
 		}

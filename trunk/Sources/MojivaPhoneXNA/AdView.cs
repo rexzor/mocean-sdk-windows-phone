@@ -20,7 +20,7 @@ namespace MojivaPhone
 
 	public class AdView
 	{
-		private enum AD_STATE
+		protected enum AD_STATE
 		{
 			INIT,
 			DOWNLOAD_PAGE,
@@ -71,16 +71,16 @@ namespace MojivaPhone
 		private string groupCode;
 		private string customParameters;
 
-		private Game game;
+		protected Game game;
 		private Thread contentThread = null;
-		private SpriteBatch spriteBatch = null;
+		protected SpriteBatch spriteBatch = null;
 		private string adHref = null;
 		private Texture2D adImage = null;
 		private Texture2D defaultImage = null;
 		private Point position = Point.Zero;
 		private Rectangle adRect = Rectangle.Empty;
 		private Timer updateTimer = null;
-		private volatile AD_STATE adState = AD_STATE.NULL;
+		protected volatile AD_STATE adState = AD_STATE.NULL;
 
 		private AdserverRequest adserverRequest = null;
 		private CThirdPartyManager thirdPartyManager = null;
@@ -100,7 +100,7 @@ namespace MojivaPhone
 			this.game = game;
 		}
 
-		public void Run()
+		public virtual void Run()
 		{
 			adState = AD_STATE.INIT;
 			Init();
@@ -121,7 +121,7 @@ namespace MojivaPhone
 			contentThread.Start();
 		}
 
-		public void Update(GameTime gameTime)
+		public virtual void Update(GameTime gameTime)
 		{
 			switch (adState)
 			{
@@ -136,7 +136,7 @@ namespace MojivaPhone
 			}
 		}
 
-		public void Draw(GameTime gameTime)
+		public virtual void Draw(GameTime gameTime)
 		{
 			if (adState != AD_STATE.NULL && adState != AD_STATE.INIT)
 			{

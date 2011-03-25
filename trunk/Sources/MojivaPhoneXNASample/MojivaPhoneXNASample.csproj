@@ -112,6 +112,11 @@
       <Project>{3E204802-796E-45E2-9FC0-865E9F7F84FF}</Project>
       <Name>MojivaPhoneXNA</Name>
     </ProjectReference>
+    <ProjectReference Include="Content\Content.contentproj">
+      <Project>{9E0975DB-D336-49D5-AADF-0F1B871407B5}</Project>
+      <Name>Content</Name>
+      <XnaReferenceType>Content</XnaReferenceType>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

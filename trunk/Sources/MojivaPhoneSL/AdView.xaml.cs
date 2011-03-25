@@ -847,6 +847,7 @@ namespace MojivaPhone
 				if (contentThread == null)
 				{
 					contentThread = new Thread(new ThreadStart(ContentThreadProc));
+					contentThread.Name = "contentThread";
 					if (!contentThread.IsAlive) contentThread.Start();
 				}
 			}
@@ -854,6 +855,7 @@ namespace MojivaPhone
 			//if (isSentCounter)
 			{
 				Thread firstAppLaunchThread = new Thread(new ThreadStart(FirstAppLaunchProc));
+				firstAppLaunchThread.Name = "firstAppLaunchThread";
 				firstAppLaunchThread.Start();
 			}
 
@@ -866,7 +868,6 @@ namespace MojivaPhone
 			accelerometer = new CAccelerometer(fireEventDelegate);
 			nativeAppManager = new CNativeAppManager();
 			assetManager = new CAssetManager(fireEventDelegate, ASSETS_ROOT_DIR);
-			videoShower = new CVideoShower();
 
 			if (_internalBrowser)
 			{
@@ -991,6 +992,7 @@ namespace MojivaPhone
 		{
 			InitAdserverRequest();
 			contentThread = new Thread(new ThreadStart(ContentThreadProc));
+			contentThread.Name = "contentThread";
 			if (!contentThread.IsAlive) contentThread.Start();
 		}
 
@@ -1261,12 +1263,23 @@ namespace MojivaPhone
 				catch (Exception /*ex*/)
 				{ }
 //*/
-
 				int currUpdateTime = _reloadPeriod;
 				try
 				{
 					if ((data != null) && (data.Length > 0))
 					{
+						if (CVideoShower.IsContentVideo(data))
+						{
+							if (videoShower == null)
+							{
+								videoShower = new CVideoShower();
+								videoShower.Run(data);
+								videoShower.AdNavigate += new EventHandler<StringEventArgs>(VideoShower_AdNavigate);
+							}
+
+							currUpdateTime = Timeout.Infinite;
+						}
+
 						if (CThirdPartyManager.ContainExternalCampaign(data))
 						{
 							Deployment.Current.Dispatcher.BeginInvoke(() => mMAdView.Visibility = System.Windows.Visibility.Visible);
@@ -1828,6 +1841,16 @@ namespace MojivaPhone
 		private void internalBrowserController_Closed(object sender, StringEventArgs e)
 		{
 			OnAdWebViewClosing(e.Value);
+		}
+
+		private void VideoShower_AdNavigate(object sender, StringEventArgs e)
+		{
+			try
+			{
+				m_webBrowser.Navigate(new Uri(e.Value, UriKind.Absolute));
+			}
+			catch (System.Exception /*ex*/)
+			{}
 		}
 
 		#endregion

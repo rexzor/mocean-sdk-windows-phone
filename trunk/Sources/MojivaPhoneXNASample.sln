@@ -5,22 +5,34 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneXNASample", "Moj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojivaPhoneXNA", "MojivaPhoneXNA\MojivaPhoneXNA.csproj", "{3E204802-796E-45E2-9FC0-865E9F7F84FF}"
 EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "Content", "MojivaPhoneXNASample\Content\Content.contentproj", "{9E0975DB-D336-49D5-AADF-0F1B871407B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|Windows Phone = Debug|Windows Phone
+		Release|Any CPU = Release|Any CPU
 		Release|Windows Phone = Release|Windows Phone
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Debug|Any CPU.ActiveCfg = Debug|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Debug|Windows Phone.Deploy.0 = Debug|Windows Phone
+		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Release|Any CPU.ActiveCfg = Release|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Release|Windows Phone.Build.0 = Release|Windows Phone
 		{34EBEA4F-241A-4A37-BFB5-BC22C92CB950}.Release|Windows Phone.Deploy.0 = Release|Windows Phone
+		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Debug|Any CPU.ActiveCfg = Debug|Windows Phone
 		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
 		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
+		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Release|Any CPU.ActiveCfg = Release|Windows Phone
 		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
 		{3E204802-796E-45E2-9FC0-865E9F7F84FF}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{9E0975DB-D336-49D5-AADF-0F1B871407B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E0975DB-D336-49D5-AADF-0F1B871407B5}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{9E0975DB-D336-49D5-AADF-0F1B871407B5}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E0975DB-D336-49D5-AADF-0F1B871407B5}.Release|Windows Phone.ActiveCfg = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

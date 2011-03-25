@@ -16,7 +16,7 @@ namespace MojivaPhone
 		private const int DEFAULT_VIDEO_HEIGHT = 800;
 
 		private System.Windows.Controls.Primitives.Popup popup = null;
-		private MediaElement mediaElement = new MediaElement();
+		private MediaElement mediaElement = null;
 		private bool inited = false;
 		private string navigateUri = String.Empty;
 		private event EventHandler<StringEventArgs> AdNavigateEvent;
@@ -47,6 +47,11 @@ namespace MojivaPhone
 		{
 		}
 
+		public static bool IsContentVideo(string data)
+		{
+			return data.Contains(VIDEO_TAG);
+		}
+
 		private void Init()
 		{
 			popup = new System.Windows.Controls.Primitives.Popup();
@@ -55,11 +60,13 @@ namespace MojivaPhone
 			popup.HorizontalOffset = 0;
 			popup.VerticalOffset = 0;
 
+			mediaElement = new MediaElement();
 			mediaElement.Width = DEFAULT_VIDEO_WIDTH;
 			mediaElement.Height = DEFAULT_VIDEO_HEIGHT;
 			mediaElement.MediaOpened += new System.Windows.RoutedEventHandler(MediaElement_MediaOpened);
 			mediaElement.MediaEnded += new System.Windows.RoutedEventHandler(MediaElement_MediaEnded);
 			mediaElement.MediaFailed += new EventHandler<System.Windows.ExceptionRoutedEventArgs>(MediaElement_MediaFailed);
+
 
 			Grid g = new Grid();
 			g.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 0, 0, 0));
@@ -82,7 +89,7 @@ namespace MojivaPhone
 				mediaElement.Width = mediaElement.NaturalVideoWidth;
 				mediaElement.Height = mediaElement.NaturalVideoHeight;
 
- 				popup.Visibility = System.Windows.Visibility.Visible;
+				popup.Visibility = System.Windows.Visibility.Visible;
 				popup.Child.Visibility = System.Windows.Visibility.Visible;
 			}
 		}
@@ -112,16 +119,15 @@ namespace MojivaPhone
 			}
 		}
 
-		public void SearchPage(string pageContent)
+		public void Run(string pageContent)
 		{
 			videoLinks.Clear();
 
-			Dictionary<string, string> parsedPage = ParseHTMLTag("a", pageContent);
+			Dictionary<string, string> parsedPage = ParseHTMLTag("a", pageContent, true);
 
 			string href = String.Empty;
 			string content = String.Empty;
 
-/*
 			if (parsedPage.ContainsKey("href"))
 			{
 				href = parsedPage["href"];
@@ -131,7 +137,7 @@ namespace MojivaPhone
 				content = parsedPage["content"];
 			}
 
-			Dictionary<string, string> parsedContent = ParseHTMLTag(VIDEO_TAG, content);
+			Dictionary<string, string> parsedContent = ParseHTMLTag(VIDEO_TAG, content, false);
 			string src = String.Empty;
 			if (parsedContent.ContainsKey("src"))
 			{
@@ -144,32 +150,36 @@ namespace MojivaPhone
 			videoLinks.Add(newVideo);
 
 			System.Windows.Deployment.Current.Dispatcher.BeginInvoke(() => ShowNextVideo());
-//*/
 		}
 
-		private Dictionary<string, string> ParseHTMLTag(string tagName, string tag)
+		private Dictionary<string, string> ParseHTMLTag(string tagName, string tag, bool closedTag)
 		{
 			var result = new Dictionary<string, string>();
 
-			string pagePattern = String.Format("<{0}\\s*(.*?)>(.*?)</{0}>", tagName);
+			string pagePattern = String.Format("<{0}\\s*(.*?)>", tagName);
+			if (closedTag)
+			{
+				pagePattern = String.Format("<{0}\\s*(.*?)>(.*?)</{0}>", tagName);
+			}
+
 			Regex pageRegex = new Regex(pagePattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 			MatchCollection pageMatches = pageRegex.Matches(tag);
 			foreach (Match currMatch in pageMatches)
 			{
  				string parameters = currMatch.Groups[1].Value;
  				string content = currMatch.Groups[2].Value;
-// 				result.Add("content", content);
+				result.Add("content", content);
 
-// 				string attrPattern = "(?<attr>[^\\s]*)=[\"\'](?<value>[^\"\']*)[\"\']";
-// 				Regex attrRegex = new Regex(attrPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-// 				MatchCollection attrMatches = attrRegex.Matches(parameters);
-// 				foreach (Match currAttrMatch in attrMatches)
-// 				{
-// 					string attr = currAttrMatch.Groups["attr"].Value;
-// 					string value = currAttrMatch.Groups["value"].Value;
-// 
-// 					result.Add(attr, value);
-// 				}
+				string attrPattern = "(?<attr>[^\\s]*)=[\"\'](?<value>[^\"\']*)[\"\']";
+				Regex attrRegex = new Regex(attrPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+				MatchCollection attrMatches = attrRegex.Matches(parameters);
+				foreach (Match currAttrMatch in attrMatches)
+				{
+					string attr = currAttrMatch.Groups["attr"].Value;
+					string value = currAttrMatch.Groups["value"].Value;
+
+					result.Add(attr, value);
+				}
 			}
 
 			return result;
