@@ -1,0 +1,21 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="MojivaPhoneThirdPartySample.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:my="clr-namespace:MojivaPhone;assembly=MojivaPhoneThirdParty"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True" Loaded="PhoneApplicationPage_Loaded">
+
+	<Grid x:Name="ContentGrid" Grid.Row="1" Background="Black">
+		<my:AdView HorizontalAlignment="Left" Name="adViewControl" VerticalAlignment="Top" Height="124" Width="420" Background="Black" Margin="32,30,0,0" IsTabStop="False" BackgroundColor="#FF7C0000" />
+	</Grid>
+	
+</phone:PhoneApplicationPage>
