@@ -77,6 +77,9 @@
     <Compile Include="CustomButton.cs" />
     <Compile Include="CVideoShower.cs" />
     <Compile Include="DataRequest.cs" />
+    <Compile Include="frmBrowser.xaml.cs">
+      <DependentUpon>frmBrowser.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HttpWebRequestSync.cs" />
     <Compile Include="MD5.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +96,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AdView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="frmBrowser.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

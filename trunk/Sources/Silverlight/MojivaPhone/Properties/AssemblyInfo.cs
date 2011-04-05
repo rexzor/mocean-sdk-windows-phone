@@ -6,13 +6,13 @@ using System.Windows.Markup;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MojivaPhone")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("mOceanWindows")]
+[assembly: AssemblyDescription("mOcean Advertising SDK")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("mOcean Mobile")]
-[assembly: AssemblyProduct("MojivaPhone")]
+[assembly: AssemblyCompany("Mojiva")]
+[assembly: AssemblyProduct("mOceanWindows")]
 [assembly: AssemblyCopyright("© 2010-2011 mOcean Mobile. A subsidiary of Mojiva, Inc. All Rights Reserved.")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("mOcean Mobile")]
 [assembly: AssemblyCulture("")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/client/2007", "MojivaPhone")]
 
@@ -33,5 +33,5 @@ using System.Windows.Markup;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.0.0")]
-[assembly: AssemblyFileVersion("2.0.0")]
+[assembly: AssemblyVersion("2.0.1")]
+[assembly: AssemblyFileVersion("2.0.1")]

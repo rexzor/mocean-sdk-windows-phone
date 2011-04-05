@@ -9,7 +9,7 @@ using Microsoft.Phone.Controls;
 
 namespace MojivaPhone
 {
-	public class CInternalBrowser
+	internal class CInternalBrowser
 	{
 		private const int DEFAULT_VIDEO_WIDTH = 480;
 		private const int DEFAULT_VIDEO_HEIGHT = 800;
@@ -48,7 +48,7 @@ namespace MojivaPhone
 
 		private void Init()
 		{
-			popup = new System.Windows.Controls.Primitives.Popup();
+			popup = new Popup();
 			popup.Width = DEFAULT_VIDEO_WIDTH;
 			popup.Height = DEFAULT_VIDEO_HEIGHT;
 			popup.HorizontalOffset = 0;

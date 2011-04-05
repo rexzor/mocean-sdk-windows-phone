@@ -12,10 +12,8 @@
 	xmlns:x1="http://schemas.microsoft.com/client/2007"
 	xmlns:x2="http://schemas.microsoft.com/client/2007"
 	xmlns:my="clr-namespace:MojivaPhone">
-	<!--xmlns:MMAdView="clr-namespace:mmiWP7SDK;assembly=WP7SDK"-->
 
     <Grid x:Name="LayoutRoot" ShowGridLines="False" DataContext="{Binding}" Background="Transparent">
 		<phone:WebBrowser HorizontalAlignment="Left" Name="m_webBrowser" VerticalAlignment="Top" Height="480" Width="480" IsScriptEnabled="True" Background="Transparent" />
-		<!--MMAdView:MMAdView Name="mMAdView" Apid="0" Width="480" Height="480" RefreshTimer="-1" AdType="MMBannerAdTop" /-->
 	</Grid>
 </UserControl>

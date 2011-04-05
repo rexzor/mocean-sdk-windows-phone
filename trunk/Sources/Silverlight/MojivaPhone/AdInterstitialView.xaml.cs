@@ -2,18 +2,15 @@
  * © 2010-2011 mOcean Mobile. A subsidiary of Mojiva, Inc. All Rights Reserved.
  * */
 
-using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Threading;
+using Microsoft.Phone.Controls;
 
 namespace MojivaPhone
 {
 	public partial class AdInterstitialView : AdView
 	{
-		private enum AdInterstitialCloseButtonPosition
+		public enum AdInterstitialCloseButtonPosition
 		{
 			AdInterstitialCloseButtonPositionTop = 0,
 			AdInterstitialCloseButtonPositionBottom = 1,
@@ -30,17 +27,17 @@ namespace MojivaPhone
 		private AdInterstitialCloseButtonPosition closeButtonPosition = AdInterstitialCloseButtonPosition.AdInterstitialCloseButtonPositionCenter;
 		private uint showCloseButtonTime = 0;
 		private uint autoCloseInterstitialTime = System.UInt32.MaxValue;
-		private bool isShowPhoneStatusBar = false;
+		private bool isPhoneStatusBarShowedBefore = false;
 		private System.Threading.Timer closeButtonTimer = null;
 		private System.Threading.Timer adTimer = null;
 		private CustomButton closeButton = new CustomButton();
 		#endregion
 
 		#region "Properties"
-		public int CloseButtonPosition
+		public AdInterstitialCloseButtonPosition CloseButtonPosition
 		{
-			get { return (int)closeButtonPosition; }
-			set { closeButtonPosition = (AdInterstitialCloseButtonPosition)value; }
+			get { return closeButtonPosition; }
+			set { closeButtonPosition = value; }
 		}
 		public uint ShowCloseButtonTime
 		{
@@ -68,11 +65,6 @@ namespace MojivaPhone
 		{
 			get { return closeButton.BackgroundColor; }
 			set { closeButton.BackgroundColor = value; }
-		}
-		public bool IsShowPhoneStatusBar
-		{
-			get { return isShowPhoneStatusBar; }
-			set { isShowPhoneStatusBar = value; }
 		}
 		public string CloseButtonImage
 		{
@@ -110,6 +102,14 @@ namespace MojivaPhone
 			LayoutRoot.Visibility = System.Windows.Visibility.Collapsed;
 		}
 
+		protected override void UserControl_Loaded(object sender, RoutedEventArgs e)
+		{
+			base.UserControl_Loaded(sender, e);
+
+			width = (int)Application.Current.RootVisual.RenderSize.Width;
+			height = (int)Application.Current.RootVisual.RenderSize.Height;
+		}
+
 		public override void Update()
 		{
 			InitAdProperties();
@@ -135,7 +135,7 @@ namespace MojivaPhone
 				Owner.ApplicationBar.IsVisible = true;
 			}
 
-			Microsoft.Phone.Shell.SystemTray.IsVisible = true;
+			Microsoft.Phone.Shell.SystemTray.IsVisible = isPhoneStatusBarShowedBefore;
 		}
 
 		~AdInterstitialView()
@@ -148,15 +148,35 @@ namespace MojivaPhone
 		#region "Private methods"
 		private void InitAdProperties()
 		{
-			Padding = new System.Windows.Thickness(0);
-			Margin = new System.Windows.Thickness(0);
-			Resize((int)System.Windows.Application.Current.RootVisual.RenderSize.Width - 0, (int)System.Windows.Application.Current.RootVisual.RenderSize.Height - 0);
+			Padding = new Thickness(0);
+			Margin = new Thickness(0);
 
-			if (Owner != null && Owner.ApplicationBar != null)
+			if (Owner != null)
 			{
-				Owner.ApplicationBar.IsVisible = false;
+				if (Owner.ApplicationBar != null)
+				{
+					Owner.ApplicationBar.IsVisible = false;
+				}
+
+				Expand(new OrientationChangedEventArgs(Owner.Orientation));
 			}
-			Microsoft.Phone.Shell.SystemTray.IsVisible = isShowPhoneStatusBar;
+
+			isPhoneStatusBarShowedBefore = Microsoft.Phone.Shell.SystemTray.IsVisible;
+			Microsoft.Phone.Shell.SystemTray.IsVisible = false;
+		}
+
+		private void Expand(OrientationChangedEventArgs e)
+		{
+			LayoutRoot.Margin = new Thickness(0);
+
+			if (e.Orientation == PageOrientation.Portrait || e.Orientation == PageOrientation.PortraitUp || e.Orientation == PageOrientation.PortraitDown)
+			{
+				Resize(width, height);
+			}
+			else if (e.Orientation == PageOrientation.Landscape || e.Orientation == PageOrientation.LandscapeLeft || e.Orientation == PageOrientation.LandscapeRight)
+			{
+				Resize(height, width);
+			}
 		}
 
 		private void InitShowTimers()
@@ -223,6 +243,18 @@ namespace MojivaPhone
 		{
 			Close();
 		}
+
+		protected override void OnOrientationChanged(object sender, OrientationChangedEventArgs e)
+		{
+			Expand(e);
+			base.OnOrientationChanged(sender, e);
+		}
+
+		protected override string GetMetaTags()
+		{
+			return "<meta name=\"viewport\" content=\"width=device-width; user-scalable=yes\"/>";
+		}
+
 		#endregion
 	}
 }

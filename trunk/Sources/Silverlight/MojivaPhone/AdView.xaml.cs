@@ -226,7 +226,7 @@ namespace MojivaPhone
 		internal String _area;
 		internal String _metro;
 		internal String _zip;
-		internal bool _sizeRequired;
+		internal bool _sizeRequired = true;
 		internal bool _textBorderEnabled;
 		internal String _paramBorder;
 		internal String _paramBG;
@@ -235,7 +235,7 @@ namespace MojivaPhone
 		internal String _carrier;
 		internal String _target;
 		internal String _url;
-		internal bool _pixelModeEnabled;
+		internal bool _pixelModeEnabled = false;
 		internal bool _navigating = true;
 		internal bool _allowNavi = false;
 		internal bool _first = true;
@@ -255,6 +255,9 @@ namespace MojivaPhone
 		private CAssetManager assetManager = null;
 		private CVideoShower videoShower = null;
 		private CInternalBrowser internalBrowser = null;
+
+		protected volatile int width = 0;
+		protected volatile int height = 0;
 
 #if THIRDPARTY
 		private CThirdPartyManager thirdPartyManager = null;
@@ -588,15 +591,6 @@ namespace MojivaPhone
 		}
 
 		/// <summary>
-		/// If set to 1, return image size (width and height) in html.
-		/// </summary>
-		public bool SizeRequired
-		{
-			get { return _sizeRequired; }
-			set { _sizeRequired = value; }
-		}
-
-		/// <summary>
 		/// Advertiser id (will be provided by mocean)
 		/// </summary>
 		public String AdvertiserId
@@ -857,7 +851,7 @@ namespace MojivaPhone
 
 				if (Owner != null)
 				{
-					Owner.OrientationChanged += new EventHandler<OrientationChangedEventArgs>(MainPage_OrientationChanged);
+					Owner.OrientationChanged += new EventHandler<OrientationChangedEventArgs>(OnOrientationChanged);
 					Owner.BackKeyPress += new EventHandler<System.ComponentModel.CancelEventArgs>(Owner_BackKeyPress);
 				}
 
@@ -1220,7 +1214,7 @@ namespace MojivaPhone
 			}
 			if (GetVisibleSync())
 			{
-				if (String.IsNullOrEmpty(UserAgent))
+				if (String.IsNullOrEmpty(_ua))
 				{
 					_firstEvent.WaitOne();
 				}
@@ -1307,9 +1301,9 @@ namespace MojivaPhone
 							Deployment.Current.Dispatcher.BeginInvoke(() => mMAdView.Visibility = System.Windows.Visibility.Collapsed);
 						}
 #endif
-
-						data = "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\" \"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\"><head>" +
-							ormmaLibText +
+						string metaTags = GetMetaTags();
+						data = "<html><head>" +
+							ormmaLibText + metaTags +
 							"</head><body style=\"margin: 0px; padding: 0px; width: 100%; height: 100%\">" + data + "</body></html>";
 
 						saveCache(idCache, data);
@@ -1324,6 +1318,11 @@ namespace MojivaPhone
 			{
 				SetReloadTimer(1000);
 			}
+		}
+
+		protected virtual string GetMetaTags()
+		{
+			return "<meta name=\"mobileoptimized\" content=\"" + width + "\">";
 		}
 
 		private void ThirdPartyManager_AddExCampaign(object sender, StringEventArgs e)
@@ -1491,8 +1490,11 @@ namespace MojivaPhone
 			task.Show();
 		}
 
-		private void UserControl_Loaded(object sender, RoutedEventArgs e)
+		protected virtual void UserControl_Loaded(object sender, RoutedEventArgs e)
 		{
+			width = (int)this.Width;
+			height = (int)this.Height;
+
 			_allowNavi = true;
 		}
 
@@ -1516,7 +1518,7 @@ namespace MojivaPhone
 		{
 			try
 			{
-				UserAgent = (String)m_webBrowser.InvokeScript("getUA");
+				_ua = (String)m_webBrowser.InvokeScript("getUA");
 			}
 			catch (System.Exception /*ex*/)
 			{}
@@ -1645,7 +1647,7 @@ namespace MojivaPhone
 			}
 		}
 
-		private void MainPage_OrientationChanged(object sender, OrientationChangedEventArgs e)
+		protected virtual void OnOrientationChanged(object sender, OrientationChangedEventArgs e)
 		{
 			FireEvent("orientationChange", new string[] { GetOrientationDegree().ToString() });
 		}
@@ -1712,10 +1714,10 @@ namespace MojivaPhone
 
 		protected void Resize(int width, int height)
 		{
-			this.Width = width;
-			this.Height = height;
-			m_webBrowser.Width = width;
-			m_webBrowser.Height = height;
+			this.Width = (double)width;
+			this.Height = (double)height;
+			m_webBrowser.Width = (double)width;
+			m_webBrowser.Height = (double)height;
 		}
 
 		private void Expand(string posStr, string propStr, string url)
@@ -1901,6 +1903,7 @@ namespace MojivaPhone
 					if (!isNaviHandled && internalBrowser != null && Owner != null)
 					{
 						internalBrowser.Show(e.Uri.ToString());
+						//Owner.NavigationService.Navigate(new Uri("/MojivaPhone;component/frmBrowser.xaml?val=" + e.Uri.ToString(), UriKind.Relative));
 					}
 					e.Cancel = true;
 				}
