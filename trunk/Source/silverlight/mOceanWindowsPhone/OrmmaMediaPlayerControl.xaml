@@ -1,0 +1,117 @@
+﻿<UserControl x:Class="mOceanWindowsPhone.OrmmaMediaPlayerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    d:DesignHeight="480" d:DesignWidth="480">
+
+	<Grid x:Name="LayoutRoot" Background="Black">
+		<MediaElement Height="Auto" HorizontalAlignment="Center" Margin="0,0,0,0" Name="mediaElement" VerticalAlignment="Center" Width="Auto" Stretch="Uniform" />
+
+		<Grid Name="ControlsContainer" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="Auto" Height="48" Margin="0,0,0,20">
+			<ToggleButton Name="playPauseButton" Width="48" Height="48" HorizontalAlignment="Left" Margin="0,0,0,0"  VerticalAlignment="Top" BorderThickness="0" IsChecked="True">
+				<ToggleButton.Template>
+					<ControlTemplate TargetType="ToggleButton">
+						<Grid Background="Transparent">
+							<VisualStateManager.VisualStateGroups>
+								<VisualStateGroup x:Name="CommonStates">
+									<VisualState x:Name="Unchecked">
+										<Storyboard>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="UncheckedGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CheckedGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+											</ObjectAnimationUsingKeyFrames>
+										</Storyboard>
+									</VisualState>
+
+									<VisualState x:Name="Checked">
+										<Storyboard>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="UncheckedGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CheckedGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+											</ObjectAnimationUsingKeyFrames>
+										</Storyboard>
+									</VisualState>
+								</VisualStateGroup>
+							</VisualStateManager.VisualStateGroups>
+
+							<Grid x:Name="UncheckedGrid" Width="48" Height="48" >
+								<Grid.Background>
+									<ImageBrush ImageSource="/mOceanWindowsPhone;component/controls/dark/basecircle.png" />
+								</Grid.Background>
+								<Border CornerRadius="24" BorderThickness="3" Background="Black" />
+								<Image Width="48" Height="48" Source="/mOceanWindowsPhone;component/controls/dark/play.png" />
+							</Grid>
+
+							<Grid x:Name="CheckedGrid">
+								<Grid.Background>
+									<ImageBrush ImageSource="/mOceanWindowsPhone;component/controls/dark/basecircle.png" />
+								</Grid.Background>
+								<Border CornerRadius="24" BorderThickness="3" Background="Black" />
+								<Image Source="/mOceanWindowsPhone;component/controls/dark/pause.png" />
+							</Grid>
+						</Grid>
+					</ControlTemplate>
+				</ToggleButton.Template>
+			</ToggleButton>
+
+			<Button Name="stopButton" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="48" Height="48" BorderThickness="0" Padding="0" Margin="78,0,0,0">
+				<Button.Template>
+					<ControlTemplate TargetType="Button">
+						<Grid Background="Transparent">
+							<VisualStateManager.VisualStateGroups>
+								<VisualStateGroup x:Name="CommonStates">
+									<VisualState x:Name="Normal">
+										<Storyboard>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NormalGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="PressedGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+											</ObjectAnimationUsingKeyFrames>
+										</Storyboard>
+									</VisualState>
+
+									<VisualState x:Name="Pressed">
+										<Storyboard>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NormalGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="PressedGrid">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+											</ObjectAnimationUsingKeyFrames>
+										</Storyboard>
+									</VisualState>
+								</VisualStateGroup>
+							</VisualStateManager.VisualStateGroups>
+
+							<Grid x:Name="NormalGrid" >
+								<Grid.Background>
+									<ImageBrush ImageSource="/mOceanWindowsPhone;component/controls/dark/basecircle.png" />
+								</Grid.Background>
+								<Border CornerRadius="24" BorderThickness="3" Background="Black" />
+								<Image Source="/mOceanWindowsPhone;component/controls/dark/stop.png" />
+							</Grid>
+
+							<Grid x:Name="PressedGrid">
+								<Grid.Background>
+									<ImageBrush ImageSource="/mOceanWindowsPhone;component/controls/light/basecircle.png" />
+								</Grid.Background>
+								<Border CornerRadius="24" BorderThickness="0" Background="White" />
+								<Image Source="/mOceanWindowsPhone;component/controls/light/stop.png" />
+							</Grid>
+						</Grid>
+					</ControlTemplate>
+				</Button.Template>
+			</Button>
+		</Grid>
+	</Grid>
+</UserControl>
