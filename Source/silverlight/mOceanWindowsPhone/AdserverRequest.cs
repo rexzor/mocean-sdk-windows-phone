@@ -136,7 +136,7 @@ namespace mOceanWindowsPhone
 		{
 			try
 			{
-				String[] paramsArray = customParametersString.Split(new char[] { ',' });
+				String[] paramsArray = customParametersString.Split(',');
 				for (int f = 0; f < paramsArray.Length; f += 2)
 				{
 					AddParameter(paramsArray[f], paramsArray[f + 1]);
@@ -274,6 +274,8 @@ namespace mOceanWindowsPhone
 		private void SetupAutodetectParameters()
 		{
 			AddParameter(parameter_connection_speed, null);
+			AddParameter(parameter_latitude, null);
+			AddParameter(parameter_longitude, null);
 		}
 
 		private void AddParameter(string key, string value)

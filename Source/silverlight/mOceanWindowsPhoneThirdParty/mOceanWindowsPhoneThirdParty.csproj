@@ -20,8 +20,8 @@
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\package 3 party\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;SILVERLIGHT;WINDOWS_PHONE;THIRDPARTY</DefineConstants>
@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\package 3 party\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE;THIRDPARTY</DefineConstants>
@@ -39,11 +39,13 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.AdMob.Ads.WindowsPhone7, Version=4.0.1.27070, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Devices.Sensors" />
     <Reference Include="Microsoft.Phone" />
+    <Reference Include="Microsoft.Phone.Controls.Maps, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Xna.Framework" />
     <Reference Include="System.Device" />
     <Reference Include="System.Runtime.Serialization" />
@@ -102,6 +104,19 @@
     <Compile Include="..\mOceanWindowsPhone\OrmmaController.cs">
       <Link>OrmmaController.cs</Link>
     </Compile>
+    <Compile Include="..\mOceanWindowsPhone\OrmmaMap.cs">
+      <Link>OrmmaMap.cs</Link>
+    </Compile>
+    <Compile Include="..\mOceanWindowsPhone\OrmmaMediaPlayer.cs">
+      <Link>OrmmaMediaPlayer.cs</Link>
+    </Compile>
+    <Compile Include="..\mOceanWindowsPhone\OrmmaMediaPlayerControl.xaml.cs">
+      <Link>OrmmaMediaPlayerControl.xaml.cs</Link>
+      <DependentUpon>OrmmaMediaPlayerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\mOceanWindowsPhone\PopupWindow.cs">
+      <Link>PopupWindow.cs</Link>
+    </Compile>
     <Compile Include="..\mOceanWindowsPhone\Resources.Designer.cs">
       <Link>Resources.Designer.cs</Link>
     </Compile>
@@ -114,6 +129,11 @@
   <ItemGroup>
     <Page Include="..\mOceanWindowsPhone\AdView.xaml">
       <Link>AdView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\mOceanWindowsPhone\OrmmaMediaPlayerControl.xaml">
+      <Link>OrmmaMediaPlayerControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -283,6 +283,58 @@ namespace mOceanWindowsPhone
 			add { OpenUrlEvent += value; }
 			remove { OpenUrlEvent -= value; }
 		}
+
+
+		public class OpenMapEventArgs : EventArgs
+		{
+			public string POI = null;
+			public bool FullScreen = true;
+			public OpenMapEventArgs(string poi, string fullScreen)
+			{
+				POI = poi;
+				Boolean.TryParse(fullScreen, out FullScreen);
+			}
+		}
+		private event EventHandler<OpenMapEventArgs> OpenMapEvent = null;
+		private void OnOpenMap(OpenMapEventArgs e)
+		{
+			if (OpenMapEvent != null)
+			{
+				OpenMapEvent(this, e);
+			}
+		}
+		public event EventHandler<OpenMapEventArgs> OpenMap
+		{
+			add { OpenMapEvent += value; }
+			remove { OpenMapEvent -= value; }
+		}
+
+		public class PlayMediaEventArgs : EventArgs
+		{
+			public string Url = null;
+			public string Properties = null;
+			public PlayMediaEventArgs(string url, string properties)
+			{
+				this.Url = url;
+				this.Properties = properties;
+			}
+		}
+		private event EventHandler<PlayMediaEventArgs> PlayMediaEvent = null;
+		private void OnPlayMedia(PlayMediaEventArgs e)
+		{
+			if (PlayMediaEvent != null)
+			{
+
+				System.Diagnostics.Debug.WriteLine("PlayMediaEvent");
+
+				PlayMediaEvent(this, e);
+			}
+		}
+		public event EventHandler<PlayMediaEventArgs> PlayMedia
+		{
+			add { PlayMediaEvent += value; }
+			remove { PlayMediaEvent -= value; }
+		}
 		#endregion
 
 		#region "Private"
@@ -335,7 +387,7 @@ namespace mOceanWindowsPhone
 
 		private void Viewer_ScriptNotify(string notify)
 		{
-			string[] notifyParts = notify.Split(new char[] { '|' });
+			string[] notifyParts = notify.Split('|');
 
 			if (notifyParts.Length > 0)
 			{
@@ -393,20 +445,14 @@ namespace mOceanWindowsPhone
 				}
 				else if (notifyParts[0] == "open")
 				{
-					OpenUrlEventArgs e = new OpenUrlEventArgs();;
 					try
 					{
+						OpenUrlEventArgs e = new OpenUrlEventArgs();
 						e.Url = notifyParts[1];
-					}
-					catch (System.Exception)
-					{
-						e = null;
-					}
-
-					if (e != null)
-					{
 						OnOpenUrl(e);
 					}
+					catch (System.Exception)
+					{}
 				}
 				else if (notifyParts[0] == "makeCall")
 				{
@@ -439,10 +485,21 @@ namespace mOceanWindowsPhone
 				{
 					try
 					{
-						NativeAppManager.PlayMedia(notifyParts[1], notifyParts[2]);
+						PlayMediaEventArgs e = new PlayMediaEventArgs(notifyParts[1], notifyParts[2]);
+						OnPlayMedia(e);
 					}
 					catch (System.Exception)
-					{ }
+					{}
+				}
+				else if (notifyParts[0] == "openMap")
+				{
+					try
+					{
+						OpenMapEventArgs e = new OpenMapEventArgs(notifyParts[1], notifyParts[2]);
+						OnOpenMap(e);
+					}
+					catch (System.Exception)
+					{}
 				}
 				else if (notifyParts[0] == "addAsset")
 				{

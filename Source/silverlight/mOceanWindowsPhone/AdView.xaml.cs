@@ -22,7 +22,7 @@ namespace mOceanWindowsPhone
 		private const string SETTINGS_IS_FIRST_APP_LAUNCH = "isFirstAppLaunch";
 		private const string FIRST_APP_LAUNCH_URL = "http://www.moceanmobile.com/appconversion.php";
 		private const string DEFAULT_AD_SERVER = "http://ads.mocean.mobi/ad";
-		private const string CHECK_NEW_VERSION_URL = "http://www.moceanmoble.com/sdk_version.php?platform=wp7&version=" + SDK_VERSION;
+		private const string CHECK_NEW_VERSION_URL = "http://www.moceanmobile.com/sdk_version.php?platform=wp7&version=" + SDK_VERSION;
 		private const string NEW_VERSION_MESSAGE = "NEW VERSION MESSAGE";
 		private const int DEFAULT_UPDATE_TIME = 120; // seconds
 		private const string NO_SITE_ZONE_PARAMETERS_MESSAGE = "NO SITE ZONE PARAMETERS MESSAGE";
@@ -69,9 +69,16 @@ namespace mOceanWindowsPhone
 		protected Size adSize = new Size(0, 0);
 		internal string metaTags = String.Empty;
 
+		private Size screenSize = new Size(0, 0);
+		private Point absolutePosition = new Point(0, 0);
+
 		private InternalBrowser internalBrowserControl = null;
-		private OrmmaController ormmaController = null;
 		private VideoShower videoShower = new VideoShower();
+
+		private OrmmaController ormmaController = null;
+		private OrmmaMap ormmaMap = null;
+		private OrmmaMediaPlayer ormmaMediaPlayer = null;
+		
 
 		protected PhoneApplicationPage ownerPage = null;
 		private SupportedPageOrientation supportedPageOrientation = SupportedPageOrientation.PortraitOrLandscape;
@@ -592,15 +599,17 @@ namespace mOceanWindowsPhone
 			//expandedViewer = new AdViewer();
 			expandedViewer.Control.Visibility = Visibility.Collapsed;
 			ormmaController = new OrmmaController(adViewer, expandedViewer);
-			ormmaController.ChangeVisibility += new EventHandler<OrmmaController.VisibilityEventArgs>(OrmmaChangeVisibility);
-			ormmaController.Resize += new EventHandler<OrmmaController.ResizeEventArgs>(OrmmaResize);
-			ormmaController.Expand += new EventHandler<OrmmaController.ExpandEventArgs>(OrmmaExpand);
-			ormmaController.Close += new EventHandler(OrmmaClose);
-			ormmaController.OpenUrl += new EventHandler<OrmmaController.OpenUrlEventArgs>(OrmmaOpenUrl);
+			ormmaController.ChangeVisibility += OrmmaChangeVisibility;
+			ormmaController.Resize += OrmmaResize;
+			ormmaController.Expand += OrmmaExpand;
+			ormmaController.Close += OrmmaClose;
+			ormmaController.OpenUrl += OrmmaOpenUrl;
+			ormmaController.OpenMap += OrmmaOpenMap;
+			ormmaController.PlayMedia += OrmmaPlayMedia;
 
 			//videoShower = new VideoShower();
-			videoShower.Opened += new EventHandler(VideoShower_Opened);
-			videoShower.Click += new EventHandler(VideoShower_Click);
+// 			videoShower.Opened += new EventHandler(VideoShower_Opened);
+// 			videoShower.Click += new EventHandler(VideoShower_Click);
 
 			updateTimer = new Timer(new TimerCallback(UpdateTimerTick));
 		}
@@ -638,7 +647,13 @@ namespace mOceanWindowsPhone
 
 			metaTags = "<meta name=\"viewport\" content=\"width=" + this.Width.ToString("F0") + ", height=" + this.Height.ToString("F0") + ", user-scalable=yes\"/>";
 
-			ownerPage = ((PhoneApplicationFrame)Application.Current.RootVisual).Content as PhoneApplicationPage;
+			PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;
+			if (frame != null)
+			{
+				ownerPage = frame.Content as PhoneApplicationPage;
+				screenSize = frame.RenderSize;
+			}
+
 			if (ownerPage != null)
 			{
 				OnAdViewLoaded();
@@ -653,6 +668,10 @@ namespace mOceanWindowsPhone
 			ResumeUpdateTimer();
 
 			Update();
+
+			//OrmmaPlayMedia(null, null);
+
+			//OrmmaOpenMap(null, null);
 		}
 
 		private void LayoutRoot_Unloaded(object sender, RoutedEventArgs e)
@@ -778,7 +797,7 @@ namespace mOceanWindowsPhone
 
 				WriteLog(Logger.LogLevel.All, Logger.GET_SERVER_RESPONSE);
 
-				videoShower.Hide();
+				//videoShower.Hide();
 
 				newAdContent = e.Content;
 
@@ -829,8 +848,6 @@ namespace mOceanWindowsPhone
 						WriteLog(Logger.LogLevel.ErrorsAndInfo, "Empty content downloaded");
 					}
 				}
-
-				ResumeUpdateTimer();
 			}
 		}
 
@@ -856,6 +873,11 @@ namespace mOceanWindowsPhone
 					+
 					prevAdContent
 					+
+					"<br><br> <a href=\"\" onclick=\"Ormma.openMap('http://maps.google.ru/maps?f=q&source=s_q&hl=ru&geocode=&q=%D1%80%D0%B5%D1%81%D0%BF%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B0+%D0%9C%D0%B0%D1%80%D0%B8%D0%B9+%D0%AD%D0%BB,+%D0%99%D0%BE%D1%88%D0%BA%D0%B0%D1%80-%D0%9E%D0%BB%D0%B0&aq=0&sll=55.178868,49.658203&sspn=25.499525,80.683594&ie=UTF8&hq=&hnear=%D0%B3%D0%BE%D1%80%D0%BE%D0%B4+%D0%99%D0%BE%D1%88%D0%BA%D0%B0%D1%80-%D0%9E%D0%BB%D0%B0,+%D1%80%D0%B5%D1%81%D0%BF%D1%83%D0%B1%D0%BB%D0%B8%D0%BA%D0%B0+%D0%9C%D0%B0%D1%80%D0%B8%D0%B9+%D0%AD%D0%BB&ll=56.642637,47.891464&spn=0.19029,0.630341&t=k&z=11&iwloc=A', true); return false;\">OPEN MAP</a>" +
+
+					"<br><br> <a href=\"\" onclick=\"Ormma.playVideo('http://www.jhepple.com/SampleMovies/niceday.wmv', { \'audio\' : \'muted\', \'autoplay\': \'autoplay\', \'controls\': \'controls\', \'loop\': \'loop\', \'startStyle\': \'fullscreen\', \'stopStyle\': \'exit\'}); return false;\">VIDEO FULSCREEN</a>" +
+					"<br><br> <a href=\"\" onclick=\"Ormma.playVideo('http://www.jhepple.com/support/SampleMovies/WindowsMedia.wmv', {\'autoplay\': \'noautoplay\', \'controls\': \'controls\', \'loop\': \'loop\', \'startStyle\': \'normal\', \'stopStyle\': \'exit\', \'width\': 150, \'height\': 150, \'position\': {\'top\': 10, \'left\':20}}); return false;\">VIDEO INLINE</a>" +
+
 					"</body></html>";
 
 				string fileName = "adview" + viewId.ToString() + ".html";
@@ -866,14 +888,22 @@ namespace mOceanWindowsPhone
 					saved = TrySaveFile(fileName, fullAdSource);
 				}
 
+				ManualResetEvent showed = new ManualResetEvent(false);
+				
 				if (saved)
 				{
-					Deployment.Current.Dispatcher.BeginInvoke(() => adViewer.ShowCachedAd(fileName));
+					Deployment.Current.Dispatcher.BeginInvoke(() => 
+					{
+						adViewer.ShowCachedAd(fileName);
+						showed.Set();
+					});
 				}
 				else
 				{
 					Deployment.Current.Dispatcher.BeginInvoke(() => adViewer.ShowAd(fullAdSource));
 				}
+
+				showed.WaitOne();
 			}
 		}
 
@@ -934,9 +964,14 @@ namespace mOceanWindowsPhone
 				else
 				{
 					PauseUpdateTimer();
-					WebBrowserTask task = new WebBrowserTask();
-					task.URL = e.Uri.ToString();
-					task.Show();
+					try
+					{
+						WebBrowserTask task = new WebBrowserTask();
+						task.URL = e.Uri.ToString();
+						task.Show();
+					}
+					catch (System.Exception)
+					{}
 				}
 			}
 		}
@@ -944,6 +979,8 @@ namespace mOceanWindowsPhone
 		private void AdViewer_LoadCompleted(object sender, EventArgs e)
 		{
 			WriteLog(Logger.LogLevel.All, "AdViewer", Logger.AD_DISPLAYED);
+
+			ResumeUpdateTimer();
 		}
 
 		private void AdViewer_DisplayAdError(object sender, EventArgs e)
@@ -1003,7 +1040,19 @@ namespace mOceanWindowsPhone
 
 		private void BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			if (internalBrowser && internalBrowserControl != null && internalBrowserControl.IsShow)
+			if (ormmaMediaPlayer != null && ormmaMediaPlayer.IsOpen)
+			{
+				e.Cancel = true;
+				ormmaMediaPlayer.Close();
+			}
+
+			if (ormmaMap != null && ormmaMap.IsOpen)
+			{
+				e.Cancel = true;
+				ormmaMap.Close();
+			}
+
+			if (internalBrowser && internalBrowserControl != null && internalBrowserControl.IsOpen)
 			{
 				e.Cancel = true;
 				internalBrowserControl.Close();
@@ -1018,9 +1067,21 @@ namespace mOceanWindowsPhone
 
 		protected virtual void OnOrientationChanged(object sender, OrientationChangedEventArgs e)
 		{
-			if (internalBrowser && internalBrowserControl != null && internalBrowserControl.IsShow)
+			Size currentScreenSize = GetCurrentScreenSize();
+
+			if (internalBrowser && internalBrowserControl != null && internalBrowserControl.IsOpen)
 			{
 				internalBrowserControl.ChangeOrientation(e.Orientation);
+			}
+
+			if (ormmaMap != null && ormmaMap.IsOpen)
+			{
+				ormmaMap.SetSize(currentScreenSize);
+			}
+
+			if (ormmaMediaPlayer != null && ormmaMediaPlayer.IsOpen)
+			{
+				ormmaMediaPlayer.Expand(e.Orientation);
 			}
 
 			ormmaController.ChangeOrientation(e.Orientation);
@@ -1231,6 +1292,67 @@ namespace mOceanWindowsPhone
 			}
 		}
 
+		private void OrmmaOpenMap(object sender, OrmmaController.OpenMapEventArgs e)
+		{
+			if (e != null && !String.IsNullOrEmpty(e.POI))
+			{
+				if (e.FullScreen)
+				{
+					if (ormmaMap == null)
+					{
+						Point position = GetCurrentAbsolutePosition();
+						Size screenSize = GetCurrentScreenSize();
+						ormmaMap = new OrmmaMap(ownerPage, position, screenSize);
+						LayoutRoot.Children.Add(ormmaMap.Window);
+					}
+					
+					ormmaMap.Show();
+					ormmaMap.OpenPoi(e.POI);
+				}
+				else
+				{
+					try
+					{
+						LayoutRoot.Children.Remove(ormmaMap.MapControl);
+					}
+					catch (System.Exception)
+					{}
+
+					ormmaMap = new OrmmaMap();
+					LayoutRoot.Children.Add(ormmaMap.MapControl);
+					ormmaMap.OpenPoi(e.POI);
+				}
+			}
+		}
+
+		private void OrmmaPlayMedia(object sender, OrmmaController.PlayMediaEventArgs e)
+		{
+			try
+			{
+				ormmaMediaPlayer.Close();
+			}
+			catch (System.Exception)
+			{}
+
+			ormmaMediaPlayer = null;
+
+			ormmaMediaPlayer = new OrmmaMediaPlayer(ownerPage, screenSize, e.Properties);
+
+			if (ormmaMediaPlayer.Window != null)
+			{
+				LayoutRoot.Children.Add(ormmaMediaPlayer.Window);
+			}
+
+//			string url = null;
+// #if DEBUG
+// 			url = "http://www.jhepple.com/SampleMovies/niceday.wmv";
+// #else
+// 			url = "http://mobile.mojiva.com/5_SILclip_iphone.mp4";
+// #endif
+
+			ormmaMediaPlayer.Play(e.Url);
+		}
+
 		private void VideoShower_Opened(object sender, EventArgs e)
 		{
 			WriteLog(Logger.LogLevel.All, "VideoShower", Logger.AD_DISPLAYED);
@@ -1285,6 +1407,41 @@ namespace mOceanWindowsPhone
 		internal static string ColorToRgb(Color color)
 		{
 			return "#" + color.R.ToString("X2") + color.G.ToString("X2") + color.B.ToString("X2");
+		}
+
+		private Point GetCurrentAbsolutePosition()
+		{
+			Point position = new Point(0, 0);
+
+			try
+			{
+				position = this.TransformToVisual(ownerPage).Transform(new Point(0, 0));
+			}
+			catch (System.Exception)
+			{}
+
+			return position;
+		}
+
+		private Size GetCurrentScreenSize()
+		{
+			if (ownerPage != null)
+			{
+				switch (ownerPage.Orientation)
+				{
+					case PageOrientation.Portrait:
+					case PageOrientation.PortraitUp:
+					case PageOrientation.PortraitDown:
+						return screenSize;
+					case PageOrientation.Landscape:
+					case PageOrientation.LandscapeLeft:
+					case PageOrientation.LandscapeRight:
+					default:
+						return new Size(screenSize.Height, screenSize.Width);
+				}
+			}
+
+			return screenSize;
 		}
 
 		private void WriteLog(Logger.LogLevel logLevel, string message, string parameter = null)

@@ -61,7 +61,17 @@ namespace mOceanWindowsPhone {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to var JSON = JSON || {};
+        ///   Looks up a localized string similar to var maxSize = {};
+        ///var size = {};
+        ///var network = &quot;unknown&quot;;
+        ///var geoLocation = {};
+        ///var heading = -1;
+        ///var tilt = {};
+        ///var orientation = -1;
+        ///var cacheRemaining = 0;
+        ///var defaultPosition = {};
+        ///
+        ///var JSON = JSON || {};
         ///JSON.stringify = JSON.stringify || function (obj) {
         ///	var t = typeof (obj);
         ///	if (t != &quot;object&quot; || obj === null) {
@@ -73,12 +83,7 @@ namespace mOceanWindowsPhone {
         ///		return String(obj);
         ///	}
         ///	else {
-        ///		// recurse array or object  
-        ///		var n, v, json = [], arr = (obj &amp;&amp; obj.constructor == Array);
-        ///		for (n in obj) {
-        ///			v = obj[n]; t = typeof (v);
-        ///			if (t == &quot;string&quot;) v = &apos;&quot;&apos; + v + &apos;&quot;&apos;;
-        ///			else if (t == &quot;object&quot; &amp;&amp; [rest of string was truncated]&quot;;.
+        ///		// recurse array or o [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ormmalib {
             get {

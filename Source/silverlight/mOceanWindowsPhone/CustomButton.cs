@@ -45,16 +45,16 @@ namespace mOceanWindowsPhone
 			get { return imagePressed; }
 			set { imagePressed = value; }
 		}
-		public string ImageSource
-		{
-			get { return imageSource; }
-			set { imageSource = value; }
-		}
-		public string ImagePressedSource
-		{
-			get { return imagePressedSource; }
-			set { imagePressedSource = value; }
-		}
+// 		public string ImageSource
+// 		{
+// 			get { return imageSource; }
+// 			set { imageSource = value; }
+// 		}
+// 		public string ImagePressedSource
+// 		{
+// 			get { return imagePressedSource; }
+// 			set { imagePressedSource = value; }
+// 		}
 		public string Text
 		{
 			get { return text; }
@@ -147,8 +147,12 @@ namespace mOceanWindowsPhone
 			{}
 
 			content = new Grid();
-			content.Width = size.Width;
-			content.Height = size.Height;
+			if (!size.IsEmpty)
+			{
+				content.Width = size.Width;
+				content.Height = size.Height;
+			}
+			
 			if (image != null)
 			{
 				image.Stretch = Stretch.Fill;

@@ -28,7 +28,7 @@ namespace mOceanWindowsPhone
 			remove { ClosedEvent -= value; }
 		}
 
-		public bool IsShow
+		public bool IsOpen
 		{
 			get { return popup.IsOpen; }
 		}

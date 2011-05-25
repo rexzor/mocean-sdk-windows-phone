@@ -121,8 +121,6 @@ namespace mOceanWindowsPhone
 				if (browser.Visibility == Visibility.Visible)
 				{
 					browser.InvokeScript("execScript", script);
-
-					string s = browser.SaveToString();
 				}
 			}
 			catch (System.Exception)
@@ -158,6 +156,7 @@ namespace mOceanWindowsPhone
 
 				if (uri != null)
 				{
+					navigating = true;
 					browser.Navigate(uri);
 				}
 				else if (!String.IsNullOrEmpty(contentToLoad))
@@ -183,7 +182,7 @@ namespace mOceanWindowsPhone
 			}
 			else
 			{
-				navigating = false;
+				//navigating = false;
 			}
 		}
 
@@ -208,6 +207,8 @@ namespace mOceanWindowsPhone
 
 		private void Browser_LoadCompleted(object sender, NavigationEventArgs e)
 		{
+			navigating = false;
+
 			if (needLoadCompletedRaise)
 			{
 				if (LoadCompletedEvent != null)
