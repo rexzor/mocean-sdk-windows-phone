@@ -15,8 +15,9 @@ namespace mOceanWindowsPhone
 	public class AdInterstitialView : Panel
 	{
 		internal const int systemTrayHeight = 32;
-		internal const int initWidth = 800;
-		internal const int initHeight = 480;
+		internal const int systemTrayWidth = 72;
+		internal const int initWidth = 480;
+		internal const int initHeight = 800;
 		private Size screenSize = new Size(initWidth, initHeight);
 
 		private Popup popup = new Popup();
