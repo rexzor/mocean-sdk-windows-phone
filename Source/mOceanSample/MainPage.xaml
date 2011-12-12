@@ -12,11 +12,11 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="PortraitOrLandscape"  Orientation="Portrait"
-    shell:SystemTray.IsVisible="False" xmlns:my="clr-namespace:mOceanWindowsPhone;assembly=mOceanWindowsPhone" OrientationChanged="PhoneApplicationPage_OrientationChanged">
+    xmlns:my="clr-namespace:mOceanWindowsPhone;assembly=mOceanWindowsPhone" OrientationChanged="PhoneApplicationPage_OrientationChanged">
 
     <!--LayoutRoot contains the root grid where all other page content is placed-->
     <Grid x:Name="LayoutRoot">
-		<my:AdInterstitialView Height="100" HorizontalAlignment="Left" Name="adInterstitialView" Site="8061" Zone="16112" VerticalAlignment="Top" Width="200" />
+		<!--my:AdInterstitialView Height="100" HorizontalAlignment="Left" Name="adInterstitialView" Site="8061" Zone="16112" VerticalAlignment="Top" Width="200" /-->
 		
         <controls:Panorama Title="mocean samples">
 			<controls:Panorama.Background>
@@ -24,7 +24,7 @@
 			</controls:Panorama.Background>
 			<controls:PanoramaItem Header="simple ad">
                 <Grid>
-					<my:AdView HorizontalAlignment="Left" Margin="18,5,0,0" Name="adViewSimple" Site="8061" Zone="20249" UpdateTime="0"  VerticalAlignment="Top" Height="137" Width="373" />
+					<my:AdView HorizontalAlignment="Left" Name="adViewSimple" Site="8061" Zone="20249" UpdateTime="0"  VerticalAlignment="Top" Height="498" Width="427" />
 				</Grid>
 			</controls:PanoramaItem>
             <controls:PanoramaItem Header="video ad">
@@ -34,12 +34,12 @@
 			</controls:PanoramaItem>
 			<controls:PanoramaItem Header="ormma">
 				<Grid>
-					<my:AdView HorizontalAlignment="Left" Margin="25,20,0,0" Name="adViewOrmma" Site="8061" Zone="17487" VerticalAlignment="Top" />
+					<my:AdView HorizontalAlignment="Left" Margin="25,20,0,0" Name="adViewOrmma" Site="8061" Zone="17487" VerticalAlignment="Top" Height="433" Width="377" />
 				</Grid>
 			</controls:PanoramaItem>
 			<controls:PanoramaItem Header="orientation">
 				<Grid>
-					<my:AdView HorizontalAlignment="Left" Margin="15,23,0,0" Name="adViewOrientation" Site="8061" Zone="20249" UpdateTime="0" VerticalAlignment="Top" Height="302" />
+					<my:AdView HorizontalAlignment="Left" Margin="15,23,0,0" Name="adViewOrientation" Site="8061" Zone="20249" UpdateTime="0" VerticalAlignment="Top" Height="422" Width="384" />
 				</Grid>
 			</controls:PanoramaItem>
 			<controls:PanoramaItem Header="call back">
@@ -51,12 +51,23 @@
 			</controls:PanoramaItem>
 			<controls:PanoramaItem Header="debug">
 				<Grid>
-					<my:AdView HorizontalAlignment="Left" Margin="-12,5,0,0" Name="adViewDebug" Site="8061" Zone="20249" Test="True" VerticalAlignment="Top" Height="307" />
+					<my:AdView HorizontalAlignment="Left" Margin="-12,5,0,0" Name="adViewDebug" Site="8061" Zone="20249" Test="True" VerticalAlignment="Top" Height="450" Width="420" />
 				</Grid>
 			</controls:PanoramaItem>
 		</controls:Panorama>
 	</Grid>
 
     <!--Panorama-based applications should not show an ApplicationBar-->
+
+	<!--phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
+                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar-->
 
 </phone:PhoneApplicationPage>

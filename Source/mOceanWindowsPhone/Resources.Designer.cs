@@ -75,14 +75,14 @@ namespace mOceanWindowsPhone {
         ///var version = &quot;1.1.0&quot;;
         ///var initState = &quot;loading&quot;;
         ///
-        ///var JSON = JSON || {};
-        ///JSON.stringify = JSON.stringify || function (obj) {
+        ///var myJSON = myJSON || {};
+        ///myJSON.stringify = myJSON.stringify || function (obj) {
         ///	var t = typeof (obj);
         ///	if (t != &quot;object&quot; || obj === null) {
         ///		if (obj === null) {
         ///			return &quot;null&quot;;
         ///		}
-        ///		// simple data type          /// [rest of string was truncated]&quot;;.
+        ///		// simple data [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ormma {
             get {

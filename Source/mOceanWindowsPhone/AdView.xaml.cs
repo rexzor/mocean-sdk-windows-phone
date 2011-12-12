@@ -569,6 +569,9 @@ namespace mOceanWindowsPhone
 			AutoDetectParameters.Instance.CourseChanged += new AutoDetectParameters.CourseChangedEventHandler(GpsCourseChanged);
 			AutoDetectParameters.Instance.NetworkChanged += new AutoDetectParameters.NetworkChangedEventHandler(NetworkChanged);
 
+			this.Loaded += new RoutedEventHandler(AdView_Loaded);
+			this.SizeChanged += new SizeChangedEventHandler(AdView_SizeChanged);
+
 			InitializeComponent();
 
 			SetUpdatingParameters();
@@ -582,6 +585,53 @@ namespace mOceanWindowsPhone
 			mediaElement.MediaEnded += mediaElement_MediaEnded;
 			mediaElement.MediaFailed += mediaElement_MediaFailed;
 			mediaElement.Stretch = Stretch.Uniform;
+		}
+
+		private int defaultZIndex = 0;
+		private void AdView_Loaded(object sender, RoutedEventArgs e)
+		{
+			parent = this.Parent as Panel;
+			try
+			{
+				(ownerPage.Content as Panel).Children.Add(popup);
+
+				defaultZIndex = Canvas.GetZIndex(this);
+			}
+			catch (Exception)
+			{ }
+
+			defaultMargin = this.Margin;
+			defaultSize = this.RenderSize;
+		}
+
+		private void AdView_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			StringBuilder script = new StringBuilder();
+			try
+			{
+				string size = String.Format("width:{0}, height:{1}", this.Width.ToString("F0"), this.Height.ToString("F0"));
+				size = "{" + size + "}";
+				script.AppendFormat("size = {0};", size);
+				script.AppendFormat("Ormma.raiseEvent(\"sizeChange\", {0});", size);
+			}
+			catch (Exception)
+			{}
+			ExecAdViewScript(script.ToString());
+		}
+
+		private void expandContainer_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			StringBuilder script = new StringBuilder();
+			try
+			{
+				string size = String.Format("width:{0}, height:{1}", expandContainer.Width.ToString("F0"), expandContainer.Height.ToString("F0"));
+				size = "{" + size + "}";
+				script.AppendFormat("size = {0};", size);
+				script.AppendFormat("Ormma.raiseEvent(\"sizeChange\", {0});", size);
+			}
+			catch (Exception)
+			{}
+			ExecAdViewExpandedScript(script.ToString());
 		}
 
 		public AdView(int site, int zone) : this()
@@ -682,11 +732,24 @@ namespace mOceanWindowsPhone
 				PauseUpdate();
 				OnAdDownloadBegin();
 				DataRequest.RequestAd(this, uri);
+
+// 				updatingAdContent = true;
+// 				webBrowser.Navigate(new Uri("mocean\\index.html", UriKind.Relative));
 			}
 			else
 			{
 				((IDataRequestListener)this).OnAdResponse(NO_SITE_ZONE_PARAMETERS_MESSAGE);
 			}
+
+// 			Popup p = new Popup();
+// 			p.HorizontalOffset = 10;
+// 			p.VerticalOffset = 10;
+// 			Grid g = new Grid();
+// 			g.Width = 200;
+// 			g.Height = 400;
+// 			g.Background = new SolidColorBrush(Colors.Green);
+// 			p.Child = g;
+// 			p.IsOpen = true;
 		}
 
 		private void ResumeUpdate()
@@ -739,10 +802,10 @@ namespace mOceanWindowsPhone
 
 			Deployment.Current.Dispatcher.BeginInvoke(() =>
 			{
-				string metaTags = "<meta name=\"viewport\" content=\"width=" + this.Width.ToString("F0") + ", height=" + this.Height.ToString("F0") + ", user-scalable=yes\"/>";
+				string metaTags = "<meta name=\"viewport\" content=\"width=" + this.Width.ToString("F0") + ", user-scalable=yes\"/>";
 				string fullAdContent = "<html><head>" +
 					metaTags +
-					"<script type=\"text/javascript\">" + mOceanWindowsPhone.Resources.ormma + "</script>" +
+					"<script type=\"text/javascript\" src=\"ormma.js\"></script>" +
 					"</head><body style=\"margin:0; padding:0; width: 100%; height: 100%\">" +
 					adContent +
 					"</body></html>";
@@ -802,6 +865,8 @@ namespace mOceanWindowsPhone
 						appStorage.DeleteFile(fileName);
 					}
 
+					appStorage.CreateDirectory(MOCEAN_SDK_DIR);
+
 					using (IsolatedStorageFileStream file = appStorage.OpenFile(fileName, FileMode.Create))
 					{
 						using (StreamWriter writer = new StreamWriter(file))
@@ -823,6 +888,10 @@ namespace mOceanWindowsPhone
 		bool isClosed = false;
 		private void CloseAdView()
 		{
+			string s = webBrowser.SaveToString();
+
+			//ExecScript("ormma.state = \"default\";");
+			//ExecScript("ormma.raiseEvent(\"ready\");");
 			ClosePopup();
 			this.Visibility = Visibility.Collapsed;
 			PauseUpdate();
@@ -856,6 +925,7 @@ namespace mOceanWindowsPhone
 		private void InitWebBrowser()
 		{
 			webBrowser.Base = String.Empty;
+
 			webBrowser.IsScriptEnabled = true;
 			webBrowser.Loaded += webBrowser_Loaded;
 			webBrowser.LoadCompleted += webBrowser_LoadCompleted;
@@ -863,12 +933,18 @@ namespace mOceanWindowsPhone
 			webBrowser.Navigated += webBrowser_Navigated;
 			webBrowser.ScriptNotify += webBrowser_ScriptNotify;
 			webBrowser.Visibility = Visibility.Collapsed;
+
+			TrySaveFile(MOCEAN_SDK_DIR + "/ormma.js", mOceanWindowsPhone.Resources.ormma);
 		}
+
+		private PageOrientation prevPageOrientation = PageOrientation.None;
+		private PageOrientation currentPageOrientation = PageOrientation.None;
 
 		private Point absolutePosition = new Point(0, 0);
 		private bool appBarVisible = false;
 		private bool systemTrayVisible = false;
 		private Popup popup = new Popup();
+		private Grid popupChildContainer = new Grid();
 		private Grid expandContainer = new Grid();
 		private WebBrowser webBrowserExpanded = new WebBrowser();
 		private string webBrowserExpandedUrl = null;
@@ -876,6 +952,7 @@ namespace mOceanWindowsPhone
 		private Map mapExpanded = new Map();
 		private Size screenSize = new Size(AdInterstitialView.initWidth, AdInterstitialView.initHeight);
 
+		private bool imageCloseVisible = false;
 		private Image imageCloseExpanded = new Image();
 
 		private void InitExpandView()
@@ -888,22 +965,35 @@ namespace mOceanWindowsPhone
 			popup.VerticalOffset = 0;
 			popup.Opened += new EventHandler(popup_Opened);
 
-			popup.Child = expandContainer;
-			LayoutRoot.Children.Add(popup);
+			//popup.Child = expandContainer;
+
+			popupChildContainer.Width = AdInterstitialView.initWidth;
+			popupChildContainer.Height = AdInterstitialView.initHeight;
+			popup.Child = popupChildContainer;
+			popupChildContainer.Children.Add(expandContainer);
+
+			try
+			{
+				(ownerPage.Content as Panel).Children.Add(popup);
+			}
+			catch (Exception)
+			{ }
+
 
 			expandContainer.Width = AdInterstitialView.initWidth;
 			expandContainer.Height = AdInterstitialView.initHeight;
-			expandContainer.HorizontalAlignment = HorizontalAlignment.Left;
-			expandContainer.VerticalAlignment = VerticalAlignment.Top;
+			expandContainer.HorizontalAlignment = HorizontalAlignment.Center;
+			expandContainer.VerticalAlignment = VerticalAlignment.Center;
 			expandContainer.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+			expandContainer.SizeChanged += new SizeChangedEventHandler(expandContainer_SizeChanged);
 
 			webBrowserExpanded.HorizontalAlignment = HorizontalAlignment.Stretch;
 			webBrowserExpanded.VerticalAlignment = VerticalAlignment.Stretch;
 			webBrowserExpanded.Base = String.Empty;
 			webBrowserExpanded.IsScriptEnabled = true;
-			// 			webBrowserExpanded.Loaded += webBrowser_Loaded;
+// 			webBrowserExpanded.Loaded += webBrowser_Loaded;
 			webBrowserExpanded.LoadCompleted += webBrowser_LoadCompleted;
-			// 			webBrowserExpanded.Navigating += webBrowser_Navigating;
+// 			webBrowserExpanded.Navigating += webBrowser_Navigating;
 			webBrowserExpanded.Navigated += webBrowser_Navigated;
 			webBrowserExpanded.ScriptNotify += webBrowser_ScriptNotify;
 			webBrowserExpanded.Visibility = Visibility.Collapsed;
@@ -940,28 +1030,46 @@ namespace mOceanWindowsPhone
 		{
 			if (ownerPage != null)
 			{
-				ResizeExpandedView(ownerPage.Orientation);
+				ResizeExpandedView(currentPageOrientation);
 			}
 		}
 
 		private void ResizeExpandedView(PageOrientation pageOrientation)
 		{
-			absolutePosition = this.TransformToVisual(Application.Current.RootVisual).Transform(new Point(0, 0));
+			Size newExpandSize = ormmaMaxSize;
+			if (ormmaState == OrmmaState.Expanded && !expandSize.IsEmpty)
+			{
+				newExpandSize = expandSize;
+			}
 
-			popup.HorizontalOffset = -absolutePosition.X;
-			popup.VerticalOffset = -absolutePosition.Y;
-
-			switch (pageOrientation)
+			switch (currentPageOrientation)
 			{
 				case PageOrientation.Landscape:
 				case PageOrientation.LandscapeLeft:
 				case PageOrientation.LandscapeRight:
-					expandContainer.Width = screenSize.Height;
-					expandContainer.Height = screenSize.Width;
+
+					popupChildContainer.Width = ormmaMaxSize.Width;
+					popupChildContainer.Height = ormmaMaxSize.Height;
+
+					expandContainer.Width = newExpandSize.Height;
+					expandContainer.Height = newExpandSize.Width;
+
+					if (Microsoft.Phone.Shell.SystemTray.IsVisible)
+					{
+						//expandContainer.Width -= AdInterstitialView.systemTrayWidth;
+					}
 					break;
 				default:
-					expandContainer.Width = screenSize.Width;
-					expandContainer.Height = screenSize.Height;
+					popupChildContainer.Width = ormmaMaxSize.Width;
+					popupChildContainer.Height = ormmaMaxSize.Height;
+
+					expandContainer.Width = newExpandSize.Width;
+					expandContainer.Height = newExpandSize.Height;
+
+					if (Microsoft.Phone.Shell.SystemTray.IsVisible)
+					{
+						//expandContainer.Height -= AdInterstitialView.systemTrayHeight;
+					}
 					break;
 			}
 		}
@@ -977,9 +1085,6 @@ namespace mOceanWindowsPhone
 						appBarVisible = ownerPage.ApplicationBar.IsVisible;
 						ownerPage.ApplicationBar.IsVisible = false;
 					}
-
-					systemTrayVisible = Microsoft.Phone.Shell.SystemTray.IsVisible;
-					Microsoft.Phone.Shell.SystemTray.IsVisible = false;
 				}
 
 				popup.IsOpen = true;
@@ -1032,6 +1137,11 @@ namespace mOceanWindowsPhone
 				ownerPage = frame.Content as PhoneApplicationPage;
 				if (ownerPage != null)
 				{
+					defaultSupportedOrientation = ownerPage.SupportedOrientations;
+
+					currentPageOrientation = ownerPage.Orientation;
+					prevPageOrientation = currentPageOrientation;
+
 					ownerPage.BackKeyPress += new EventHandler<System.ComponentModel.CancelEventArgs>(ownerPage_BackKeyPress);
 					ownerPage.OrientationChanged += new EventHandler<OrientationChangedEventArgs>(ownerPage_OrientationChanged);
 					ownerPage.NavigationService.Navigating += new NavigatingCancelEventHandler(ownerPage_Navigating);
@@ -1160,6 +1270,7 @@ namespace mOceanWindowsPhone
 
 		private void webBrowser_ScriptNotify(object sender, NotifyEventArgs e)
 		{
+			Debug.WriteLine(e.Value);
 			OrmmaNotify(e.Value);
 		}
 
@@ -1340,9 +1451,16 @@ namespace mOceanWindowsPhone
 
 		#region ORMMA
 		private Size defaultSize = Size.Empty;
+		private Size ormmaMaxSize = Size.Empty;
 		private Thickness defaultMargin = new Thickness(0);
 		private Panel parent = null;
 		internal string PlacementType { get; set; }
+
+		private Size expandSize = Size.Empty;
+
+		private SupportedPageOrientation defaultSupportedOrientation = SupportedPageOrientation.PortraitOrLandscape;
+		private bool orientationLocked = false;
+
 		private AccelerometerController accelerometer = null;
 		enum OrmmaState
 		{
@@ -1359,10 +1477,6 @@ namespace mOceanWindowsPhone
 		{
 			OrmmaSetState(OrmmaState.Default);
 
-			parent = this.Parent as Panel;
-			defaultMargin = this.Margin;
-			defaultSize = this.RenderSize;
-
 			if (accelerometer == null)
 			{
 				accelerometer = new AccelerometerController();
@@ -1371,55 +1485,36 @@ namespace mOceanWindowsPhone
 				accelerometer.StartListen();
 			}
 
-			StringBuilder script = new StringBuilder();
-			if (parent != null)
-			{
-				script.AppendLine("maxSize = { width:" + parent.RenderSize.Width.ToString("F0") + ", height:" + parent.RenderSize.Height.ToString("F0") + "};");
-			}
+			OrmmaSetOrientation(ownerPage.Orientation);
 
+			StringBuilder script = new StringBuilder();
+			script.AppendLine("size = { width:" + this.Width.ToString("F0") + ", height:" + this.Height.ToString("F0") + "};");
 			if (!defaultSize.IsEmpty)
 			{
-				script.AppendLine("size = { width:" + defaultSize.Width.ToString("F0") + ", height:" + defaultSize.Height.ToString("F0") + "};");
 				script.AppendLine("defaultPosition = {x: " + defaultMargin.Left.ToString("F0") + ", y: " + defaultMargin.Top.ToString("F0") + ", width: " + defaultSize.Width.ToString("F0") + ", height: " + defaultSize.Height.ToString("F0") + "};");
-				script.AppendLine("placementType = \"" + PlacementType + "\";");
 			}
+			script.AppendLine("placementType = \"" + PlacementType + "\";");
+			script.AppendLine("Ormma.setDefaultExpandSize();");
 
-			ExecScript(script.ToString());
+			ExecAdViewScript(script.ToString());
 
-			OrmmaSetOrientation(ownerPage.Orientation);
 			OrmmaNetworkChanged(AutoDetectParameters.Instance.CurrentNetworkType);
-
-			ExecScript("ORMMAReady(); ormma.raiseEvent(\"ready\");");
+			ExecAdViewScript("ORMMAReady();");
+			ExecAdViewScript("ormma.raiseEvent(\"ready\");");
 		}
 
 		private void OrmmaExpandReady()
 		{
-			if (accelerometer == null)
-			{
-				accelerometer = new AccelerometerController();
-				accelerometer.TiltChange += new AccelerometerController.TiltChangeEventHandler(accelerometer_TiltChange);
-				accelerometer.Shake += new EventHandler(accelerometer_Shake);
-				accelerometer.StartListen();
-			}
-
 			StringBuilder script = new StringBuilder();
-			if (parent != null)
-			{
-				script.AppendLine("maxSize = { width:" + parent.RenderSize.Width.ToString("F0") + ", height:" + parent.RenderSize.Height.ToString("F0") + "};");
-			}
-
+			script.AppendLine("size = { width:" + expandContainer.Width.ToString("F0") + ", height:" + expandContainer.Height.ToString("F0") + "};");
 			if (!defaultSize.IsEmpty)
 			{
-				script.AppendLine("size = { width:" + defaultSize.Width.ToString("F0") + ", height:" + defaultSize.Height.ToString("F0") + "};");
 				script.AppendLine("defaultPosition = {x: " + defaultMargin.Left.ToString("F0") + ", y: " + defaultMargin.Top.ToString("F0") + ", width: " + defaultSize.Width.ToString("F0") + ", height: " + defaultSize.Height.ToString("F0") + "};");
-				script.AppendLine("placementType = \"" + PlacementType + "\";");
-				script.AppendLine("initState = \"expanded\";");
 			}
+			script.AppendLine("placementType = \"" + PlacementType + "\";");
+			script.AppendLine("initState = \"expanded\";");
 
-			ExecScript(script.ToString());
-
-			OrmmaSetOrientation(ownerPage.Orientation);
-			OrmmaNetworkChanged(AutoDetectParameters.Instance.CurrentNetworkType);
+			ExecAdViewExpandedScript(script.ToString());
 		}
 
 		private void accelerometer_TiltChange(double x, double y, double z)
@@ -1431,7 +1526,7 @@ namespace mOceanWindowsPhone
 				StringBuilder script = new StringBuilder();
 				script.AppendFormat("tilt = {0};", tilt);
 				script.AppendFormat("Ormma.raiseEvent(\"tiltChange\", {0});", tilt);
-				ExecScript(script.ToString());
+				ExecBothViewsScript(script.ToString());
 			}
 			catch (Exception)
 			{}
@@ -1439,7 +1534,7 @@ namespace mOceanWindowsPhone
 
 		private void accelerometer_Shake(object sender, EventArgs e)
 		{
-			ExecScript("Ormma.raiseEvent(\"shake\");");
+			ExecBothViewsScript("Ormma.raiseEvent(\"shake\");");
 		}
 
 		private void OrmmaSetState(OrmmaState newOrmmaState)
@@ -1450,29 +1545,57 @@ namespace mOceanWindowsPhone
 			}
 		}
 
-		private void ExecScript(string script)
+		private void ExecAdViewScript(string script)
 		{
 			Deployment.Current.Dispatcher.BeginInvoke(() =>
 			{
 				try
 				{
-					if (ormmaState == OrmmaState.Expanded)
+					webBrowser.InvokeScript("execScript", script);
+				}
+				catch (Exception)
+				{
+					Debug.WriteLine("script " + script + " failed");
+				}
+			});
+		}
+
+		private void ExecAdViewExpandedScript(string script)
+		{
+			if (ormmaState == OrmmaState.Expanded)
+			{
+				Deployment.Current.Dispatcher.BeginInvoke(() =>
+				{
+					try
 					{
 						webBrowserExpanded.InvokeScript("execScript", script);
 					}
-					else
-					{
-						webBrowser.InvokeScript("execScript", script);
-					}
-				}
-				catch (Exception)
-				{ }
-			});
+					catch (Exception)
+					{ }
+				});
+			}
+		}
+
+		private string EvalAdViewExpandedScript(string script)
+		{
+			try
+			{
+				return webBrowserExpanded.InvokeScript("eval", script) as string;
+			}
+			catch (Exception ex)
+			{}
+
+			return null;
+		}
+
+		private void ExecBothViewsScript(string script)
+		{
+			ExecAdViewScript(script);
+			ExecAdViewExpandedScript(script);
 		}
 
 		private void OrmmaNotify(string notify)
 		{
-			OnAlert(notify);
 			string[] notifyParts = notify.Split('|');
 			if (notifyParts.Length > 0)
 			{
@@ -1520,7 +1643,6 @@ namespace mOceanWindowsPhone
 			this.Visibility = Visibility.Visible;
 			OrmmaSetState(OrmmaState.Default);
 		}
-
 		private void OrmmaResize(params string[] resizeParams)
 		{
 			if (resizeParams.Length >= 3)
@@ -1529,16 +1651,19 @@ namespace mOceanWindowsPhone
 				{
 					double width = Double.Parse(resizeParams[1]);
 					double height = Double.Parse(resizeParams[2]);
-
-					this.Width = width;
-					this.Height = height;
-
+					Resize(width, height);
 					OrmmaSetState(OrmmaState.Resized);
-					//ExecScript("window.location.reload();");
 				}
 				catch (Exception)
 				{ }
 			}
+		}
+
+
+		private void Resize(double width, double height)
+		{
+			this.Width = width;
+			this.Height = height;
 		}
 
 		private void OrmmaClose()
@@ -1569,7 +1694,10 @@ namespace mOceanWindowsPhone
 					catch (Exception)
 					{ }
 
-					ExecScript("ormma.onExpandClosed();");
+					ExecAdViewScript("ormma.onExpandClosed();");
+					Canvas.SetZIndex(this, defaultZIndex);
+					ownerPage.SupportedOrientations = defaultSupportedOrientation;
+					SetUseCustomClose(!imageCloseVisible);
 					break;
 				default:
 					break;
@@ -1586,7 +1714,7 @@ namespace mOceanWindowsPhone
 			[DataMember]
 			public bool useCustomClose = true;
 			[DataMember]
-			public bool isModal = true;
+			public bool isModal = false;
 			[DataMember]
 			public bool lockOrientation = false;
 			[DataMember]
@@ -1619,17 +1747,57 @@ namespace mOceanWindowsPhone
 
 				if (properties != null)
 				{
-					SetUseCustomClose(properties.useCustomClose);
+					orientationLocked = properties.lockOrientation;
+					if (orientationLocked)
+					{
+						try
+						{
+							switch (currentPageOrientation)
+							{
+								case PageOrientation.Landscape:
+								case PageOrientation.LandscapeLeft:
+								case PageOrientation.LandscapeRight:
+									ownerPage.SupportedOrientations = SupportedPageOrientation.Landscape;
+									break;
+								default:
+									ownerPage.SupportedOrientations = SupportedPageOrientation.Portrait;
+									break;
+							}
+						}
+						catch (Exception)
+						{}
+					}
 
 					OrmmaSetState(OrmmaState.Expanded);
 
 					string url = expandParams[2];
-					if (String.IsNullOrEmpty(url) || url.Equals("null", StringComparison.OrdinalIgnoreCase))
+					expandSize = new Size(properties.width, properties.height);
+
+					if (url.Equals(String.Empty))
 					{
+						if (ownerPage != null)
+						{
+							if (ownerPage.ApplicationBar != null)
+							{
+								appBarVisible = ownerPage.ApplicationBar.IsVisible;
+								ownerPage.ApplicationBar.IsVisible = false;
+							}
+						}
+
+						imageCloseVisible = (imageClose.Visibility == Visibility.Visible);
+						SetUseCustomClose(properties.useCustomClose);
+						Resize(properties.width, properties.height);
+
+						Canvas.SetZIndex(this, Int16.MaxValue);
+					}
+					else if (url == null || url.Equals("null", StringComparison.OrdinalIgnoreCase))
+					{
+						SetUseCustomCloseExpanded(properties.useCustomClose);
+
 						try
 						{
 							string currentAdContent = webBrowser.SaveToString();
-							currentAdContent = currentAdContent.Replace("initState = \"loading\"", "initState = \"expanded\"");
+							currentAdContent = currentAdContent.Replace("initState = \"default\"", "initState = \"expanded\"");
 							if (TrySaveFile(adExpandFileName, currentAdContent))
 							{
 								OpenUrlInternal(adExpandFileName);
@@ -1640,6 +1808,7 @@ namespace mOceanWindowsPhone
 					}
 					else
 					{
+						SetUseCustomCloseExpanded(properties.useCustomClose);
 						OpenUrlInternal(expandParams[2]);
 					}
 				}
@@ -1657,7 +1826,7 @@ namespace mOceanWindowsPhone
 			{
 				response = response.Replace("\"", "\\\"").Replace("\'", "\\\'").Replace("\n", "\\n");
 				string script = String.Format("ormma.raiseEvent(\"response\", \"{0}\", \"{1}\");", url, response);
-				ExecScript(script);
+				ExecBothViewsScript(script);
 			}
 			catch (Exception)
 			{}
@@ -1667,39 +1836,58 @@ namespace mOceanWindowsPhone
 		{
 			bool useCustomClose = false;
 			Boolean.TryParse(use, out useCustomClose);
-			SetUseCustomClose(useCustomClose);
+
+			if (ormmaState == OrmmaState.Expanded)
+			{
+				SetUseCustomCloseExpanded(useCustomClose);
+			}
+			else
+			{
+				SetUseCustomClose(useCustomClose);
+			}
 		}
 
 		private void SetUseCustomClose(bool use)
 		{
 			if (use)
 			{
-				imageCloseExpanded.Visibility = Visibility.Visible;
+				imageClose.Visibility = Visibility.Collapsed;
 			}
 			else
 			{
+				imageClose.Visibility = Visibility.Visible;
+			}
+		}
+
+		private void SetUseCustomCloseExpanded(bool use)
+		{
+			if (use)
+			{
 				imageCloseExpanded.Visibility = Visibility.Collapsed;
+			}
+			else
+			{
+				imageCloseExpanded.Visibility = Visibility.Visible;
 			}
 		}
 
 		private void imageClose_Tap(object sender, System.Windows.Input.GestureEventArgs e)
 		{
-			if (sender.Equals(imageClose))
-			{
-				CloseAdView();
-			}
-
 			if (ormmaState == OrmmaState.Expanded)
 			{
 				OrmmaClose();
+			}
+			else if (sender.Equals(imageClose))
+			{
+				CloseAdView();
 			}
 		}
 
 		#region Map
 		private const string KEY = "AogiRkuyqKxbvxlcu99SUeRp5M9V3j4hije0x4onsbMqkoOEE6p4QNPkA6mjqvxD";
 		private const double DEFAULT_ZOOM_LEVEL = 0;
-		private const double DEFAULT_LATITUDE = 56.632778;
-		private const double DEFAULT_LONGITUDE = 47.895833;
+		private const double DEFAULT_LATITUDE = 0.0;
+		private const double DEFAULT_LONGITUDE = 0.0;
 		private Color PUSHPIN_COLOR = Colors.LightGray;
 		private Color PUSHPIN_TEXT_COLOR = Colors.Black;
 		private const int PUSHPIN_TEXT_SIZE = 30;
@@ -1714,8 +1902,7 @@ namespace mOceanWindowsPhone
 		private const string QUERY_PARAM_NAME = "q";
 		private const string CENTER_PARAM_NAME = "ll";
 		private const string ZOOM_LEVEL_PARAM_NAME = "z";
-
-		private const string PROOF = "http://maps.google.ru/maps/ms?gl=ru&ie=UTF8&msa=0&msid=213579429772951119527.0004a3c5ac3165f7db1ea&ll=56.674338,47.891464&spn=0.19013,0.623474&t=h&z=11&iwloc=0004a3c5ac333eb8e4989";
+		//private const string PROOF = "http://maps.google.ru/maps/ms?gl=ru&ie=UTF8&msa=0&msid=213579429772951119527.0004a3c5ac3165f7db1ea&ll=56.674338,47.891464&spn=0.19013,0.623474&t=h&z=11&iwloc=0004a3c5ac333eb8e4989";
 
 		private void InitMap(Map map)
 		{
@@ -1736,8 +1923,6 @@ namespace mOceanWindowsPhone
 				string poi = mapParams[1];
 				bool fullScreen = false;
 				Boolean.TryParse(mapParams[2], out fullScreen);
-
-				poi = PROOF;
 
 				if (fullScreen)
 				{
@@ -1879,7 +2064,7 @@ namespace mOceanWindowsPhone
 				StringBuilder script = new StringBuilder();
 				script.AppendFormat("heading = {0};", heading);
 				script.AppendFormat("Ormma.raiseEvent(\"headingChange\", {0});", heading);
-				ExecScript(script.ToString());
+				ExecBothViewsScript(script.ToString());
 			}
 			catch (Exception)
 			{ }
@@ -1894,7 +2079,7 @@ namespace mOceanWindowsPhone
 				StringBuilder script = new StringBuilder();
 				script.AppendFormat("geoLocation = {0};", location);
 				script.AppendFormat("Ormma.raiseEvent(\"locationChange\", {0});", location);
-				ExecScript(script.ToString());
+				ExecBothViewsScript(script.ToString());
 			}
 			catch (Exception)
 			{ }
@@ -1924,7 +2109,7 @@ namespace mOceanWindowsPhone
 				StringBuilder script = new StringBuilder();
 				script.AppendFormat("network = \"{0}\";", netWork);
 				script.AppendFormat("Ormma.raiseEvent(\"networkChange\", {0});", "{online: " + (netWork == "wifi" || netWork == "cell").ToString().ToLower() + ", connection: \"" + netWork + "\"}");
-				ExecScript(script.ToString());
+				ExecBothViewsScript(script.ToString());
 			}
 			catch (Exception)
 			{ }
@@ -1963,12 +2148,26 @@ namespace mOceanWindowsPhone
 				case PageOrientation.PortraitDown:
 					width = Application.Current.RootVisual.RenderSize.Width;
 					height = Application.Current.RootVisual.RenderSize.Height;
+
+					ormmaMaxSize.Width = width;
+					ormmaMaxSize.Height = height;
+					if (Microsoft.Phone.Shell.SystemTray.IsVisible)
+					{
+						ormmaMaxSize.Height -= AdInterstitialView.systemTrayHeight;
+					}
 					break;
 				case PageOrientation.Landscape:
 				case PageOrientation.LandscapeLeft:
 				case PageOrientation.LandscapeRight:
 					width = Application.Current.RootVisual.RenderSize.Height;
 					height = Application.Current.RootVisual.RenderSize.Width;
+
+					ormmaMaxSize.Width = width;
+					ormmaMaxSize.Height = height;
+					if (Microsoft.Phone.Shell.SystemTray.IsVisible)
+					{
+						ormmaMaxSize.Width -= AdInterstitialView.systemTrayWidth;
+					}
 					break;
 				default:
 					break;
@@ -1981,6 +2180,7 @@ namespace mOceanWindowsPhone
 
 				string screenSizeSetter = String.Format("width:{0},height:{1};", width.ToString("F0"), height.ToString("F0"));
 				script.AppendFormat("screenSize = {0};", "{width: " + width.ToString("F0") + ", height:" + height.ToString("F0") + "}");
+				script.AppendFormat("maxSize = {0};", "{width: " + ormmaMaxSize.Width.ToString("F0") + ", height:" + ormmaMaxSize.Height.ToString("F0") + "}");
 
 				script.AppendFormat("orientation = {0};", degrees);
 				script.AppendFormat("Ormma.raiseEvent(\"orientationChange\", {0});", degrees);
@@ -1988,7 +2188,7 @@ namespace mOceanWindowsPhone
 				{
 					script.AppendFormat("Ormma.raiseEvent(\"screenChange\", {0});", "{width: " + width.ToString("F0") + ", height:" + height.ToString("F0") + "}");
 				}
-				ExecScript(script.ToString());
+				ExecBothViewsScript(script.ToString());
 			}
 			catch (Exception)
 			{ }
@@ -2015,10 +2215,18 @@ namespace mOceanWindowsPhone
 		{
 			if (e != null)
 			{
-				ResizeExpandedView(e.Orientation);
+				SetOwnerPageOrientation(e.Orientation);
 
 				OrmmaSetOrientation(e.Orientation);
+
+				ResizeExpandedView(currentPageOrientation);
 			}
+		}
+
+		private void SetOwnerPageOrientation(PageOrientation pageOrientation)
+		{
+			prevPageOrientation = currentPageOrientation;
+			currentPageOrientation = pageOrientation;
 		}
 
 		internal void ownerPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
@@ -2036,6 +2244,30 @@ namespace mOceanWindowsPhone
 					{
 						e.Cancel = true;
 						ClosePopup();
+// 
+// 						bool needClosePopup = false;
+// 
+// 						if (webBrowserExpanded.Visibility == Visibility.Visible)
+// 						{
+// 							string historyLengthStr = EvalAdViewExpandedScript("history.length.toString()");
+// 							int historyLength = 0;
+// 							if (Int32.TryParse(historyLengthStr, out historyLength))
+// 							{
+// 								if (historyLength == 0)
+// 								{
+// 									needClosePopup = true;
+// 								}
+// 								else
+// 								{
+// 									EvalAdViewExpandedScript("history.go(-1)");
+// 								}
+// 							}
+// 						}
+// 						
+// 						if (needClosePopup)
+// 						{
+// 							ClosePopup();
+// 						}
 					}
 				}
 			}
@@ -2083,17 +2315,18 @@ namespace mOceanWindowsPhone
 
 		private void OnAlert(params string[] alertParams)
 		{
-// 			if (alertParams.Length <= 1)
-// 			{
-// 				if (!alertParams[0].Contains("tilt"))
-// 				{
-// 					MessageBox.Show(alertParams[0]);
-// 				}
-// 			}
-// 			else
-// 			{
-// 				MessageBox.Show(alertParams[1], alertParams[0], MessageBoxButton.OK);
-// 			}
+			if (alertParams.Length <= 1)
+			{
+				if (!alertParams[0].Contains("tilt"))
+				{
+					MessageBox.Show(alertParams[0]);
+				}
+			}
+			else
+			{
+				//MessageBox.Show(alertParams[1], alertParams[0], MessageBoxButton.OK);
+				MessageBox.Show(alertParams[1]);
+			}
 		}
 	}
 }

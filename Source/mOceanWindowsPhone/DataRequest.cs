@@ -224,6 +224,10 @@ namespace mOceanWindowsPhone
 						string imageLocalPath = LoadAndSaveImage(image.Source);
 						if (imageLocalPath != null)
 						{
+							if (imageLocalPath.Contains(".js"))
+							{
+								imageLocalPath = imageLocalPath.Replace("mocean", "");
+							}
 							adContent = adContent.Replace(image.Source, imageLocalPath);
 
 							if (image.ResType == Resource.TYPE.VIDEO)
@@ -257,6 +261,7 @@ namespace mOceanWindowsPhone
 				if (!exists)
 				{
 					Debug.WriteLine("file " + localImageFilePath + " not exists");
+					Debug.WriteLine("download " + source);
 
 					WebClient imageLoader = new WebClient();
 					ManualResetEvent imageLoaded = new ManualResetEvent(false);
@@ -349,7 +354,6 @@ namespace mOceanWindowsPhone
 			List<Resource> resources = new List<Resource>();
 
 			string adPattern = "<(img|video).*?src=[\",\'](.*?)[\",\'].*?>";
-			//string adPattern = "<(img).*?src=[\",\'](.*?)[\",\'].*?>";
 			Regex adRegex = new Regex(adPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 			MatchCollection adMatches = adRegex.Matches(adContent);
 			foreach (Match currMatch in adMatches)
@@ -368,6 +372,20 @@ namespace mOceanWindowsPhone
 					}
 				}
 			}
+
+
+// 			string httpPattern = @"https?://([-\w\.]+)+(:\d+)?(/([\w/_\.]*(\?\S+)?)?)?";
+// 			Regex httpRegex = new Regex(httpPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+// 			MatchCollection httpMatches = httpRegex.Matches(adContent);
+// 			foreach (Match currMatch in httpMatches)
+// 			{
+// 				string url = currMatch.Groups[0].Value;
+// 				if (url.Contains(".js"))
+// 				{
+// 					resources.Add(new Resource(Resource.TYPE.IMAGE, url));
+// 				}
+// 			}
+
 
 			if (resources.Count > 0)
 			{

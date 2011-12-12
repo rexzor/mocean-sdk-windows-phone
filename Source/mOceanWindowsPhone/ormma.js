@@ -1,19 +1,21 @@
-﻿var maxSize = {};
-var size = {};
-var screenSize = {};
+﻿var maxSize = {width:0, height:0};
+var size = {width:0, height:0};
+var screenSize = {width:0, height:0};
 var network = "unknown";
 var geoLocation = {};
 var heading = -1;
 var tilt = {};
 var orientation = -1;
 var cacheRemaining = 0;
-var defaultPosition = {};
+var defaultPosition = {x:0, y:0, width:0, height:0};
 var placementType = "inline";
 var version = "1.1.0";
-var initState = "loading";
+var initState = "default";
+var methodNotSupportedMessage = "method not supported";
+var eventNotSupportedMessage = "event not supported";
 
-var JSON = JSON || {};
-JSON.stringify = JSON.stringify || function (obj) {
+var myJSON = myJSON || {};
+myJSON.stringify = myJSON.stringify || function (obj) {
 	var t = typeof (obj);
 	if (t != "object" || obj === null) {
 		if (obj === null) {
@@ -31,14 +33,14 @@ JSON.stringify = JSON.stringify || function (obj) {
 		for (n in obj) {
 			v = obj[n]; t = typeof (v);
 			if (t == "string") v = '"' + v + '"';
-			else if (t == "object" && v !== null) v = JSON.stringify(v);
+			else if (t == "object" && v !== null) v = myJSON.stringify(v);
 			json.push((arr ? "" : '"' + n + '":') + String(v));
 		}
 		return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
 	}
 };
 
-JSON.parse = JSON.parse || function (str) {
+myJSON.parse = myJSON.parse || function (str) {
 	if (str === "") str = '""';
 	eval("var p=" + str + ";");
 	return p;
@@ -57,12 +59,7 @@ function alert() {
 			notify += '|';
 		}
 	}
-	window.external.Notify(notify);
-}
-
-
-function getUA() {
-	return navigator.userAgent;
+	//window.external.Notify(notify);
 }
 
 (function () {
@@ -75,7 +72,6 @@ function getUA() {
 	var ORMMA_EVENT_READY = "ready";
 	var ORMMA_EVENT_ERROR = "error";
 	var ORMMA_EVENT_HEADING_CHANGE = "headingChange";
-	var ORMMA_EVENT_KEYBOARD_CHANGE = "keyboardChange";
 	var ORMMA_EVENT_LOCATION_CHANGE = "locationChange";
 	var ORMMA_EVENT_NETWORK_CHANGE = "networkChange";
 	var ORMMA_EVENT_ORIENTATION_CHANGE = "orientationChange";
@@ -85,7 +81,11 @@ function getUA() {
 	var ORMMA_EVENT_SIZE_CHANGE = "sizeChange";
 	var ORMMA_EVENT_STATE_CHANGE = "stateChange";
 	var ORMMA_EVENT_TILT_CHANGE = "tiltChange";
+	var ORMMA_EVENT_VIEWABLE_CHANGE = "viewableChange";
 
+	var ORMMA_EVENT_KEYBOARD_CHANGE = "keyboardChange";
+	
+	
 	window.ormma = {
 		events: [],
 
@@ -94,10 +94,10 @@ function getUA() {
 		},
 
 		expandProperties: {
-			width : 800,
-			height : 480,
-			useCustomClose : true,
-			isModal : true,
+			width : 100,
+			height : 100,
+			useCustomClose : false,
+			isModal : false,
 			lockOrientation : false,
 			useBackground : false,
 			backgroundColor : "#00ccff",
@@ -106,10 +106,15 @@ function getUA() {
 
 		shakeProperties: { interval: 0, intensity: 0 },
 		lastState: ORMMA_STATE_DEFAULT,
-		state: initState,
+		state: ORMMA_STATE_LOADING,
 
 		ORMMAinited: function () {
-			setState(ORMMA_STATE_DEFAULT);
+			setState(initState);
+		},
+
+		setDefaultExpandSize: function () {
+			this.expandProperties.width = maxSize.width;
+			this.expandProperties.height = maxSize.height;
 		},
 
 		supports: function (feature) {
@@ -140,9 +145,12 @@ function getUA() {
 		},
 
 		addEventListener : function(event, listener) {
-			//window.external.Notify(event.toString());
-
-			if (typeof listener == 'function') {
+			if (event == ORMMA_EVENT_KEYBOARD_CHANGE) {
+				var msg = '';
+				msg = event + ' ' + eventNotSupportedMessage;
+				this.raiseEvent(ORMMA_EVENT_ERROR, {message: msg, action:"addEventListener"});
+			}
+			else if (typeof listener == 'function') {
 				if (!this.events[event]) {
 					this.events[event] = [];
 				}
@@ -156,8 +164,6 @@ function getUA() {
 		},
 
 		removeEventListener: function (event, listener) {
-			//window.external.Notify(event.toString());
-
 			if (typeof listener == 'function' && this.events[event] && this.events[event].listeners) {
 				var listenerIndex = getListenerIndex(event, listener);
 				if (listenerIndex !== -1) {
@@ -173,29 +179,54 @@ function getUA() {
 		hide: function () {
 			if (this.state != ORMMA_STATE_EXPANDED) {
 				setState(ORMMA_STATE_HIDDEN);
+				sendNotify("hide");
+
+				this.raiseEvent(ORMMA_EVENT_VIEWABLE_CHANGE);
 			}
-			sendNotify("hide");
 		},
 
 		show: function () {
 			if (this.state == ORMMA_STATE_HIDDEN) {
 				sendNotify("show");
 				setState(this.lastState);
+
+				this.raiseEvent(ORMMA_EVENT_VIEWABLE_CHANGE);
+			}
+			else
+			{
+				this.raiseEvent(ORMMA_EVENT_ERROR, {message: "ad view is visible", action:"show"});
 			}
 		},
 
 		resize: function (width, height) {
 			if (this.state == ORMMA_STATE_DEFAULT) {
-				//sendNotify("resize", width, height, JSON.stringify(this.resizeProperties));
 				sendNotify("resize", width, height);
 				setState(ORMMA_STATE_RESIZED);
 			}
 		},
 
-		expand: function (url) {
+		expand: function () {
 			if (this.state == ORMMA_STATE_DEFAULT || this.state == ORMMA_STATE_RESIZED) {
-				sendNotify("expand", JSON.stringify(this.expandProperties), url);
-				setState(ORMMA_STATE_EXPANDED);
+
+				if (defaultPosition.x + this.expandProperties.width <= maxSize.width &&
+					defaultPosition.y + this.expandProperties.height <= maxSize.height) {
+
+					var url = '';
+					if (arguments.length > 0) {
+						url = String(arguments[0]);
+					}
+
+					sendNotify("expand", myJSON.stringify(this.expandProperties), url);
+					setState(ORMMA_STATE_EXPANDED);
+				}
+				else
+				{
+					this.raiseEvent(ORMMA_EVENT_ERROR, {message:"out of bounds", action:"expand"});
+				}
+			}
+			else
+			{
+				this.raiseEvent(ORMMA_EVENT_ERROR, {message:"state not default or resized", action:"expand"});
 			}
 		},
 
@@ -264,7 +295,6 @@ function getUA() {
 						else if(event == ORMMA_EVENT_HEADING_CHANGE) {
 							(this.events[event].listeners[i]).call(this, arguments[1]);
 						}
-						else if(event == ORMMA_EVENT_KEYBOARD_CHANGE) {}
 						else if(event == ORMMA_EVENT_LOCATION_CHANGE) {
 							(this.events[event].listeners[i]).call(this, arguments[1].lat, arguments[1].lon, arguments[1].acc);
 						}
@@ -275,10 +305,7 @@ function getUA() {
 							(this.events[event].listeners[i]).call(this, arguments[1]);
 						}
 						else if(event == ORMMA_EVENT_RESPONSE) {
-							//sendNotify("RESPONSE");
 							(this.events[event].listeners[i]).call(this, arguments[1], arguments[2]);
-
-							//sendNotify(arguments[1].url);
 						}
 						else if(event == ORMMA_EVENT_SCREEN_CHANGE) {
 							(this.events[event].listeners[i]).call(this, arguments[1].width, arguments[1].height);
@@ -308,10 +335,19 @@ function getUA() {
 
 		fireError: function (message, action) {
 			var data = { message: message, action: action };
+			this.raiseEvent(ORMMA_EVENT_ERROR, { message: message, action: action });
 		},
 
 
 		// Level 2 methods
+
+		createEvent: function (date, title, body) {
+			this.raiseEvent(ORMMA_EVENT_ERROR, {message: methodNotSupportedMessage, action:"createEvent"});
+		},
+
+		getKeyboard: function () {
+			this.raiseEvent(ORMMA_EVENT_ERROR, {message: methodNotSupportedMessage, action:"getKeyboard"});
+		},
 
 		getOrientation: function () {
 			return orientation;
@@ -346,11 +382,11 @@ function getUA() {
 		},
 
 		playAudio: function (URL, properties) {
-			sendNotify("playAudio", URL, JSON.stringify(properties));
+			sendNotify("playAudio", URL, myJSON.stringify(properties));
 		},
 
 		playVideo: function (URL, properties) {
-			sendNotify("playVideo", URL, JSON.stringify(properties));
+			sendNotify("playVideo", URL, myJSON.stringify(properties));
 		},
 
 		openMap: function (POI, fullscreen) {
@@ -387,7 +423,11 @@ function getUA() {
 		},
 
 		getViewable: function () {
-			return true;
+			return this.isViewable();
+		},
+
+		isViewable: function () {
+			return (this.state != ORMMA_STATE_HIDDEN);
 		},
 
 		onExpandClosed: function () {
@@ -410,6 +450,7 @@ function getUA() {
 				notify += '|';
 			}
 		}
+
 		window.external.Notify(notify);
 	}
 
@@ -439,9 +480,13 @@ function getUA() {
 					
 		ormma.state = state;
 		ormma.raiseEvent(ORMMA_EVENT_STATE_CHANGE, state);
+
+		window.external.Notify(ormma.lastState);
+		window.external.Notify(ormma.state);
 	}
 
 	window.Ormma = ormma;
 	window.mraid = ormma;
+
 	ormma.ORMMAinited();
 })();
