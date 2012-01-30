@@ -542,6 +542,13 @@ namespace mOceanWindowsPhone
 			get { return logLevel; }
 			set { logLevel = value; }
 		}
+
+		public bool ContentAlignment
+		{
+			get;
+			set;
+		}
+		
 		#endregion
 
 		public AdView()
@@ -823,12 +830,10 @@ namespace mOceanWindowsPhone
 					"<script type=\"text/javascript\" src=\"ormma.js\"></script>" +
 					"</head><body style=\"" + bodyStyle + "\">" +
 
-					"<table border=\"0\" width=\"100%\" ><tr><td align=\"center\" valign=\"middle\">" +
+					(ContentAlignment ? "<table border=\"0\" width=\"100%\" ><tr><td align=\"center\" valign=\"middle\">" + adContent + "</td></tr></table>"
+										: adContent)
 
-					adContent +
-
-					"</td></tr></table>" +
-
+					 +
 					"</body></html>";
 
 				bool saved = TrySaveFile(adFileName, fullAdContent);
