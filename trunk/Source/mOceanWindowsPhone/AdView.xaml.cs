@@ -253,13 +253,16 @@ namespace mOceanWindowsPhone
 			}
 		}
 
-		private Color backgroundColor = Colors.Transparent;
+		private Color backgroundColor = Colors.White;
+		bool bgColorSetted = false;
 		public Color BackgroundColor
 		{
 			get { return backgroundColor; }
 			set
 			{
+				bgColorSetted = true;
 				backgroundColor = value;
+				this.Background = new SolidColorBrush(value);
 				adserverRequest.SetBackgroundColor(ColorToRgb(backgroundColor));
 			}
 		}
@@ -602,6 +605,15 @@ namespace mOceanWindowsPhone
 
 			defaultMargin = this.Margin;
 			defaultSize = this.RenderSize;
+
+			if (!bgColorSetted)
+			{
+				SolidColorBrush bgSolidColorBrush = this.Background as SolidColorBrush;
+				if (bgSolidColorBrush != null)
+				{
+					backgroundColor = bgSolidColorBrush.Color;
+				}
+			}
 		}
 
 		private void AdView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -802,12 +814,21 @@ namespace mOceanWindowsPhone
 
 			Deployment.Current.Dispatcher.BeginInvoke(() =>
 			{
+				string bgColorHex = ColorToRgb(backgroundColor);
 				string metaTags = "<meta name=\"viewport\" content=\"width=" + this.Width.ToString("F0") + ", user-scalable=yes\"/>";
+				string bodyStyle = String.Format("margin:0; padding:0; width: 100%; height: 100%; background-color: {0}", bgColorHex);
+
 				string fullAdContent = "<html><head>" +
 					metaTags +
 					"<script type=\"text/javascript\" src=\"ormma.js\"></script>" +
-					"</head><body style=\"margin:0; padding:0; width: 100%; height: 100%\">" +
+					"</head><body style=\"" + bodyStyle + "\">" +
+
+					"<table border=\"0\" width=\"100%\" ><tr><td align=\"center\" valign=\"middle\">" +
+
 					adContent +
+
+					"</td></tr></table>" +
+
 					"</body></html>";
 
 				bool saved = TrySaveFile(adFileName, fullAdContent);
@@ -1582,7 +1603,7 @@ namespace mOceanWindowsPhone
 			{
 				return webBrowserExpanded.InvokeScript("eval", script) as string;
 			}
-			catch (Exception ex)
+			catch (Exception /*ex*/)
 			{}
 
 			return null;
