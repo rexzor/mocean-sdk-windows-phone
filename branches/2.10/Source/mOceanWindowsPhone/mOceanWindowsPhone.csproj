@@ -59,9 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accelerometer.cs" />
-    <Compile Include="AdInterstitialView.cs" />
-    <Compile Include="AdView.xaml.cs">
-      <DependentUpon>AdView.xaml</DependentUpon>
+    <Compile Include="MASTAdInterstitialView.cs" />
+    <Compile Include="MASTAdView.xaml.cs">
+      <DependentUpon>MASTAdView.xaml</DependentUpon>
     </Compile>
     <Compile Include="AdserverRequest.cs" />
     <Compile Include="AutoDetectParameters.cs" />
@@ -78,7 +78,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AdView.xaml">
+    <Page Include="MASTAdView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

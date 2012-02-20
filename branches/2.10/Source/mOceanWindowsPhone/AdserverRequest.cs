@@ -45,6 +45,8 @@ namespace mOceanWindowsPhone
 
 		private string parameter_excampaigns = "excampaigns";
 
+		private string parameter_timeout = "timeout";
+
 		private string adserverURL = String.Empty;
 		#endregion
 
@@ -232,6 +234,11 @@ namespace mOceanWindowsPhone
 			}
 		}
 
+		public void SetTimeout(int timeout)
+		{
+			AddParameter(parameter_timeout, timeout);
+		}
+
 		public void AddExternalCampaign(string campaign_id)
 		{
 			AddParameter(parameter_excampaigns, campaign_id);
@@ -311,9 +318,13 @@ namespace mOceanWindowsPhone
 				}
 			}
 			catch (Exception)
-			{}
+			{ }
 		}
 
+		private void AddParameter(string key, int value)
+		{
+			AddParameter(key, value.ToString());
+		}
 		private void RemoveParameter(string key)
 		{
 			try

@@ -12,7 +12,8 @@ using Microsoft.Phone.Controls;
 
 namespace mOceanWindowsPhone
 {
-	public class AdInterstitialView : Panel
+	[Obsolete("MASTAdInterstitialView is obsolete")]
+	public class MASTAdInterstitialView : Panel
 	{
 		internal const int systemTrayHeight = 32;
 		internal const int systemTrayWidth = 72;
@@ -22,7 +23,7 @@ namespace mOceanWindowsPhone
 
 		private Popup popup = new Popup();
 		private Grid container = new Grid();
-		private AdView adView = null;
+		private MASTAdView adView = null;
 		private Button closeButton = null;
 		private Image imageClose = new Image();
 		private PhoneApplicationFrame ownerFrame = null;
@@ -30,14 +31,14 @@ namespace mOceanWindowsPhone
 		private PageOrientation pageOrientation = PageOrientation.PortraitUp;
 		private bool appBarVisible = false;
 		private bool systemTrayVisible = false;
-		
+
 		private Timer closeButtonTimer = null;
 		private Timer adTimer = null;
 
-		public AdInterstitialView()
+		public MASTAdInterstitialView()
 		{
 			this.Loaded += new RoutedEventHandler(AdInterstitialView_Loaded);
-			adView = new AdView();
+			adView = new MASTAdView();
 			adView.PlacementType = "interstitial";
 
 			popup.Width = initWidth;
@@ -63,8 +64,8 @@ namespace mOceanWindowsPhone
 			container.Children.Add(adView);
 
 			imageClose.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("customclose.png", UriKind.Relative));
-			imageClose.Width = AdView.CUSTOM_CLOSE_BUTTON_SIZE;
-			imageClose.Height = AdView.CUSTOM_CLOSE_BUTTON_SIZE;
+			imageClose.Width = MASTAdView.CUSTOM_CLOSE_BUTTON_SIZE;
+			imageClose.Height = MASTAdView.CUSTOM_CLOSE_BUTTON_SIZE;
 			imageClose.HorizontalAlignment = HorizontalAlignment.Right;
 			imageClose.VerticalAlignment = VerticalAlignment.Top;
 			imageClose.Stretch = Stretch.Fill;
@@ -80,13 +81,13 @@ namespace mOceanWindowsPhone
 			AutoCloseInterstitialTime = UInt32.MaxValue;
 		}
 
-		public AdInterstitialView(int site, int zone) : this()
+		public MASTAdInterstitialView(int site, int zone) : this()
 		{
 			Site = site;
 			Zone = zone;
 		}
 
-		internal AdInterstitialView(string url) : this()
+		internal MASTAdInterstitialView(string url) : this()
 		{
 			adView.UrlToLoad = url;
 		}
@@ -242,6 +243,7 @@ namespace mOceanWindowsPhone
 			get { return adView.Track; }
 			set { adView.Track = value; }
 		}
+		
 		public Button CloseButton
 		{
 			get { return closeButton; }
@@ -477,7 +479,7 @@ namespace mOceanWindowsPhone
 			remove { adView.AdDownloadEnd -= value; }
 		}
 
-		public event EventHandler<AdView.DownloadErrorEventArgs> AdDownloadError
+		public event EventHandler<MASTAdView.DownloadErrorEventArgs> AdDownloadError
 		{
 			add { adView.AdDownloadError += value; }
 			remove { adView.AdDownloadError -= value; }
@@ -489,7 +491,7 @@ namespace mOceanWindowsPhone
 			remove { adView.AdNavigateBanner -= value; }
 		}
 
-		public event EventHandler<AdView.WebViewClosingEventArgs> AdWebViewClosing
+		public event EventHandler<MASTAdView.WebViewClosingEventArgs> AdWebViewClosing
 		{
 			add { adView.AdWebViewClosing += value; }
 			remove { adView.AdWebViewClosing -= value; }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
-  <App xmlns="" ProductID="{8224a611-471a-4405-b801-ae85ca06f2e7}" Title="mOceanSample" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="mOceanSample author" Description="Sample description" Publisher="mOceanSample">
+  <App xmlns="" ProductID="{81aa7a93-be1b-4380-ad70-30c3fa9d127f}" Title="mOceanSample" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="mOceanSample author" Description="Sample description" Publisher="mOceanSample">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES"/>

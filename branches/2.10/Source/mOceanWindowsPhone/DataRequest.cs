@@ -11,6 +11,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Threading;
 
 namespace mOceanWindowsPhone
 {
@@ -25,6 +26,7 @@ namespace mOceanWindowsPhone
 	internal class DataRequest
 	{
 		public static string RootDir { get; set; }
+		private static int DEFAULT_REQUEST_AD_TIMEOUT = 30; // seconds
 		private static int BLOCK_SIZE = 1024;
 		private static Encoding AD_CONTENT_ENCODE = Encoding.UTF8;
 
@@ -96,10 +98,39 @@ namespace mOceanWindowsPhone
 					}
 
 					request.Accept = "text/html";
+					request.Headers[HttpRequestHeader.Connection] = "close";
+					
 					request.BeginGetResponse(new AsyncCallback(RequestAdCallback), request);
+					//AddRequestAdTimeout(request);
+
 					Debug.WriteLine("BeginGetResponse");
 				}
 			}
+		}
+
+		private static void AddRequestAdTimeout(HttpWebRequest request)
+		{
+			DispatcherTimer timeoutTimer = new DispatcherTimer();
+			timeoutTimer.Tick +=
+				delegate(object s, EventArgs args)
+				{
+					try
+					{
+						Debug.WriteLine("time out !");
+						timeoutTimer.Stop();
+						request.Abort();
+					}
+					catch (Exception)
+					{}
+				};
+
+			try
+			{
+				timeoutTimer.Interval = new TimeSpan(0, 0, DEFAULT_REQUEST_AD_TIMEOUT);
+				timeoutTimer.Start();
+			}
+			catch (Exception)
+			{}
 		}
 
 		public static void CancelRequestAd(IDataRequestListener listener)
@@ -144,8 +175,15 @@ namespace mOceanWindowsPhone
 				try
 				{
 					HttpWebResponse response = request.EndGetResponse(result) as HttpWebResponse;
-					adContent = GetStringAd(response);
-					response.Close();
+					if (response != null && response.StatusCode == HttpStatusCode.OK)
+					{
+						adContent = GetStringAd(response);
+						response.Close();
+					}
+					else
+					{
+						return;
+					}
 				}
 				catch (WebException we)
 				{
@@ -226,14 +264,14 @@ namespace mOceanWindowsPhone
 						{
 							if (imageLocalPath.Contains(".js"))
 							{
-								imageLocalPath = imageLocalPath.Replace("mocean", "");
+								imageLocalPath = imageLocalPath.Replace(RootDir, "");
 							}
 							adContent = adContent.Replace(image.Source, imageLocalPath);
 
 							if (image.ResType == Resource.TYPE.VIDEO)
 							{
 								video = image;
-								video.Source = video.Source.Replace(image.Source, imageLocalPath);
+								video.Source = video.Source.Replace(image.Source, RootDir + "\\" + imageLocalPath);
 							}
 						}
 					}

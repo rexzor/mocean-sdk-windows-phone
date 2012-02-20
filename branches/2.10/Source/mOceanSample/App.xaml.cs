@@ -40,8 +40,8 @@ namespace mOceanSample
 			// Show graphics profiling information while debugging.
 			if (System.Diagnostics.Debugger.IsAttached)
 			{
-				// Display the current frame rate counters.
-				//Application.Current.Host.Settings.EnableFrameRateCounter = true;
+				// Display the current frame rate counters
+				Application.Current.Host.Settings.EnableFrameRateCounter = false;
 
 				// Show the areas of the app that are being redrawn in each frame.
 				//Application.Current.Host.Settings.EnableRedrawRegions = true;
@@ -56,7 +56,6 @@ namespace mOceanSample
 				// and consume battery power when the user is not using the phone.
 				PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
 			}
-
 		}
 
 		// Code to execute when the application is launching (eg, from Start)
@@ -69,6 +68,7 @@ namespace mOceanSample
 		// This code will not execute when the application is first launched
 		private void Application_Activated(object sender, ActivatedEventArgs e)
 		{
+			// Ensure that application state is restored appropriately
 		}
 
 		// Code to execute when the application is deactivated (sent to background)
@@ -81,6 +81,7 @@ namespace mOceanSample
 		// This code will not execute when the application is deactivated
 		private void Application_Closing(object sender, ClosingEventArgs e)
 		{
+			// Ensure that required application state is persisted here.
 		}
 
 		// Code to execute if a navigation fails
