@@ -13,7 +13,7 @@
     
     <Grid x:Name="LayoutRoot">
         <map:Map HorizontalAlignment="Stretch" Name="map" VerticalAlignment="Stretch" Visibility="Collapsed"/>
-		<phone:WebBrowser HorizontalAlignment="Stretch" Name="webBrowser" VerticalAlignment="Stretch" IsScriptEnabled="True" Visibility="Collapsed" />
+		<phone:WebBrowser HorizontalAlignment="Stretch" Name="webBrowser" VerticalAlignment="Stretch" IsScriptEnabled="True" Visibility="Collapsed" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
         <MediaElement Name="mediaElement" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Collapsed"/>
 		<Image Height="50" HorizontalAlignment="Right" Name="imageClose" Stretch="Fill" VerticalAlignment="Top" Width="50" Source="customclose.png" Tap="imageClose_Tap" Visibility="Collapsed" />
 	</Grid>

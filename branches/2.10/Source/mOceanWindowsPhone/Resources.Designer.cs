@@ -61,28 +61,23 @@ namespace mOceanWindowsPhone {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to var maxSize = {};
-        ///var size = {};
-        ///var screenSize = {};
+        ///   Looks up a localized string similar to var maxSize = {width:0, height:0};
+        ///var size = {width:0, height:0};
+        ///var screenSize = {width:0, height:0};
         ///var network = &quot;unknown&quot;;
         ///var geoLocation = {};
         ///var heading = -1;
         ///var tilt = {};
         ///var orientation = -1;
         ///var cacheRemaining = 0;
-        ///var defaultPosition = {};
+        ///var defaultPosition = {x:0, y:0, width:0, height:0};
         ///var placementType = &quot;inline&quot;;
         ///var version = &quot;1.1.0&quot;;
-        ///var initState = &quot;loading&quot;;
+        ///var initState = &quot;default&quot;;
+        ///var methodNotSupportedMessage = &quot;method not supported&quot;;
+        ///var eventNotSupportedMessage = &quot;event not supported&quot;;
         ///
-        ///var myJSON = myJSON || {};
-        ///myJSON.stringify = myJSON.stringify || function (obj) {
-        ///	var t = typeof (obj);
-        ///	if (t != &quot;object&quot; || obj === null) {
-        ///		if (obj === null) {
-        ///			return &quot;null&quot;;
-        ///		}
-        ///		// simple data [rest of string was truncated]&quot;;.
+        ///var myJSON = myJSON | [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ormma {
             get {

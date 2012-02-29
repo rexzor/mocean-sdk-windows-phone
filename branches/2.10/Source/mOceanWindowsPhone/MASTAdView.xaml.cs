@@ -562,7 +562,7 @@ namespace mOceanWindowsPhone
 		public bool ContentAlignment { get; set; }
 
 		private int timeout = DEFAULT_TIMEOUT;
-		public int Timeout
+		public int AdCallTimeout
 		{
 			get
 			{
@@ -600,7 +600,7 @@ namespace mOceanWindowsPhone
 			adFileName = MOCEAN_SDK_DIR + "\\" + "adview" + viewId.ToString() + ".html";
 			adExpandFileName = MOCEAN_SDK_DIR + "\\" + "adviewexpand" + viewId.ToString() + ".html";
 			PlacementType = "inline";
-			Timeout = DEFAULT_TIMEOUT;
+			AdCallTimeout = DEFAULT_TIMEOUT;
 			InternalBrowser = false;
 			UrlToLoad = null;
 			LocationUpdateInterval = 0;
@@ -877,7 +877,6 @@ namespace mOceanWindowsPhone
 		private void CancelLastRequest()
 		{
 			DataRequest.CancelRequestAd(this);
-			//RequestCanceled = true;
 		}
 
 		void IDataRequestListener.OnAdResponse(string newAdContent)
@@ -971,8 +970,8 @@ namespace mOceanWindowsPhone
 
 			if (newAdContent == adContent)
 			{
-// 				ResumeUpdate();
-// 				return;
+				ResumeUpdate();
+				return;
 			}
 
 			adContent = newAdContent;
@@ -1094,7 +1093,6 @@ namespace mOceanWindowsPhone
 			webBrowser.Visibility = Visibility.Collapsed;
 
 			TrySaveFile(MOCEAN_SDK_DIR + "/ormma.js", mOceanWindowsPhone.Resources.ormma);
-
 		}
 
 		private void ShowDefaultImage()
@@ -1154,8 +1152,6 @@ namespace mOceanWindowsPhone
 			popup.VerticalOffset = 0;
 			popup.Opened += new EventHandler(popup_Opened);
 
-			//popup.Child = expandContainer;
-
 			popupChildContainer.Width = SCREEN_WIDTH;
 			popupChildContainer.Height = SCREEN_HEIGHT;
 			popup.Child = popupChildContainer;
@@ -1180,9 +1176,7 @@ namespace mOceanWindowsPhone
 			webBrowserExpanded.VerticalAlignment = VerticalAlignment.Stretch;
 			webBrowserExpanded.Base = String.Empty;
 			webBrowserExpanded.IsScriptEnabled = true;
-// 			webBrowserExpanded.Loaded += webBrowser_Loaded;
 			webBrowserExpanded.LoadCompleted += webBrowser_LoadCompleted;
-// 			webBrowserExpanded.Navigating += webBrowser_Navigating;
 			webBrowserExpanded.Navigated += webBrowser_Navigated;
 			webBrowserExpanded.ScriptNotify += webBrowser_ScriptNotify;
 			webBrowserExpanded.Visibility = Visibility.Collapsed;
@@ -1242,11 +1236,6 @@ namespace mOceanWindowsPhone
 
 					expandContainer.Width = newExpandSize.Height;
 					expandContainer.Height = newExpandSize.Width;
-
-					if (Microsoft.Phone.Shell.SystemTray.IsVisible)
-					{
-						//expandContainer.Width -= AdInterstitialView.systemTrayWidth;
-					}
 					break;
 				default:
 					popupChildContainer.Width = ormmaMaxSize.Width;
@@ -1254,11 +1243,6 @@ namespace mOceanWindowsPhone
 
 					expandContainer.Width = newExpandSize.Width;
 					expandContainer.Height = newExpandSize.Height;
-
-					if (Microsoft.Phone.Shell.SystemTray.IsVisible)
-					{
-						//expandContainer.Height -= AdInterstitialView.systemTrayHeight;
-					}
 					break;
 			}
 		}
@@ -1796,7 +1780,7 @@ namespace mOceanWindowsPhone
 			{
 				return webBrowserExpanded.InvokeScript("eval", script) as string;
 			}
-			catch (Exception /*ex*/)
+			catch (Exception)
 			{}
 
 			return null;
@@ -2116,7 +2100,6 @@ namespace mOceanWindowsPhone
 		private const string QUERY_PARAM_NAME = "q";
 		private const string CENTER_PARAM_NAME = "ll";
 		private const string ZOOM_LEVEL_PARAM_NAME = "z";
-		//private const string PROOF = "http://maps.google.ru/maps/ms?gl=ru&ie=UTF8&msa=0&msid=213579429772951119527.0004a3c5ac3165f7db1ea&ll=56.674338,47.891464&spn=0.19013,0.623474&t=h&z=11&iwloc=0004a3c5ac333eb8e4989";
 
 		private void InitMap(Map map)
 		{
@@ -2529,7 +2512,6 @@ namespace mOceanWindowsPhone
 			}
 			else
 			{
-				//MessageBox.Show(alertParams[1], alertParams[0], MessageBoxButton.OK);
 				MessageBox.Show(alertParams[1]);
 			}
 		}
