@@ -7,6 +7,7 @@ using System.Device.Location;
 using System.Threading;
 using Microsoft.Phone.Info;
 using Microsoft.Phone.Net.NetworkInformation;
+using System.Diagnostics;
 
 namespace mOceanWindowsPhone
 {
@@ -73,7 +74,7 @@ namespace mOceanWindowsPhone
 
 		AutoDetectParameters()
 		{
-			StartLocationService();
+			//StartLocationService();
 			StartNetworkService();
 		}
 
@@ -85,14 +86,39 @@ namespace mOceanWindowsPhone
 		#endregion
 
 		#region Location
-		private const double LOCATION_CHANGE_DIFFERENCE = 0.1;
 		private static IGeoPositionWatcher<GeoCoordinate> geoWatcher = null;
 		private static GeoCoordinate prevLocation = null;
 		private static GeoCoordinate location = null;
 		private static int course = -1;
 
+        private bool locationDetection = false;
+        public bool LocationDetection
+        {
+            get { return locationDetection; }
+            set
+            {
+                locationDetection = value;
+                if ((locationDetection == true) && (geoWatcher == null))
+                {
+                    StartLocationService();
+                }
+                else if (locationDetection == false)
+                {
+                    StopLocationService();
+                }
+            }
+        }
+
+        private double locationMinMoveMeters = 1000.0; // old value was 0.1, leading to constant updates
+        public double LocationMinMoveMeters
+        {
+            get { return locationMinMoveMeters; }
+            set { locationMinMoveMeters = value; }
+        }
+
 		private void StartLocationService()
 		{
+            Debug.WriteLine("Location services enabled");
 			geoWatcher = new GeoCoordinateWatcher(GeoPositionAccuracy.Default);
 			if (geoWatcher.Status == GeoPositionStatus.Disabled)
 			{
@@ -106,6 +132,7 @@ namespace mOceanWindowsPhone
 
 		private void StopLocationService()
 		{
+            Debug.WriteLine("Location services disabled");
 			geoWatcher = null;
 		}
 
@@ -128,8 +155,8 @@ namespace mOceanWindowsPhone
 				prevLocation = location;
 				OnLocationChanged();
 			}
-			else if (Math.Abs(location.Latitude - prevLocation.Latitude) >= LOCATION_CHANGE_DIFFERENCE ||
-					Math.Abs(location.Longitude - prevLocation.Longitude) >= LOCATION_CHANGE_DIFFERENCE)
+            else if (Math.Abs(location.Latitude - prevLocation.Latitude) >= LocationMinMoveMeters ||
+                     Math.Abs(location.Longitude - prevLocation.Longitude) >= LocationMinMoveMeters)
 			{
 				OnLocationChanged();
 				prevLocation = location;
