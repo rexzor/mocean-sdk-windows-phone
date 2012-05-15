@@ -467,16 +467,16 @@ namespace mOceanWindowsPhone
 			}
 		}
 
-		private string metro = null;
+		private string dma = null;
 		public string Metro
 		{
-			get { return metro; }
+			get { return dma; }
 			set
 			{
 				if (!String.IsNullOrEmpty(value))
 				{
-					metro = value;
-					adserverRequest.SetMetro(metro);
+					dma = value;
+                    adserverRequest.SetDma(dma);
 				}
 				else
 				{
@@ -484,6 +484,23 @@ namespace mOceanWindowsPhone
 				}
 			}
 		}
+
+        public string Dma
+        {
+            get { return dma; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    dma = value;
+                    adserverRequest.SetDma(dma);
+                }
+                else
+                {
+                    WriteLog(Logger.LogLevel.ErrorsOnly, Logger.WRONG_PARAMETER, "dma");
+                }
+            }
+        }
 
 		private string zip = null;
 		public string Zip
@@ -548,7 +565,22 @@ namespace mOceanWindowsPhone
 			get;
 			set;
 		}
-		
+
+        public bool LocationDetection
+        {
+            get { return AutoDetectParameters.Instance.LocationDetection; }
+            set
+            {
+                AutoDetectParameters.Instance.LocationDetection = value;
+            }
+        }
+
+        public double LocationMinMoveMeters
+        {
+            get { return AutoDetectParameters.Instance.LocationMinMoveMeters; }
+            set { AutoDetectParameters.Instance.LocationMinMoveMeters = value; }
+        }
+
 		#endregion
 
 		public AdView()
@@ -575,8 +607,12 @@ namespace mOceanWindowsPhone
 				deviceId = String.Empty;
 			}
 
-			AutoDetectParameters.Instance.LocationChanged += new AutoDetectParameters.LocationChangedEventHandler(GpsLocationChanged);
-			AutoDetectParameters.Instance.CourseChanged += new AutoDetectParameters.CourseChangedEventHandler(GpsCourseChanged);
+            if (LocationDetection)
+            {
+                AutoDetectParameters.Instance.LocationChanged += new AutoDetectParameters.LocationChangedEventHandler(GpsLocationChanged);
+                AutoDetectParameters.Instance.CourseChanged += new AutoDetectParameters.CourseChangedEventHandler(GpsCourseChanged);
+            }
+
 			AutoDetectParameters.Instance.NetworkChanged += new AutoDetectParameters.NetworkChangedEventHandler(NetworkChanged);
 
 			this.Loaded += new RoutedEventHandler(AdView_Loaded);

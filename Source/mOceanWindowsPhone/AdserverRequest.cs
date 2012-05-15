@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace mOceanWindowsPhone
 {
@@ -29,7 +30,8 @@ namespace mOceanWindowsPhone
 		private string parameter_region = "region";
 		private string parameter_city = "city";
 		private string parameter_area = "area";
-		private string parameter_metro = "metro";
+		//private string parameter_metro = "metro"; // deprecated, use dma instead
+        private string parameter_dma = "dma";
 		private string parameter_zip = "zip";
 		private string parameter_carrier = "carrier";
 		private string parameter_connection_speed = "connection_speed";
@@ -121,11 +123,49 @@ namespace mOceanWindowsPhone
 
 		public void SetMaxSizeX(int size)
 		{
+            // Don't allow max x to be smaller than min x
+            String min = GetParameter(parameter_min_size_x);
+            if (min != null)
+            {
+                try
+                {
+                    int iMin = int.Parse(min);
+                    if (size < iMin)
+                    {
+                        Debug.WriteLine("Invalid parameter: max x < min x, using min x");
+                        AddParameter(parameter_size_x, min);
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
 			AddParameter(parameter_size_x, size.ToString());
 		}
 
 		public void SetMaxSizeY(int size)
 		{
+            // Don't allow max y to be smaller than min y
+            String min = GetParameter(parameter_min_size_y);
+            if (min != null)
+            {
+                try
+                {
+                    int iMin = int.Parse(min);
+                    if (size < iMin)
+                    {
+                        Debug.WriteLine("Invalid parameter: max y < min y, using min y");
+                        AddParameter(parameter_size_y, min);
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
 			AddParameter(parameter_size_y, size.ToString());
 		}
 
@@ -183,10 +223,16 @@ namespace mOceanWindowsPhone
 			AddParameter(parameter_area, area);
 		}
 
-		public void SetMetro(string metro)
-		{
-			AddParameter(parameter_metro, metro);
+		// Deprecated
+        public void SetMetro(string dma)
+        {
+            AddParameter(parameter_dma, dma);
 		}
+
+        public void SetDma(string dma)
+        {
+            AddParameter(parameter_dma, dma);
+        }
 
 		public void SetZip(string zip)
 		{
@@ -285,6 +331,7 @@ namespace mOceanWindowsPhone
 			catch (System.Exception)
 			{ }
 
+            Debug.WriteLine("adServerRequest: " + adserverURL + "?" + url);
 			return adserverURL + "?" + url;
 		}
 		#endregion
@@ -313,6 +360,21 @@ namespace mOceanWindowsPhone
 			catch (Exception)
 			{}
 		}
+
+        private String GetParameter(String key)
+        {
+            try
+            {
+                if (parameters.ContainsKey(key))
+                {
+                    return parameters[key];
+                }
+            }
+            catch (System.Exception)
+            { }
+
+            return null;
+        }
 
 		private void RemoveParameter(string key)
 		{
