@@ -468,6 +468,7 @@ namespace mOceanWindowsPhone
 		}
 
 		private string dma = null;
+        [ Obsolete("The Metro attribute is obsolete, use the Dma attribute instead.", false) ]
 		public string Metro
 		{
 			get { return dma; }
