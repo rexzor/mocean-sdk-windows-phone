@@ -1166,8 +1166,7 @@ namespace com.moceanmobile.mast
                         return;
                 }
             }
-            
-            // TODO: Deal with plaement type.
+
             switch (this.placementType)
             {
                 case mast.PlacementType.Inline:
@@ -1237,6 +1236,13 @@ namespace com.moceanmobile.mast
         {
             get { return this.closeButtonDelay; }
             set { this.closeButtonDelay = value; }
+        }
+
+        public bool test = false;
+        public bool Test
+        {
+            get { return this.test; }
+            set { this.test = value; }
         }
 
         #endregion
@@ -1465,6 +1471,9 @@ namespace com.moceanmobile.mast
             args.Add("count", "1");
             args.Add("key", "3");
             args.Add("zone", this.zone.ToString());
+
+            if (this.test)
+                args.Add("test", "1");
 
             string url = this.AdServerURL;
             int timeout = Defaults.NETWORK_TIMEOUT_MILLISECONDS;
