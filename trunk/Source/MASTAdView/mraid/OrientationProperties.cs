@@ -75,7 +75,7 @@ namespace com.moceanmobile.mast.mraid
                     break;
             }
 
-            string ret = string.Format("{{allowOrientationChange:{0},forceOrientation:'{1}'}}",
+            string ret = string.Format("{{allowOrientationChange:{0},forceOrientation:\"{1}\"}}",
                 allowOrientationChangeString, forceOrientationString);
 
             return ret;

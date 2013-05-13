@@ -1247,6 +1247,124 @@ namespace com.moceanmobile.mast
 
         #endregion
 
+        #region URL Handling
+
+        private bool OpenURL(Uri uri)
+        {
+            if (uri == null)
+                return false;
+
+            string scheme = uri.Scheme;
+            if (string.IsNullOrWhiteSpace(scheme))
+                return false;
+
+            scheme = scheme.ToLower();
+            switch (scheme)
+            {
+                case "http":
+                case "https":
+                    if (this.useInternalBrowser == true)
+                    {
+                        ShowInternalBrowser(this.adDescriptor.URL);
+                    }
+                    else
+                    {
+                        OnLeavingApplication();
+
+                        Microsoft.Phone.Tasks.WebBrowserTask task = new Microsoft.Phone.Tasks.WebBrowserTask();
+                        task.Uri = uri;
+                        task.Show();
+                    }
+                    return true;
+
+                case "mailto":
+                    {
+                        string to = uri.UserInfo + "@" + uri.Host;
+                        string subject = string.Empty;
+                        string body = string.Empty;
+
+                        string[] info = uri.Query.Trim(new char[] { '?' }).Split(new char[] { '&' });
+                        foreach (string infoPart in info)
+                        {
+                            string[] infoParts = infoPart.Split(new char[] { '=' });
+                            if (infoParts.Length != 2)
+                                continue;
+
+                            string key = Uri.UnescapeDataString(infoParts[0]).ToLower();
+                            string value = Uri.UnescapeDataString(infoParts[1]);
+
+                            switch (key)
+                            {
+                                case "subject":
+                                    subject = value;
+                                    break;
+                                case "body":
+                                    body = value;
+                                    break;
+                            }
+                        }
+
+                        OnLeavingApplication();
+
+                        Microsoft.Phone.Tasks.EmailComposeTask task = new Microsoft.Phone.Tasks.EmailComposeTask();
+                        task.To = to;
+                        task.Subject = subject;
+                        task.Body = body;
+                        task.Show();
+                    }
+                    return true;
+
+                case "tel":
+                    {
+                        string path = uri.AbsolutePath;
+                        string[] pathParts = path.Split(new char[] { ';' });
+                        string number = pathParts[0];
+
+                        OnLeavingApplication();
+
+                        Microsoft.Phone.Tasks.PhoneCallTask task = new Microsoft.Phone.Tasks.PhoneCallTask();
+                        task.PhoneNumber = uri.UserInfo;
+                        task.Show();
+                    }
+                    return true;
+
+                case "sms":
+                    {
+                        string number = uri.AbsolutePath;
+                        string body = string.Empty;
+
+                        string[] info = uri.Query.Trim(new char[] { '?' }).Split(new char[] { '&' });
+                        foreach (string infoPart in info)
+                        {
+                            string[] infoParts = infoPart.Split(new char[] { '=' });
+                            if (infoParts.Length != 2)
+                                continue;
+
+                            string key = Uri.UnescapeDataString(infoParts[0]).ToLower();
+                            string value = Uri.UnescapeDataString(infoParts[1]);
+
+                            if ("body" == key)
+                                body = value;
+                        }
+
+                        OnLeavingApplication();
+
+                        Microsoft.Phone.Tasks.SmsComposeTask task = new Microsoft.Phone.Tasks.SmsComposeTask();
+                        task.To = number;
+                        task.Body = body;
+                        task.Show();
+                    }
+                    return true;
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        #endregion
+
         #region Location Services
 
         System.Device.Location.GeoCoordinateWatcher geoCoordinateWatcher = null;
@@ -1932,7 +2050,33 @@ namespace com.moceanmobile.mast
 
         private void webControl_Navigating(object sender, NavigatingEventArgs e)
         {
+            Uri uri = e.Uri;
+            if ((uri == null) || string.IsNullOrEmpty(uri.AbsolutePath))
+                return;
 
+            string scheme = uri.Scheme.ToLower();
+            if (string.IsNullOrEmpty(scheme))
+                return;
+
+            if ("javascript" == scheme)
+                return;
+
+            if (scheme.StartsWith("http"))
+            {
+                if (this.twoPartExpand && (this.twoPartMraidBridge.State == State.Loading))
+                    return;
+            }
+
+            string url = uri.ToString();
+            if (OnOpeningURL(url) && OpenURL(uri))
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            // Don't let the browser navigate to some other page.
+            if (scheme.StartsWith("http"))
+                e.Cancel = true;
         }
         
         private void webControl_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
@@ -1949,45 +2093,7 @@ namespace com.moceanmobile.mast
             if (webBrowser == this.twoPartWebBrowser)
                 bridge = this.twoPartMraidBridge;
 
-            if (bridge == null)
-                return;
-            
-            SetMRAIDSupportedFeatures(bridge);
-
-            switch (this.placementType)
-            {
-                case mast.PlacementType.Inline:
-                    bridge.SetPlacementType(mraid.PlacementType.Inline);
-                    break;
-
-                case mast.PlacementType.Interstitial:
-                    bridge.SetPlacementType(mraid.PlacementType.Interstitial);
-                    break;
-            }
-            
-            ExpandProperties expandProperties = new ExpandProperties();
-            expandProperties.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
-            expandProperties.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
-            bridge.SetExpandProperties(expandProperties);
-
-            OrientationProperties orientationProperties = new OrientationProperties();
-            bridge.SetOrientationProperties(orientationProperties);
-
-            ResizeProperties resizeProperties = new ResizeProperties();
-            bridge.SetResizeProperties(resizeProperties);
-
-            MRAIDControllerLayoutUpdate(bridge, (Border)webBrowser.Parent);
-
-            if (this.twoPartExpand == false)
-            {
-                bridge.SetState(State.Default);
-            }
-            else
-            {
-                ((BridgeHandler)this).mraidExpand(bridge, null);
-            }
-
-            bridge.SendReady();
+            MRAIDControllerInit(webBrowser, bridge);
         }
 
         private void webControl_ScriptNotify(object sender, Microsoft.Phone.Controls.NotifyEventArgs e)
@@ -2027,6 +2133,49 @@ namespace com.moceanmobile.mast
             {
                 // TODO: Bother with these?
             }
+        }
+
+        private void MRAIDControllerInit(WebBrowser webBrowser, Bridge bridge)
+        {
+            if (bridge == null)
+                return;
+
+            SetMRAIDSupportedFeatures(bridge);
+
+            switch (this.placementType)
+            {
+                case mast.PlacementType.Inline:
+                    bridge.SetPlacementType(mraid.PlacementType.Inline);
+                    break;
+
+                case mast.PlacementType.Interstitial:
+                    bridge.SetPlacementType(mraid.PlacementType.Interstitial);
+                    break;
+            }
+
+            ExpandProperties expandProperties = new ExpandProperties();
+            expandProperties.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
+            expandProperties.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
+            bridge.SetExpandProperties(expandProperties);
+
+            OrientationProperties orientationProperties = new OrientationProperties();
+            bridge.SetOrientationProperties(orientationProperties);
+
+            ResizeProperties resizeProperties = new ResizeProperties();
+            bridge.SetResizeProperties(resizeProperties);
+
+            MRAIDControllerLayoutUpdate(bridge, (Border)webBrowser.Parent);
+
+            if (this.twoPartExpand == false)
+            {
+                bridge.SetState(State.Default);
+            }
+            else
+            {
+                ((BridgeHandler)this).mraidExpand(bridge, null);
+            }
+
+            bridge.SendReady();
         }
 
         private void MRAIDControllerLayoutUpdate(Bridge bridge, Border border)
@@ -2161,17 +2310,8 @@ namespace com.moceanmobile.mast
 
             if (OnOpeningURL(url))
             {
-                if (this.useInternalBrowser == true)
-                {
-                    ShowInternalBrowser(this.adDescriptor.URL);
-                    return;
-                }
-
-                OnLeavingApplication();
-
-                Microsoft.Phone.Tasks.WebBrowserTask task = new Microsoft.Phone.Tasks.WebBrowserTask();
-                task.Uri = new Uri(url);
-                task.Show();
+                Uri uri = new Uri(url);
+                OpenURL(uri);
             }
         }
 
@@ -2205,27 +2345,48 @@ namespace com.moceanmobile.mast
                 return;
             }
 
-            if (this.IsExpanded)
+            bool hasUrl = !string.IsNullOrEmpty(url);
+
+            switch (bridge.State)
             {
-                bridge.SendErrorMessage("Can not expand while state is expanded.", Const.CommandExpand);
-                return;
+                case State.Loading:
+                    if (this.twoPartExpand && (hasUrl == false))
+                        // This is the two part expand after load, which is expected.
+                        break;
+
+                    bridge.SendErrorMessage("Can not expand while state is loading.", Const.CommandExpand);
+                    break;
+                
+                case State.Default:
+                case State.Hidden:
+                    break;
+                
+                case State.Expanded:
+                    bridge.SendErrorMessage("Can not expand while state is expanded.", Const.CommandExpand);
+                    break;
+
+                case State.Resized:
+                    if (this.IsResized)
+                    {
+                        CollapseResizePopup();
+                    }
+                    break;
             }
 
-            if (this.IsResized)
+            // The first time through for a two part expand this block is necessary, else don't do it.
+            if (this.twoPartExpand == false)
             {
-                CollapseResizePopup();
-            }
+                if (hasUrl == false)
+                {
+                    base.Children.Remove(border);
+                    OpenExpandPopup(border);
 
-            if (string.IsNullOrEmpty(url))
-            {
-                base.Children.Remove(border);
-                OpenExpandPopup(border);
-
-                MRAIDControllerLayoutUpdate(bridge, border);
-            }
-            else
-            {
-                RenderMRAIDTwoPartExpand(url);
+                    MRAIDControllerLayoutUpdate(bridge, border);
+                }
+                else
+                {
+                    RenderMRAIDTwoPartExpand(url);
+                }
             }
 
             bridge.SetState(State.Expanded);

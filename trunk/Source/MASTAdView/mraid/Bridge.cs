@@ -63,7 +63,7 @@ namespace com.moceanmobile.mast.mraid
 
         public void SendErrorMessage(string message, string action)
         {
-            string js = string.Format("mraid.fireErrorEvent('{0}', '{1}');", message, action);
+            string js = string.Format("mraid.fireErrorEvent(\"{0}\", \"{1}\");", message, action);
             EvalJS(js);
         }
 
@@ -96,7 +96,7 @@ namespace com.moceanmobile.mast.mraid
             if (featureString == null)
                 return;
 
-            string js = String.Format("mraid.setSupports('{0}', '{1}');", featureString, supportedString);
+            string js = String.Format("mraid.setSupports(\"{0}\", \"{1}\");", featureString, supportedString);
             EvalJS(js);
         }
 
@@ -124,13 +124,13 @@ namespace com.moceanmobile.mast.mraid
                     break;
             }
 
-            string js = String.Format("mraid.setState('{0}');", stateString);
+            string js = String.Format("mraid.setState(\"{0}\");", stateString);
             EvalJS(js);
         }
 
         public void SendReady()
         {
-            string js = String.Format("mraid.fireEvent('{0}');", Const.EventReady);
+            string js = String.Format("mraid.fireEvent(\"{0}\");", Const.EventReady);
             EvalJS(js);
         }
 
@@ -140,7 +140,7 @@ namespace com.moceanmobile.mast.mraid
             if (viewable)
                 viewableString = Const.True;
 
-            string js = String.Format("mraid.setViewable('{0}');", viewableString);
+            string js = String.Format("mraid.setViewable(\"{0}\");", viewableString);
             EvalJS(js);
         }
 
@@ -181,7 +181,7 @@ namespace com.moceanmobile.mast.mraid
                     break;
             }
 
-            string js = string.Format("mraid.setPlacementType('{0}');", placementTypeString);
+            string js = string.Format("mraid.setPlacementType(\"{0}\");", placementTypeString);
             EvalJS(js);
         }
 
@@ -212,7 +212,7 @@ namespace com.moceanmobile.mast.mraid
             if (success)
                 successString = Const.True;
 
-            string js = string.Format("mraid.firePictureAddedEvent('{0}');", successString);
+            string js = string.Format("mraid.firePictureAddedEvent(\"{0}\");", successString);
             EvalJS(js);
         }
 
@@ -343,8 +343,9 @@ namespace com.moceanmobile.mast.mraid
             {
                 ret = browser.InvokeScript("eval", new string[] { js });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine("EvalJS:" + ex.Message);
                 // TODO: Bubble this up.
             }
 
