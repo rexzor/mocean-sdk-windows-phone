@@ -148,7 +148,7 @@ namespace com.moceanmobile.mast.mraid
             if (this.allowOffscreen)
                 allowOffscreenString = Const.True;
 
-            string ret = string.Format("{{width:{0},height:{1},customClosePosition:'{2}',offsetX:{3},offsetY:{4},allowOffscreen:{5}}}",
+            string ret = string.Format("{{width:{0},height:{1},customClosePosition:\"{2}\",offsetX:{3},offsetY:{4},allowOffscreen:{5}}}",
                 this.width, this.height, customClosePositionString, this.offsetX, this.offsetY, allowOffscreenString);
 
             return ret;
