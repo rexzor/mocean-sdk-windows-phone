@@ -2207,8 +2207,6 @@ namespace com.moceanmobile.mast
                 currentPoint = border.TransformToVisual(this.phoneApplicationPage).Transform(currentPoint);
             }
 
-            // TODO: The Y seems to update properly but the X is still out of place post resize, hmm.
-
             // The currentPosition is relative to the maxSize.
             double currentWidth = this.webBorder.Width;
             double currentHeight = this.webBorder.Height;
@@ -2355,7 +2353,7 @@ namespace com.moceanmobile.mast
                         break;
 
                     bridge.SendErrorMessage("Can not expand while state is loading.", Const.CommandExpand);
-                    break;
+                    return;
                 
                 case State.Default:
                 case State.Hidden:
@@ -2363,7 +2361,7 @@ namespace com.moceanmobile.mast
                 
                 case State.Expanded:
                     bridge.SendErrorMessage("Can not expand while state is expanded.", Const.CommandExpand);
-                    break;
+                    return;
 
                 case State.Resized:
                     if (this.IsResized)
@@ -2445,7 +2443,7 @@ namespace com.moceanmobile.mast
                 case State.Hidden:
                 case State.Expanded:
                     bridge.SendErrorMessage("Can not resize loading, hidden or expanded.", Const.CommandResize);
-                    break;
+                    return;
 
                 case State.Default:
                 case State.Resized:

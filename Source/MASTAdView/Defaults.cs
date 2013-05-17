@@ -7,10 +7,7 @@ namespace com.moceanmobile.mast
 {
     internal class Defaults
     {
-        public static string VERSION = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major + "." +
-            System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor + "." +
-            System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Revision +
-            "beta";
+        public static string VERSION = "3.0.0-beta";
 
         public static string AD_SERVER_URL = "http://ads.mocean.mobi/ad";
 
