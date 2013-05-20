@@ -5,6 +5,7 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:mast="clr-namespace:com.moceanmobile.mast;assembly=MASTAdView"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
@@ -31,7 +32,11 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel>
-                <mast:MASTAdView x:Name="adView" Background="Gray" Zone="88269" HorizontalAlignment="Stretch" Height="50"/>
+                <mast:MASTAdView x:Name="adView" Background="Gray" Zone="88269" HorizontalAlignment="Stretch" Height="50">
+                    <mast:MASTAdView.AdRequestParameters>
+                        <sys:String x:Key="customParameterName">customParameterValue</sys:String>
+                    </mast:MASTAdView.AdRequestParameters>
+                </mast:MASTAdView>
             </StackPanel>
         </Grid>
     </Grid>

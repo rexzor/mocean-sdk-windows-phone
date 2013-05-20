@@ -16,5 +16,17 @@ namespace com.moceanmobile.mast.samples.Custom
         {
             InitializeComponent();
         }
+
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            PhoneApplicationService.Current.State["refreshAdView"] = adView;
+            NavigationService.Navigate(new Uri("/RefreshPage.xaml", UriKind.Relative));
+        }
+
+        private void ConfigureButton_Click(object sender, EventArgs e)
+        {
+            PhoneApplicationService.Current.State["configureAdView"] = adView;
+            NavigationService.Navigate(new Uri("/CustomConfigurePage.xaml", UriKind.Relative));
+        }
     }
 }

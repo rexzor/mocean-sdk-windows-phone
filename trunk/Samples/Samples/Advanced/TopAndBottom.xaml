@@ -12,8 +12,7 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
     mc:Ignorable="d"
-    shell:SystemTray.IsVisible="True"
-    ApplicationBar="{StaticResource RefreshApplicationBar}">
+    shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
@@ -31,12 +30,18 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel>
-                <mast:MASTAdView x:Name="adViewTop" Background="Gray" Zone="156037" HorizontalAlignment="Stretch" Height="50"/>
+                <mast:MASTAdView x:Name="topAdView" Background="Gray" Zone="156037" HorizontalAlignment="Stretch" Height="50"/>
             </StackPanel>
             <StackPanel VerticalAlignment="Bottom">
-                <mast:MASTAdView x:Name="adViewBottom" Background="Gray" Zone="88269" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"  Height="50"/>
+                <mast:MASTAdView x:Name="bottomAdView" Background="Gray" Zone="88269" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"  Height="50"/>
             </StackPanel>
         </Grid>
     </Grid>
+
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True" Mode="Minimized">
+            <shell:ApplicationBarIconButton x:Name="RefreshButton" IconUri="/appbar.refresh.rest.png" Text="Refresh" Click="RefreshButton_Click"/>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
 
 </phone:PhoneApplicationPage>

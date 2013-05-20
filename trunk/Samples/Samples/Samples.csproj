@@ -104,6 +104,9 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomConfigurePage.xaml.cs">
+      <DependentUpon>CustomConfigurePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RefreshPage.xaml.cs">
       <DependentUpon>RefreshPage.xaml</DependentUpon>
     </Compile>
@@ -188,6 +191,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="CustomConfigurePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="RefreshPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -224,6 +231,7 @@
     <None Include="Properties\WMAppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="appbar.feature.settings.rest.png" />
     <Content Include="appbar.refresh.rest.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
