@@ -35,4 +35,11 @@
         </Grid>
     </Grid>
 
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True" Mode="Minimized">
+            <shell:ApplicationBarIconButton x:Name="RefreshButton" IconUri="/appbar.refresh.rest.png" Text="Refresh" Click="RefreshButton_Click"/>
+            <shell:ApplicationBarIconButton x:Name="ConfigureButton" IconUri="/appbar.feature.settings.rest.png" Text="Configure" Click="ConfigureButton_Click"/>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+
 </phone:PhoneApplicationPage>

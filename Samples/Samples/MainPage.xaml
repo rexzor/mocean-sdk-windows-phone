@@ -32,28 +32,28 @@
             <ScrollViewer Grid.Row="1">
                 <StackPanel Margin="0,10,0,10">
                     <TextBlock Text="Simple"/>
-                    <HyperlinkButton NavigateUri="//Simple/Image.xaml">Image</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Simple/AnimatedGIF.xaml">Animated GIF</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Simple/Interstitial.xaml">Interstitial</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Simple/RichMedia.xaml">Rich Media</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Simple/Text.xaml">Text</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/Image.xaml" Style="{StaticResource SampleLinkStyle}">Image</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/AnimatedGIF.xaml" Style="{StaticResource SampleLinkStyle}">Animated GIF</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/Interstitial.xaml" Style="{StaticResource SampleLinkStyle}">Interstitial</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/RichMedia.xaml" Style="{StaticResource SampleLinkStyle}">Rich Media</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/Text.xaml" Style="{StaticResource SampleLinkStyle}">Text</HyperlinkButton>
                     <TextBlock Text="Advanced"/>
-                    <HyperlinkButton NavigateUri="//Advanced/Animation.xaml">Animation</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Advanced/Bottom.xaml">Bottom</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Advanced/Table.xaml">Table</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Advanced/TopAndBottom.xaml">Top and Bottom</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Advanced/Animation.xaml" Style="{StaticResource SampleLinkStyle}">Animation</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Advanced/Bottom.xaml" Style="{StaticResource SampleLinkStyle}">Bottom</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Advanced/Table.xaml" Style="{StaticResource SampleLinkStyle}">Table</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Advanced/TopAndBottom.xaml" Style="{StaticResource SampleLinkStyle}">Top and Bottom</HyperlinkButton>
                     <TextBlock Text="Custom"/>
-                    <HyperlinkButton NavigateUri="//Custom/CustomAdSetup.xaml">Custom Ad Setup</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Custom/CustomAdSetup.xaml" Style="{StaticResource SampleLinkStyle}">Custom Ad Setup</HyperlinkButton>
                     <TextBlock Text="Delegate"/>
-                    <HyperlinkButton NavigateUri="//Delegate/Generic.xaml" Content="Generic"/>
-                    <HyperlinkButton NavigateUri="//Delegate/MRAIDEvents.xaml">MRAID Events</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Delegate/ThirdPartyRequest.xaml">Third Party Request</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Delegate/Logging.xaml">Logging</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Delegate/NoContentZone.xaml">No Content Zone</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/Generic.xaml"  Style="{StaticResource SampleLinkStyle}">Generic</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/MRAIDEvents.xaml" Style="{StaticResource SampleLinkStyle}">MRAID Events</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/ThirdPartyRequest.xaml" Style="{StaticResource SampleLinkStyle}">Third Party Request</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/Logging.xaml" Style="{StaticResource SampleLinkStyle}">Logging</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/NoContentZone.xaml" Style="{StaticResource SampleLinkStyle}">No Content Zone</HyperlinkButton>
                     <TextBlock Text="Error"/>
-                    <HyperlinkButton NavigateUri="//Error/Hide.xaml">Hide</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Error/Image.xaml">Image</HyperlinkButton>
-                    <HyperlinkButton NavigateUri="//Error/Reset.xaml">Reset</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Error/Hide.xaml" Style="{StaticResource SampleLinkStyle}">Hide</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Error/Image.xaml" Style="{StaticResource SampleLinkStyle}">Image</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Error/Reset.xaml" Style="{StaticResource SampleLinkStyle}">Reset</HyperlinkButton>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

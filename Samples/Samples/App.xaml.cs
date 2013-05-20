@@ -164,6 +164,7 @@ namespace com.moceanmobile.mast.samples
 
         #endregion
 
+        // Common only to single adView samples.
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             PhoneApplicationFrame frame = Application.Current.RootVisual as PhoneApplicationFrame;

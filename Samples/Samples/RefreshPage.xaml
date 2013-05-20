@@ -27,9 +27,15 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <StackPanel Background="Black">
+            <StackPanel x:Name="ZonePanel" Background="Black">
                 <TextBlock Text="Zone" />
                 <TextBox x:Name="ZoneTextBox" InputScope="Number"/>
+            </StackPanel>
+            <StackPanel x:Name="TopBottomPanel" Background="Black" Visibility="Collapsed">
+                <TextBlock Text="Top Zone" />
+                <TextBox x:Name="TopZoneTextBox" InputScope="Number"/>
+                <TextBlock Text="Bottom Zone" />
+                <TextBox x:Name="BottomZoneTextBox" InputScope="Number"/>
             </StackPanel>
             <Grid VerticalAlignment="Bottom" >
                 <Grid.ColumnDefinitions>

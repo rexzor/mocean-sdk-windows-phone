@@ -16,5 +16,11 @@ namespace com.moceanmobile.mast.samples.Advanced
         {
             InitializeComponent();
         }
+
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            PhoneApplicationService.Current.State["refreshAdView"] = new MASTAdView[] { topAdView, bottomAdView };
+            NavigationService.Navigate(new Uri("/RefreshPage.xaml", UriKind.Relative));
+        }
     }
 }

@@ -23,6 +23,8 @@ namespace com.moceanmobile.mast.samples
 
         private MASTAdView adView = null;
         private List<MASTAdView> adViews = null;
+        private MASTAdView topAdView = null;
+        private MASTAdView bottomAdView = null;
         
         private void RefreshPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -43,22 +45,49 @@ namespace com.moceanmobile.mast.samples
                 adViews = (List<MASTAdView>)obj;
                 adView = adViews.ElementAt(0);
             }
+            else if (obj is MASTAdView[])
+            {
+                topAdView = ((MASTAdView[])obj)[0];
+                bottomAdView = ((MASTAdView[])obj)[1];
+            }
 
-            ZoneTextBox.Text = adView.Zone.ToString();
+            if (adView != null)
+            {
+                ZonePanel.Visibility = System.Windows.Visibility.Visible;
+                TopBottomPanel.Visibility = System.Windows.Visibility.Collapsed;
+
+                ZoneTextBox.Text = adView.Zone.ToString();
+            }
+            else
+            {
+                ZonePanel.Visibility = System.Windows.Visibility.Collapsed;
+                TopBottomPanel.Visibility = System.Windows.Visibility.Visible;
+
+                TopZoneTextBox.Text = topAdView.Zone.ToString();
+                BottomZoneTextBox.Text = bottomAdView.Zone.ToString();
+            }
         }
 
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
-            if (adViews != null)
+            if (adView != null)
             {
-                foreach (MASTAdView av in adViews)
+                if (adViews != null)
                 {
-                    av.Zone = int.Parse(ZoneTextBox.Text);
+                    foreach (MASTAdView av in adViews)
+                    {
+                        av.Zone = int.Parse(ZoneTextBox.Text);
+                    }
+                }
+                else
+                {
+                    adView.Zone = int.Parse(ZoneTextBox.Text);
                 }
             }
             else
             {
-                adView.Zone = int.Parse(ZoneTextBox.Text);
+                topAdView.Zone = int.Parse(TopZoneTextBox.Text);
+                bottomAdView.Zone = int.Parse(BottomZoneTextBox.Text);
             }
 
             NavigationService.GoBack();
