@@ -25,17 +25,17 @@ window.mraid_init = function()
     // MAST SDK
     mraid.returnInfo = function(call)
     {
-        var info = '';
+        var info = "";
         
         var result = call();
         for (property in result)
         {
             if (info)
             {
-                info += '&';
+                info += "&";
             }
             
-            info += encodeURIComponent(property) + '=' + encodeURIComponent(result[property]);
+            info += encodeURIComponent(property) + "=" + encodeURIComponent(result[property]);
         }
         
         return info;
@@ -569,7 +569,7 @@ window.mraid_init = function()
             
             for (var i = 0; i < handlers.length; ++i)
             {
-                handlers[i](width, height);
+				handlers[i](width, height);
             }
         }
     };
@@ -675,5 +675,5 @@ window.mraid_init = function()
 if (!window.mraid)
 {
     window.mraid_init();
-    console.debug('controllerReady');
+    console.debug("controllerReady");
 }

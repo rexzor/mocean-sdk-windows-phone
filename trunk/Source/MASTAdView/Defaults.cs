@@ -20,6 +20,7 @@ namespace com.moceanmobile.mast
         public static string CLOSE_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.MASTCloseButton.png";
 
         public static int CLOSE_BUTTON_SIZE = 50;
+        public static int INLINE_CLOSE_BUTTON_SIZE = 28;
 
         public static string RICHMEDIA_FORMAT = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"user-scalable=0;\"/><script>{0}</script><style>body{{margin:0;padding:0;}}</style></head><body>{1}</body></html>";
 

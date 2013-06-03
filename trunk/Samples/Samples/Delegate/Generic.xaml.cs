@@ -110,7 +110,7 @@ namespace com.moceanmobile.mast.samples.Delegate
 
         private void adView_SavingPhoto(object sender, MASTAdView.SavingPhotoEventArgs e)
         {
-            string entry = "adView_SavingPhoto Photo:" + e.Photo;
+            string entry = "adView_SavingPhoto Photo:" + e.URL;
             addEntry(entry);
         }
 

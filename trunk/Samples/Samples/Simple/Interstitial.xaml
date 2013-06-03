@@ -33,7 +33,7 @@
             <StackPanel>
                 <!-- Note that if placing interstitials this way they need
                 to be collapsed since they won't function as inlinebanner ads. -->
-                <mast:MASTAdViewInterstitial x:Name="adView" Zone="88269" Visibility="Collapsed"/>
+                <mast:MASTAdViewInterstitial x:Name="adView" Zone="88269" ShowCloseButton="True" CloseButtonDelay="3" Visibility="Collapsed"/>
             </StackPanel>
         </Grid>
     </Grid>
