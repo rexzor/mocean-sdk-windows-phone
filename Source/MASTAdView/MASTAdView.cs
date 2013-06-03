@@ -8,19 +8,48 @@ using com.moceanmobile.mast.mraid;
 
 namespace com.moceanmobile.mast
 {
+    /// <summary>
+    /// Possible log levels for SDK logging.
+    /// </summary>
     public enum LogLevel
     {
+        /// <summary>
+        /// Logs nothing.
+        /// </summary>
         None = 0,
+
+        /// <summary>
+        /// Logs only errors.
+        /// </summary>
         Error,
+
+        /// <summary>
+        /// Logs everything.
+        /// Not recommended for production builds.
+        /// </summary>
         Debug,
     }
 
+    /// <summary>
+    /// The placement type of the instance.
+    /// Ads can either be inline with content or external and separate from content.
+    /// </summary>
     public enum PlacementType
     {
+        /// <summary>
+        /// The ad instance is configured for inline placement.
+        /// </summary>
         Inline,
+
+        /// <summary>
+        /// The ad instance is configured for interstitial use and should not be placed/viewed inline with content.
+        /// </summary>
         Interstitial,
     };
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class MASTAdView : Canvas, BridgeHandler, IDisposable
     {
         private static string UserAgent = null;
@@ -28,11 +57,21 @@ namespace com.moceanmobile.mast
         
         private PhoneApplicationPage phoneApplicationPage = null;
 
+        /// <summary>
+        /// Default inline ad constructor.
+        /// Created instance to be used inline with other application content.
+        /// </summary>
         public MASTAdView() : this(false)
         {
 
         }
 
+        /// <summary>
+        /// Constructor allowing creation of inline or interstitial instances.
+        /// Instances created for inline are used inline with other application content.
+        /// Instance created for interstitial are used outside of existing content (hidden if from XAML, not placed in view with code).
+        /// </summary>
+        /// <param name="interstitial">Controls created instance placement intent.  True for interstitial, false for inline.</param>
         public MASTAdView(bool interstitial)
         {
             base.Loaded += MASTAdView_Loaded;
@@ -54,6 +93,9 @@ namespace com.moceanmobile.mast
                 this.placementType = mast.PlacementType.Interstitial;
         }
 
+        /// <summary>
+        /// Returns the SDK version.
+        /// </summary>
         public static string Version
         {
             get { return Defaults.VERSION; }
@@ -61,37 +103,169 @@ namespace com.moceanmobile.mast
 
         #region Events
 
+        /// <summary>
+        /// Delegate for the AdFailed event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void AdFailedEventHandler(object sender, AdFailedEventArgs e);
+
+        /// <summary>
+        /// Delegate for the OpeningURL event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void OpeningURLEventHandler(object sender, OpeningURLEventArgs e);
+
+        /// <summary>
+        /// Delegate for the AdResized event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void AdResizedEventHandler(object sender, AdResizedEventArgs e);
+
+        /// <summary>
+        /// Delegate for the LoggingEvent event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void LoggingEventEventHandler(object sender, LoggingEventEventArgs e);
+
+        /// <summary>
+        /// Delegate for the ReceivedThirdPartyRequest event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void ReceivedThirdPartyRequestEventHandler(object sender, ThirdPartyRequestEventArgs e);
+
+        /// <summary>
+        /// Delegate for the PlayingVideo event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void PlayingVideoEventHandler(object sender, PlayingVideoEventArgs e);
+
+        /// <summary>
+        /// Delegate for the SavingCalendarEvent event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void SavingCalendarEventEventHandler(object sender, SavingCalendarEventEventArgs e);
+
+        /// <summary>
+        /// Delegate for the SavingPhoto event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void SavingPhotoEventHandler(object sender, SavingPhotoEventArgs e);
+
+        /// <summary>
+        /// Delegate for the ProcessedRichmediaRequest event.
+        /// Note: The delegate may be invoked on a non-UI thread.
+        /// </summary>
+        /// <param name="sender">Instance invoking the delegate.</param>
+        /// <param name="e">Event args providing event information.</param>
         public delegate void ProcessedRichmediaRequestEventHandler(object sender, ProcessedRichmediaRequestEventArgs e);
 
+        /// <summary>
+        /// Event triggered when the SDK receives and renders an ad.
+        /// </summary>
         public event EventHandler AdReceived;
+
+        /// <summary>
+        /// Event triggered when the SDK fails to receive or render an ad.
+        /// </summary>
         public event AdFailedEventHandler AdFailed;
+
+        /// <summary>
+        /// Event triggered when user action with the SDK will invoke opening a URL.
+        /// </summary>
         public event OpeningURLEventHandler OpeningURL;
+
+        /// <summary>
+        /// Event triggered when the SDK opens the internal browser.
+        /// </summary>
         public event EventHandler InternalBrowserOpened;
+
+        /// <summary>
+        /// Event triggered when the SDK closes the internal browser.
+        /// </summary>
         public event EventHandler InternalBrowserClosed;
+
+        /// <summary>
+        /// Event triggered when the close button is pressed and is not handled by the SDK.
+        /// Ex: An expanded rich media ad close button will not trigger this event, however using the close button for inline banner ads will.
+        /// </summary>
         public event EventHandler CloseButtonPressed;
+
+        /// <summary>
+        /// Event triggered when a rich media ad is expanded.
+        /// </summary>
         public event EventHandler AdExpanded;
+
+        /// <summary>
+        /// Event triggered when a rich media ad is resized.
+        /// </summary>
         public event EventHandler AdResized;
+
+        /// <summary>
+        /// Event triggered when a  rich media ad that is expanded or resized is collapsed.
+        /// </summary>
         public event EventHandler AdCollapsed;
+
+        /// <summary>
+        /// Event triggerd when user interaction with an ad causes the SDK to invoke a Windows Phone task.
+        /// </summary>
         public event EventHandler LeavingApplication;
+
+        /// <summary>
+        /// Event triggered when a logging event occurs.
+        /// </summary>
         public event LoggingEventEventHandler LoggingEvent;
+
+        /// <summary>
+        /// Event triggered when the SDK receives a third party request from the ad network.
+        /// In this case no ad rendering is done.
+        /// </summary>
         public event ReceivedThirdPartyRequestEventHandler ReceivedThirdPartyRequest;
+
+        /// <summary>
+        /// Event triggered when a rich media ad requests playing of a video.
+        /// </summary>
         public event PlayingVideoEventHandler PlayingVideo;
+
+        /// <summary>
+        /// Event triggered when a rich media ad requests saving a calendar event to the user's calendar.
+        /// Note: This isn't currently possible with WP7/8.
+        /// </summary>
         public event SavingCalendarEventEventHandler SavingCalendarEvent;
+
+        /// <summary>
+        /// Event triggered when a rich media ad rquests saving a photo to the user's media library.
+        /// </summary>
         public event SavingPhotoEventHandler SavingPhoto;
+
+        /// <summary>
+        /// Event triggered when a rich media ad request is processed.
+        /// Note: The event will be handled by the SDK and isn't meant to be overloaded by the developer consuming the event.
+        /// </summary>
         public event ProcessedRichmediaRequestEventHandler ProcessedRichmediaRequest;
 
         #endregion
 
         #region Event Args
 
+        /// <summary>
+        /// AdFailed EventArgs
+        /// </summary>
         public class AdFailedEventArgs : EventArgs
         {
             public AdFailedEventArgs(Exception execption)
@@ -100,12 +274,21 @@ namespace com.moceanmobile.mast
             }
 
             private readonly Exception exception;
+            /// <summary>
+            /// The exception, if any, that lead to the failure.
+            /// </summary>
             public Exception Exception
             {
                 get { return this.exception; }
             }
         }
         
+        /// <summary>
+        /// OpeningURL CancelEventArgs
+        /// Note:  The SDK opening of the URL can be canceled through the Cancel property.
+        /// If canceled, the application is responsible for opening the URL or notifying the user that their
+        /// interaction has been canceled.
+        /// </summary>
         public class OpeningURLEventArgs : System.ComponentModel.CancelEventArgs
         {
             public OpeningURLEventArgs(string url)
@@ -114,13 +297,18 @@ namespace com.moceanmobile.mast
             }
 
             private readonly string url;
+            /// <summary>
+            ///  The URL being opened.
+            /// </summary>
             public string URL
             {
                 get { return this.url; }
             }
         }
-
-        
+                
+        /// <summary>
+        /// AdResized EventArgs
+        /// </summary>
         public class AdResizedEventArgs : EventArgs
         {
             public AdResizedEventArgs(System.Windows.Rect rect)
@@ -129,13 +317,21 @@ namespace com.moceanmobile.mast
             }
 
             private readonly System.Windows.Rect rect;
+            /// <summary>
+            /// The location of the screen where the ad has been resized too.
+            /// Note that resizing doesn't affect inline layout and instead is rendered on top of existing content.
+            /// </summary>
             public System.Windows.Rect Rect
             {
                 get { return this.rect; }
             }
         }
-
-
+        
+        /// <summary>
+        /// LoggingEvent EventArgs
+        /// Note:  The SDK logging of the event can be canceled through the Cancel property.
+        /// If canceled, the application is responsible for logging the event as necessary.
+        /// </summary>
         public class LoggingEventEventArgs : System.ComponentModel.CancelEventArgs
         {
             public LoggingEventEventArgs(LogLevel logLevel, string entry)
@@ -145,18 +341,27 @@ namespace com.moceanmobile.mast
             }
 
             private readonly LogLevel logLevel;
+            /// <summary>
+            /// The LogLevel of the event.
+            /// </summary>
             public object LogLevel
             {
                 get { return this.logLevel; }
             }
 
             private readonly string entry;
+            /// <summary>
+            /// The logging event entry.
+            /// </summary>
             public string Entry
             {
                 get { return this.entry; }
             }
         }
         
+        /// <summary>
+        /// ThirdPartyRequest EventArgs
+        /// </summary>
         public class ThirdPartyRequestEventArgs : EventArgs
         {
             public ThirdPartyRequestEventArgs(Dictionary<string, string> properties, Dictionary<string, string> parameters)
@@ -185,6 +390,12 @@ namespace com.moceanmobile.mast
             }
         }
 
+        /// <summary>
+        /// PlayingVideo EventArgs
+        /// Note:  The SDK opening/playing of the URL can be canceled through the Cancel property.
+        /// If canceled, the application is responsible for opening/playing the URL or notifying the user that their
+        /// interaction has been canceled.
+        /// </summary>
         public class PlayingVideoEventArgs : System.ComponentModel.CancelEventArgs
         {
             public PlayingVideoEventArgs(string url)
@@ -193,12 +404,23 @@ namespace com.moceanmobile.mast
             }
 
             private readonly string url;
+            /// <summary>
+            /// The URL of the video.
+            /// </summary>
             public string URL
             {
                 get { return this.url; }
             }
         }
         
+        /// <summary>
+        /// SavingCalendarEvent EventArgs
+        /// Note:  The SDK saving of the event can be canceled through the Cancel property.
+        /// Note:  Windows Phone 7/8 does not currenltly offer an API for modifying the user's calendar.
+        /// This event can be used to provide the application the ability to do something with the calendar
+        /// if the application has it's own calendar.  It could otherwise render a UI where the user could
+        /// possibly copy the caledar event and later paste it to a new calendar entry.
+        /// </summary>
         public class SavingCalendarEventEventArgs : System.ComponentModel.CancelEventArgs
         {
             public SavingCalendarEventEventArgs(string calendarEvent)
@@ -207,27 +429,41 @@ namespace com.moceanmobile.mast
             }
 
             private readonly string calendarEvent;
+            /// <summary>
+            /// The calendar event information.
+            /// </summary>
             public string CalendarEvent
             {
                 get { return this.calendarEvent; }
             }
         }
 
+        /// <summary>
+        /// SavingPhoto EventArgs
+        /// Note:  The SDK saving of the event can be canceled through the Cancel property.
+        /// If canceled, the application is responsible for saving the photo or notifying the user that their
+        /// interaction has been canceled.
+        /// </summary>
         public class SavingPhotoEventArgs : System.ComponentModel.CancelEventArgs
         {
-            public SavingPhotoEventArgs(string photo)
+            public SavingPhotoEventArgs(string url)
             {
-                this.photo = photo;
+                this.url = url;
             }
 
-            private readonly string photo;
-            public string Photo
+            private readonly string url;
+            /// <summary>
+            /// URL of the photo to save.
+            /// </summary>
+            public string URL
             {
-                get { return this.photo; }
+                get { return this.url; }
             }
         }
         
-
+        /// <summary>
+        /// ProcessedRichmediaRequest EventArgs
+        /// </summary>
         public class ProcessedRichmediaRequestEventArgs : EventArgs
         {
             public ProcessedRichmediaRequestEventArgs(Uri uri, bool handled)
@@ -237,12 +473,19 @@ namespace com.moceanmobile.mast
             }
 
             private readonly Uri uri;
+            /// <summary>
+            /// The URI used to communicate the rich media request from JavaScript to the SDK.
+            /// This provides the request and it's arguments.
+            /// </summary>
             public Uri URI
             {
                 get { return this.uri; }
             }
 
             private readonly bool handled;
+            /// <summary>
+            /// Result of the request.  If parsed and handled by the SDK returns true.
+            /// </summary>
             public bool Handled
             {
                 get { return this.handled; }
@@ -400,6 +643,12 @@ namespace com.moceanmobile.mast
         #region Logging
 
         private LogLevel logLevel = LogLevel.Error;
+        /// <summary>
+        /// Sets the log level of the SDK.  Logging is done through the system console only.
+        /// Developers desiring to record log data to a custom log file can be done through the LoggingEvent event.
+        /// By default the SDK is set to LogLevel.Error.
+        /// Production releases should not be set to LogLevel.Debug.
+        /// </summary>
         public LogLevel LogLevel
         {
             get { return this.logLevel; }
@@ -424,8 +673,10 @@ namespace com.moceanmobile.mast
 
         #region Canvas
 
-        // Closes any expanded or resized richmedia ads.
-        // Closes interstitial
+        /// <summary>
+        /// Allows developers to remove any rendered ad content.
+        /// This method will remove any rednered ad containers, close interstitial ads and collapse any expanded or resized rich media ads.
+        /// </summary>
         public void RemoveContent()
         {
             if (IsInternalBrowserOpen)
@@ -532,7 +783,12 @@ namespace com.moceanmobile.mast
                     if (this.IsExpanded)
                     {
                         e.Cancel = true;
-                        CloseInterstitial();
+
+                        // Don't allow back close unless the timer has displayed the button.
+                        if (this.expandCloseBorder.Parent != null)
+                        {
+                            CloseInterstitial();
+                        }
                     }
                     break;
             }
@@ -613,21 +869,14 @@ namespace com.moceanmobile.mast
             if (this.mraidBridge != null)
                 return;
 
-            if (String.IsNullOrEmpty(this.adDescriptor.URL) == false)
+            string url = this.adDescriptor.URL;
+            if (String.IsNullOrEmpty(url) == false)
             {
-                if (OnOpeningURL(this.adDescriptor.URL))
+                Uri uri = new Uri(url);
+                if (OnOpeningURL(url) && OpenURL(uri))
                 {
-                    if (this.useInternalBrowser)
-                    {
-                        ShowInternalBrowser(this.adDescriptor.URL);
-                        return;
-                    }
-
-                    OnLeavingApplication();
-
-                    Microsoft.Phone.Tasks.WebBrowserTask task = new Microsoft.Phone.Tasks.WebBrowserTask();
-                    task.Uri = new Uri(this.adDescriptor.URL);
-                    task.Show();
+                    e.Handled = true;
+                    return;
                 }
             }
         }
@@ -665,16 +914,25 @@ namespace com.moceanmobile.mast
         private Image imageControl = new Image();
         private ImageTools.Controls.AnimatedImage animatedImageControl = new ImageTools.Controls.AnimatedImage();
 
+        /// <summary>
+        /// Border used to wrap any image based ads.
+        /// </summary>
         public Border ImageBorder
         {
             get { return this.imageBorder; }
         }
 
+        /// <summary>
+        /// Control used to render any image based ads (except GIFs).
+        /// </summary>
         public Image ImageControl
         {
             get { return this.imageControl; }
         }
 
+        /// <summary>
+        /// Control used to render any GIF based image ads (providing animation support).
+        /// </summary>
         public ImageTools.Controls.AnimatedImage AnimatedImageControl
         {
             get { return this.animatedImageControl; }
@@ -683,11 +941,17 @@ namespace com.moceanmobile.mast
         private Border textBorder = new Border();
         private TextBlock textControl = new TextBlock();
 
+        /// <summary>
+        /// Border used to wrap any text based ads.
+        /// </summary>
         public Border TextBorder
         {
             get { return this.textBorder; }
         }
         
+        /// <summary>
+        /// Control used to render any text based ads (non-HTML).
+        /// </summary>
         public TextBlock TextControl
         {
             get { return this.textControl; }
@@ -696,14 +960,29 @@ namespace com.moceanmobile.mast
         private Border webBorder = new Border();
         private WebBrowser webControl = new WebBrowser();
 
+        /// <summary>
+        /// Border used to wrap any web based ads.
+        /// </summary>
         public Border WebBorder
         {
             get { return this.webBorder; }
         }
 
+        /// <summary>
+        /// Control used to render any web/rich media ads (HTML/JS/MRAID).
+        /// </summary>
         public WebBrowser WebControl
         {
             get { return this.webControl; }
+        }
+
+        private Border inlineCloseBorder = new Border();
+        /// <summary>
+        /// Border containing the close control for inline ads.
+        /// </summary>
+        public Border InlineCloseBorder
+        {
+            get { return this.inlineCloseBorder; }
         }
 
         private void InitializeAdContainers()
@@ -717,10 +996,7 @@ namespace com.moceanmobile.mast
             this.textBorder.Child = this.textControl;
             this.textBorder.SizeChanged += border_SizeChanged;
 
-            //this.webControl.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-            //this.webControl.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
-            // TODO: Query delegate method to see if this should be allowed.  Or mix in somehow with other location stuff.
-            this.webControl.IsGeolocationEnabled = false;
+            this.webControl.IsGeolocationEnabled = this.allowBrowserGeolocation;
             this.webControl.IsScriptEnabled = true;
             this.webControl.NavigationFailed += webControl_NavigationFailed;
             this.webControl.Navigating += webControl_Navigating;
@@ -730,6 +1006,10 @@ namespace com.moceanmobile.mast
             this.webControl.SizeChanged += webControl_SizeChanged;
             this.webBorder.Child = this.webControl;
             this.webBorder.SizeChanged += border_SizeChanged;
+
+            Canvas.SetZIndex(this.inlineCloseBorder, byte.MaxValue);
+            this.inlineCloseBorder.SizeChanged += border_SizeChanged;
+            this.inlineCloseBorder.Tap += closeControl_Tap;
         }
 
         private void border_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
@@ -767,6 +1047,10 @@ namespace com.moceanmobile.mast
         private bool expandPopupHidesTray = false;
         private bool expandPopupHidesBar = false;
         
+        /// <summary>
+        /// Determines if the instance is currently expanded.
+        /// If expanded then there is an SDK controlled full sized popop control rendered on top of application content.
+        /// </summary>
         public bool IsExpanded
         {
             get
@@ -790,6 +1074,7 @@ namespace com.moceanmobile.mast
                 this.expandCanvas.VerticalAlignment = VerticalAlignment.Stretch;
                 this.expandCanvas.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
                 this.expandCanvas.SizeChanged += expandCanvas_SizeChanged;
+                this.expandCanvas.Tap += MASTAdView_Tap;
 
                 this.expandCloseBorder.Width = CloseAreaSize;
                 this.expandCloseBorder.Height = CloseAreaSize;
@@ -889,6 +1174,10 @@ namespace com.moceanmobile.mast
         private WebBrowser internalBrowser = null;
         private int internalBrowserNavigationSteps = 0;
 
+        /// <summary>
+        /// Determines if the instance currently has it's internal browser open.
+        /// If the browser is open then there is an SDK controlled full sized popop control rendered on top of application content.
+        /// </summary>
         private bool IsInternalBrowserOpen
         {
             get
@@ -998,6 +1287,10 @@ namespace com.moceanmobile.mast
         private Canvas resizeCanvas = new Canvas();
         private Border resizeCloseBorder = new Border();
 
+        /// <summary>
+        /// Determines if the instance is currently resized.
+        /// If resized then there is an SDK controlled variable sized popop control rendered on top of application content.
+        /// </summary>
         public bool IsResized
         {
             get
@@ -1085,8 +1378,12 @@ namespace com.moceanmobile.mast
 
         #region Close Control
 
+        private System.Threading.Timer closeButtonDelayTimer = null;
+
         private void closeControl_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
+            e.Handled = true;
+
             switch (this.placementType)
             {
                 case mast.PlacementType.Inline:
@@ -1116,37 +1413,64 @@ namespace com.moceanmobile.mast
 
         private void PrepareCloseButton()
         {
+            if (this.closeButtonDelayTimer != null)
+            {
+                this.closeButtonDelayTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+            }
+
             // Either way, both this and the two part "share" the same state info.
             Bridge bridge = this.mraidBridge;
-            if (bridge == null)
-                return;
-
-            switch (bridge.State)
+            if (bridge != null)
             {
-                case State.Expanded:
-                    if (bridge.ExpandProperties.UseCustomClose == false)
-                    {
-                        RenderCloseButton();
-                    }
-                    return;
+                switch (bridge.State)
+                {
+                    case State.Expanded:
+                        // For expanded ads, ignore the timer.
+                        if (bridge.ExpandProperties.UseCustomClose == false)
+                        {
+                            RenderCloseButton();
+                        }
+                        return;
 
-                case State.Resized:
-                    // The ad creative MUST supply it's own close button.
-                    break;
+                    case State.Resized:
+                        // The ad creative MUST supply it's own close button.
+                        return;
+                }
+            }
+
+            if (this.showCloseButton)
+            {
+                if (this.closeButtonDelay <= 0)
+                {
+                    RenderCloseButton();
+                }
+                else
+                {
+                    if (this.closeButtonDelayTimer == null)
+                    {
+                        this.closeButtonDelayTimer = new System.Threading.Timer(new System.Threading.TimerCallback(OnCloseButtonDelayTimer));
+                    }
+
+                    this.closeButtonDelayTimer.Change(this.closeButtonDelay * 1000, System.Threading.Timeout.Infinite);
+                }
             }
         }
 
         private void RenderCloseButton()
         {
-            // TODO: Fetch button image from delegate or property
+            System.Windows.Media.ImageSource imageSource = this.closeButtonCustomSource;
 
-            System.IO.Stream resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(Defaults.CLOSE_BUTTON_RESOURCE);
-            System.Windows.Media.Imaging.BitmapImage bitmapImage = new System.Windows.Media.Imaging.BitmapImage();
-            bitmapImage.SetSource(resourceStream);
+            if (imageSource == null)
+            {
+                System.IO.Stream resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(Defaults.CLOSE_BUTTON_RESOURCE);
+                System.Windows.Media.Imaging.BitmapImage bitmapImage = new System.Windows.Media.Imaging.BitmapImage();
+                bitmapImage.SetSource(resourceStream);
+                imageSource = bitmapImage;
+            }
             
             Image buttonImage = new Image();
             buttonImage.Stretch = System.Windows.Media.Stretch.Uniform;
-            buttonImage.Source = bitmapImage;
+            buttonImage.Source = imageSource;
             
             if (this.mraidBridge != null)
             {
@@ -1170,7 +1494,12 @@ namespace com.moceanmobile.mast
             switch (this.placementType)
             {
                 case mast.PlacementType.Inline:
-                    // TODO: Need yet another control to render a close button on the MASTAdview?
+                    this.inlineCloseBorder.Child = buttonImage;
+                    this.inlineCloseBorder.Width = Defaults.INLINE_CLOSE_BUTTON_SIZE;
+                    this.inlineCloseBorder.Height = Defaults.INLINE_CLOSE_BUTTON_SIZE;
+                    Canvas.SetLeft(this.inlineCloseBorder, this.ActualWidth - this.inlineCloseBorder.Width);
+                    Canvas.SetTop(this.inlineCloseBorder, 0);
+                    this.Children.Add(this.inlineCloseBorder);
                     break;
 
                 case mast.PlacementType.Interstitial:
@@ -1180,17 +1509,31 @@ namespace com.moceanmobile.mast
             }
         }
 
+        private void OnCloseButtonDelayTimer(object state)
+        {
+            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(delegate
+            {
+                RenderCloseButton();
+            });
+        }
+
         #endregion
 
         #region Configuration
 
         private PlacementType placementType = PlacementType.Inline;
+        /// <summary>
+        /// Returns the current placement type of the instance.
+        /// </summary>
         public PlacementType PlacementType
         {
             get { return this.placementType; }
         }
 
         private string adServerURL = Defaults.AD_SERVER_URL;
+        /// <summary>
+        /// The current ad server/network URL.  This defaults to the mOcean ad network.
+        /// </summary>
         public string AdServerURL
         {
             get { return this.adServerURL; }
@@ -1198,12 +1541,21 @@ namespace com.moceanmobile.mast
         }
 
         private Dictionary<string, string> adRequestParameters = new Dictionary<string,string>();
+        /// <summary>
+        /// The current set of ad request parameters.
+        /// The SDK will set various parameters based on configuration and other options.
+        /// For more information see http://developer.moceanmobile.com/Mocean_Ad_Request_API.
+        /// </summary>
         public Dictionary<string, string> AdRequestParameters
         {
             get { return this.adRequestParameters; }
         }
 
         private int updateInterval = 0;
+        /// <summary>
+        /// The delay between requesting updates after the initial update.
+        /// By default the value is 0 meaning application developers control ad updates by invoking Update.
+        /// </summary>
         public int UpdateInterval
         {
             get { return this.updateInterval; }
@@ -1211,6 +1563,9 @@ namespace com.moceanmobile.mast
         }
 
         private int zone = 0;
+        /// <summary>
+        /// Specifies the zone for the ad network.  This property is required and has no default.
+        /// </summary>
         public int Zone
         {
             get { return this.zone; }
@@ -1218,6 +1573,9 @@ namespace com.moceanmobile.mast
         }
 
         private bool useInternalBrowser = false;
+        /// <summary>
+        /// Set to enable the use of the internal browser for opening ad content.  Defaults to false.
+        /// </summary>
         public bool UseInteralBrowser
         {
             get { return this.useInternalBrowser; }
@@ -1225,6 +1583,19 @@ namespace com.moceanmobile.mast
         }
 
         private bool showCloseButton = false;
+        /// <summary>
+        /// Set to show a close button after the ad is rendered.
+        /// 
+        /// This can be used for both inline/banner/custom and interstitial ads.  For most cases this should not
+        /// be required since banner ads don't usually have a need for a close button and rich media ads that expand
+        /// or resize will off their own close button.
+        /// 
+        /// This SHOULD be used for interstitial ads that are known to not be rich media as they will not have a built
+        /// in close button.
+        /// 
+        /// This setting applies for all subsequent updates.  The button can be customized using the 
+        /// CloseButtonCustomSource property.
+        /// </summary>
         public bool ShowCloseButton
         {
             get { return this.showCloseButton; }
@@ -1232,17 +1603,50 @@ namespace com.moceanmobile.mast
         }
 
         private int closeButtonDelay = 0;
+        /// <summary>
+        /// The delay between ad rendering and displaying of the close button if ShowCloseButton is true.  Defaults to 0.
+        /// </summary>
         public int CloseButtonDelay
         {
             get { return this.closeButtonDelay; }
             set { this.closeButtonDelay = value; }
         }
 
+        private System.Windows.Media.ImageSource closeButtonCustomSource = null;
+        /// <summary>
+        /// The custom image source to use for customizing the close button.
+        /// </summary>
+        public System.Windows.Media.ImageSource CloseButtonCustomSource
+        {
+            get { return this.closeButtonCustomSource; }
+            set { this.closeButtonCustomSource = value; }
+        }
+
         public bool test = false;
+        /// <summary>
+        /// Instructs the ad server to return test ads for the configured zone (if the zone has configured test ads).
+        /// This should never be set to true for application releases.
+        /// </summary>
         public bool Test
         {
             get { return this.test; }
             set { this.test = value; }
+        }
+
+        private bool allowBrowserGeolocation = false;
+        /// <summary>
+        /// Sets the IsGeolocationEnabled flag for WebBrowser based ads.
+        /// </summary>
+        public bool AllowBrowserGeolocation
+        {
+            get { return this.allowBrowserGeolocation; }
+            set 
+            {
+                this.allowBrowserGeolocation = value;
+                   
+                if (this.webControl != null)
+                    this.webControl.IsGeolocationEnabled = true;
+            }
         }
 
         #endregion
@@ -1369,9 +1773,21 @@ namespace com.moceanmobile.mast
 
         System.Device.Location.GeoCoordinateWatcher geoCoordinateWatcher = null;
 
-        // These capabilities are required:
-        // ID_CAP_NETWORKING -Windows Phone 8, Windows Phone OS 7.1
-        // ID_CAP_LOCATION - Windows Phone 8
+        /// <summary>
+        /// Enables or disables SDK location detection support using the most battery efficient options.
+        /// Use the EnableLocationDetection method for more fined tuned detection options during enablement.
+        /// In either case setting this property to false turns off SDK based location detection.
+        /// 
+        /// See GeoCoordinateWatcher MSDN documentation for more information on how location is determined.
+        /// 
+        /// Note that this functionality is only used to set the lat and long parameters in the AdRequestParameters 
+        /// dictionary and may also override anything set manually.  If manually setting lat and long parameters
+        /// then then location detection should be disabled.
+        /// 
+        /// Requires these capabilities:
+        /// ID_CAP_NETWORKING -Windows Phone 8, Windows Phone OS 7.1
+        /// ID_CAP_LOCATION - Windows Phone 8
+        /// </summary>
         public bool LocationDetectionEnabled
         {
             get
@@ -1406,6 +1822,14 @@ namespace com.moceanmobile.mast
             }
         }
 
+        /// <summary>
+        /// Enables location detection using the specified configuration.  To disable use the LocationDetectionEnabled property.
+        /// 
+        /// See the EnableLocationDetection for more information.
+        /// </summary>
+        /// <param name="desiredAccuracy">Sets the desired accuracy for the GeoCoordinateWatcher.</param>
+        /// <param name="movementThreshold">Sets the movement threshold for the GeoCoordinateWatcher.</param>
+        /// <param name="suppressPermissionPrompt">Determines if the permission prompt should be suprressed.</param>
         public void EnableLocationDetection(System.Device.Location.GeoPositionAccuracy desiredAccuracy, double movementThreshold, bool suppressPermissionPrompt)
         {
             if (this.geoCoordinateWatcher != null)
@@ -1471,11 +1895,20 @@ namespace com.moceanmobile.mast
         private bool invokeAdTracking = false;
         private bool updateDeferred = false;
 
+        /// <summary>
+        /// Initiates an ad content update on the instance.
+        /// Will defer the update if the user is interacting with the ad until after the user is done interacting with the ad.
+        /// </summary>
         public void Update()
         {
             Update(false);
         }
 
+        /// <summary>
+        /// Initiates an ad content update on the instance.
+        /// Pass true to force an update even if the user is interacting with the ad.
+        /// </summary>
+        /// <param name="force"></param>
         public void Update(bool force)
         {
             if (updateTimer == null)
@@ -1524,6 +1957,12 @@ namespace com.moceanmobile.mast
             InternalUpdate();
         }
 
+        /// <summary>
+        /// Resets the instance to it's default state.
+        /// - Stops any updates and update interval.
+        /// - Stops location detection.
+        /// - Removes ad content (see RemoveContent)
+        /// </summary>
         public void Reset()
         {
             this.updateDeferred = false;
@@ -1532,6 +1971,8 @@ namespace com.moceanmobile.mast
             {
                 updateTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             }
+
+            this.LocationDetectionEnabled = false;
 
             RemoveContent();
         }
@@ -1681,6 +2122,12 @@ namespace com.moceanmobile.mast
 
         private System.Threading.Timer interstitialCloseTimer = null;
 
+        /// <summary>
+        /// Shows the interstitial ad container.
+        /// If not yet received and rendered by be blank until the ad is rendered.
+        /// 
+        /// Can not be used on inline instances.
+        /// </summary>
         public void ShowInterstitial()
         {
             if (this.placementType != mast.PlacementType.Interstitial)
@@ -1702,7 +2149,7 @@ namespace com.moceanmobile.mast
                     null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             }
 
-            RenderCloseButton();
+            PrepareCloseButton();
 
             if (this.interstitialDuration < 1)
             {
@@ -1714,12 +2161,18 @@ namespace com.moceanmobile.mast
         }
 
         private int interstitialDuration = 0;
+        /// <summary>
+        /// The amount of time to show the interstitial after invoking ShowInterstitial.
+        /// </summary>
         public int InterstitialDuration
         {
             get { return this.interstitialDuration; }
             set { this.interstitialDuration = value; }
         }
 
+        /// <summary>
+        /// Closes the interstitial ad container.
+        /// </summary>
         public void CloseInterstitial()
         {
             if (interstitialCloseTimer != null)
@@ -1743,7 +2196,11 @@ namespace com.moceanmobile.mast
 
         #region Ad Rendering
 
-        // can be called from a background thread (normal) or from the main thread (for testing)
+        /// <summary>
+        /// For SDK testing.  Allows rendering an AdDescriptor without obtaining one from the ad network.
+        /// Can be invoked from a background thread.
+        /// </summary>
+        /// <param name="adDescriptor">The AdDescriptor to render.</param>
         public void RenderWithAdDescriptor(AdDescriptor adDescriptor)
         {
             if (adDescriptor.Type.StartsWith("image", StringComparison.OrdinalIgnoreCase))
@@ -1905,6 +2362,7 @@ namespace com.moceanmobile.mast
                 case mast.PlacementType.Inline:
                     base.Children.Clear();
                     base.Children.Add(this.imageBorder);
+                    PrepareCloseButton();
                     break;
 
                 case mast.PlacementType.Interstitial:
@@ -1932,6 +2390,7 @@ namespace com.moceanmobile.mast
                 case mast.PlacementType.Inline:
                     base.Children.Clear();
                     base.Children.Add(this.imageBorder);
+                    PrepareCloseButton();
                     break;
 
                 case mast.PlacementType.Interstitial:
@@ -1961,6 +2420,7 @@ namespace com.moceanmobile.mast
                 case mast.PlacementType.Inline:
                     base.Children.Clear();
                     base.Children.Add(this.textBorder);
+                    PrepareCloseButton();
                     break;
 
                 case mast.PlacementType.Interstitial:
@@ -1984,12 +2444,87 @@ namespace com.moceanmobile.mast
         private WebBrowser twoPartWebBrowser = null;
         private Bridge twoPartMraidBridge = null;
         
-        private void RenderMRAIDTwoPartExpand(string url)
+        private bool RenderMRAIDTwoPartExpand(string url)
         {
+            // TODO: For now commenting all of this out.  Need to find a better way of 
+            // injecting the bridge without having to load the URL as a string.
+            //// Fetch the URL contents and inject MRAID bridge code then load into the browser.
+            //System.Net.HttpWebRequest twoPartRequest = null;
+            //try
+            //{
+            //    twoPartRequest = System.Net.HttpWebRequest.CreateHttp(url);
+            //    twoPartRequest.AllowAutoRedirect = true;
+            //    twoPartRequest.UserAgent = UserAgent;
+
+            //    twoPartRequest.BeginGetResponse(delegate(IAsyncResult ar)
+            //    {
+            //        try
+            //        {
+            //            System.Net.WebResponse response = twoPartRequest.EndGetResponse(ar);
+            //            System.IO.Stream stream = response.GetResponseStream();
+
+            //            System.IO.StreamReader streamReader = new System.IO.StreamReader(stream);
+            //            string content = streamReader.ReadToEnd();
+
+            //            int insertScriptAt = -1;
+
+            //            int htmlIndex = content.IndexOf("<html");
+            //            if (htmlIndex > -1)
+            //            {
+            //                int htmlEndIndex = content.IndexOf('>', htmlIndex);
+            //                if (htmlEndIndex > -1)
+            //                {
+            //                    insertScriptAt = htmlEndIndex + 1;
+
+            //                    int headIndex = content.IndexOf("<head", htmlEndIndex);
+            //                    if (headIndex > -1)
+            //                    {
+            //                        int headEndIndex = content.IndexOf('>', headIndex);
+            //                        if (headEndIndex > -1)
+            //                        {
+            //                            insertScriptAt = headEndIndex + 1;
+            //                        }
+            //                    }
+            //                }
+            //            }
+
+            //            if (insertScriptAt > -1)
+            //            {
+            //                System.IO.Stream resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(Defaults.RICHMEDIA_SCRIPT_RESOURCE);
+            //                System.IO.StreamReader resourceStreamReader = new System.IO.StreamReader(resourceStream);
+            //                string mraidScript = resourceStreamReader.ReadToEnd();
+
+            //                mraidScript = "\n<script>" + mraidScript + "</script>\n";
+
+            //                content = content.Insert(insertScriptAt, mraidScript);
+
+            //                System.Windows.Deployment.Current.Dispatcher.BeginInvoke(delegate
+            //                {
+            //                    this.twoPartWebBrowser.NavigateToString(content);
+            //                });
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(delegate
+            //            {
+            //                ((BridgeHandler)this).mraidClose(this.mraidBridge);
+            //            });
+                        
+            //            LogEvent(mast.LogLevel.Error, "Exception while trying to load two part creative. Ex:" + ex.Message);
+            //        }
+            //    }, null);
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogEvent(mast.LogLevel.Error, "Exception while trying to load two part creative. Ex:" + ex.Message);
+            //    return false;
+            //}
+
             this.twoPartExpand = true;
             
             this.twoPartWebBrowser = new WebBrowser();
-            this.twoPartWebBrowser.IsGeolocationEnabled = false;
+            this.twoPartWebBrowser.IsGeolocationEnabled = this.allowBrowserGeolocation;
             this.twoPartWebBrowser.IsScriptEnabled = true;
             this.twoPartWebBrowser.NavigationFailed += webControl_NavigationFailed;
             this.twoPartWebBrowser.Navigating += webControl_Navigating;
@@ -2007,7 +2542,10 @@ namespace com.moceanmobile.mast
 
             this.twoPartMraidBridge = new Bridge(this, this.twoPartWebBrowser);
 
+            // TODO: Simple load vs. the above commented out chunk.
             this.twoPartWebBrowser.Navigate(new Uri(url));
+
+            return true;
         }
 
         // called from the main thread/dispatcher
@@ -2050,6 +2588,16 @@ namespace com.moceanmobile.mast
 
         private void webControl_Navigating(object sender, NavigatingEventArgs e)
         {
+            WebBrowser webBrowser = (WebBrowser)sender;
+
+            bool isTwoPart = false;
+            Bridge bridge = this.mraidBridge;
+            if (webBrowser == this.twoPartWebBrowser)
+            {
+                isTwoPart = true;
+                bridge = this.twoPartMraidBridge;
+            }
+
             Uri uri = e.Uri;
             if ((uri == null) || string.IsNullOrEmpty(uri.AbsolutePath))
                 return;
@@ -2058,10 +2606,10 @@ namespace com.moceanmobile.mast
             if (string.IsNullOrEmpty(scheme))
                 return;
 
-            if ("javascript" == scheme)
+            if (("javascript" == scheme) || ("about" == scheme))
                 return;
 
-            if (scheme.StartsWith("http"))
+            if (isTwoPart && scheme.StartsWith("http"))
             {
                 if (this.twoPartExpand && (this.twoPartMraidBridge.State == State.Loading))
                     return;
@@ -2074,6 +2622,8 @@ namespace com.moceanmobile.mast
                 return;
             }
 
+            // TODO: What about iframes?
+
             // Don't let the browser navigate to some other page.
             if (scheme.StartsWith("http"))
                 e.Cancel = true;
@@ -2081,7 +2631,12 @@ namespace com.moceanmobile.mast
         
         private void webControl_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
+            //WebBrowser webBrowser = (WebBrowser)sender;
+            //string content = webBrowser.SaveToString();
 
+            //Bridge bridge = this.mraidBridge;
+            //if (webBrowser == this.twoPartWebBrowser)
+            //    bridge = this.twoPartMraidBridge;
         }
 
         private void webControl_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
@@ -2093,12 +2648,17 @@ namespace com.moceanmobile.mast
             if (webBrowser == this.twoPartWebBrowser)
                 bridge = this.twoPartMraidBridge;
 
+            // TODO: Not using MRAID with two part since the bridge code can't be injected into the page.
+            // Remove when a solution is found/implemented that will result in MRAID being injected.
+            if (bridge == this.twoPartMraidBridge)
+                return;
+
             MRAIDControllerInit(webBrowser, bridge);
         }
 
         private void webControl_ScriptNotify(object sender, Microsoft.Phone.Controls.NotifyEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("ScriptNotify:" + e.Value);
+            //System.Diagnostics.Debug.WriteLine("ScriptNotify:" + e.Value);
 
             WebBrowser webBrowser = (WebBrowser)sender;
             //string content = webBrowser.SaveToString();
@@ -2383,7 +2943,11 @@ namespace com.moceanmobile.mast
                 }
                 else
                 {
-                    RenderMRAIDTwoPartExpand(url);
+                    if (RenderMRAIDTwoPartExpand(url) == false)
+                    {
+                        bridge.SendErrorMessage("Unable to retreive specified URL.", Const.CommandExpand);
+                        return;
+                    }
                 }
             }
 
@@ -2654,6 +3218,11 @@ namespace com.moceanmobile.mast
 
         #region IDisposable
 
+        /// <summary>
+        /// See IDisposable.
+        /// 
+        /// Kills off timers and other WP APIs such as the GeoCoordinateWatcher.
+        /// </summary>
         public void Dispose()
         {
             if (this.geoCoordinateWatcher != null)
@@ -2668,6 +3237,13 @@ namespace com.moceanmobile.mast
                 this.interstitialCloseTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
                 this.interstitialCloseTimer.Dispose();
                 this.interstitialCloseTimer = null;
+            }
+
+            if (this.closeButtonDelayTimer != null)
+            {
+                this.closeButtonDelayTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                this.closeButtonDelayTimer.Dispose();
+                this.closeButtonDelayTimer = null;
             }
 
             if (this.updateTimer != null)
