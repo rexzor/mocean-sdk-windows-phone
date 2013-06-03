@@ -9,7 +9,7 @@ namespace com.moceanmobile.mast
     {
         public static string VERSION = "3.0.0-beta";
 
-        public static string AD_SERVER_URL = "http://ads.mocean.mobi/ad";
+        public static string AD_SERVER_URL = "http://ads.moceanads.com/ad";
 
         // This is the user agent string sent if unable to determine one from the browser control.
         public static string ERROR_USER_AGENT = "MASTAdView/3.0 (Windows Phone, unable to determine ua)";
