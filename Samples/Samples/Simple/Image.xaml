@@ -32,9 +32,10 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel>
-                <mast:MASTAdView x:Name="adView" Background="Gray" Zone="88269" HorizontalAlignment="Stretch" Height="75">
+                <mast:MASTAdView x:Name="adView" Background="Gray" Zone="88269" HorizontalAlignment="Stretch" Height="75" LogLevel="Debug">
                     <mast:MASTAdView.AdRequestParameters>
                         <sys:String x:Key="customParameterName">customParameterValue</sys:String>
+                        <sys:String x:Key="udid">12345abcdef</sys:String>
                     </mast:MASTAdView.AdRequestParameters>
                 </mast:MASTAdView>
             </StackPanel>

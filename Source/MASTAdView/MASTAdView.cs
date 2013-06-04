@@ -1092,7 +1092,8 @@ namespace com.moceanmobile.mast
                 this.expandPopup = new System.Windows.Controls.Primitives.Popup();
                 this.expandPopup.HorizontalOffset = 0;
                 this.expandPopup.VerticalOffset = 0;
-                
+
+                this.expandCanvas.RenderTransform = null;
                 this.expandCanvas.HorizontalAlignment = HorizontalAlignment.Stretch;
                 this.expandCanvas.VerticalAlignment = VerticalAlignment.Stretch;
                 this.expandCanvas.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
@@ -1109,6 +1110,10 @@ namespace com.moceanmobile.mast
 
                 this.expandPopup.Child = this.expandCanvas;
             }
+
+            this.expandPopup.HorizontalOffset = 0;
+            this.expandPopup.VerticalOffset = 0;
+            this.expandCanvas.RenderTransform = null;
 
             this.expandPopupHidesTray = Microsoft.Phone.Shell.SystemTray.IsVisible;
             if (this.expandPopupHidesTray)
@@ -1330,7 +1335,6 @@ namespace com.moceanmobile.mast
             if (resizePopup == null)
             {
                 this.resizePopup = new System.Windows.Controls.Primitives.Popup();
-                this.Children.Add(this.resizePopup);
 
                 this.resizeCanvas.HorizontalAlignment = HorizontalAlignment.Stretch;
                 this.resizeCanvas.VerticalAlignment = VerticalAlignment.Stretch;
@@ -3072,25 +3076,37 @@ namespace com.moceanmobile.mast
                 return;
             }
 
+            System.Windows.Point currentPoint = new System.Windows.Point(0, 0);
+            try
+            {
+                currentPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(currentPoint);
+            }
+            catch
+            {
+                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position before resize.  Possibly due to page navigation.");
+
+                bridge.SendErrorMessage("Error calculating current position.", Const.CommandResize);
+                return;
+            }
+
+            double systemTrayHeight = 0;
+            if (Microsoft.Phone.Shell.SystemTray.IsVisible)
+            {
+                // TODO: Hack, not sure where this constant is defined if it is.
+                systemTrayHeight += 32;
+            }
+
+            currentPoint.Y += systemTrayHeight;
+
             if (bridge.ResizeProperties.AllowOffscreen == false)
             {
-                System.Windows.Point currentPoint = new System.Windows.Point(0, 0);
-                try
-                {
-                    currentPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(currentPoint);
-                }
-                catch
-                {
-                    LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position before resize.  Possibly due to page navigation.");
-
-                    bridge.SendErrorMessage("Error calculating current position.", Const.CommandResize);
-                    return;
-                }
-
                 double desiredScreenX = currentPoint.X + x;
                 double desiredScreenY = currentPoint.Y + y;
                 double resultingScreenX = desiredScreenX;
                 double resultingScreenY = desiredScreenY;
+
+                double minX = 0;
+                double minY = systemTrayHeight;
 
                 if (width > screenWidth)
                     width = screenWidth;
@@ -3098,9 +3114,9 @@ namespace com.moceanmobile.mast
                 if (height > screenHeight)
                     height = screenHeight;
 
-                if (desiredScreenX < 0)
+                if (desiredScreenX < minX)
                 {
-                    resultingScreenX = 0;
+                    resultingScreenX = minX;
                 }
                 else if ((desiredScreenX + width) > screenWidth)
                 {
@@ -3108,9 +3124,9 @@ namespace com.moceanmobile.mast
                     resultingScreenX -= diff;
                 }
 
-                if (desiredScreenY < 0)
+                if (desiredScreenY < minY)
                 {
-                    resultingScreenY = 0;
+                    resultingScreenY = minY;
                 }
                 else if ((desiredScreenY + height) > screenHeight)
                 {
@@ -3127,7 +3143,7 @@ namespace com.moceanmobile.mast
             // Determine where the close control area will be.  This MUST be on screen.
             // By default it is in the top right but the ad can specify where it should be.
             // The ad MUST provide the graphic for it or some other means to close the resize.
-            Rect closeControlRect = new Rect(x + width - CloseAreaSize, y, 
+            Rect closeControlRect = new Rect(width - CloseAreaSize, y, 
                 CloseAreaSize, CloseAreaSize);
 
             switch (bridge.ResizeProperties.CustomClosePosition)
@@ -3166,17 +3182,36 @@ namespace com.moceanmobile.mast
                     break;
             }
 
-            // TODO: Verify resize close control area will be on screen, if not error.
+            // Determine where the close box will end up and error out if ends up outside viewable area.
+            Rect closeContainsArea = new Rect(0, systemTrayHeight, screenWidth, screenHeight);
+            Point closeContainsPoint = new Point(currentPoint.X + x + closeControlRect.X, currentPoint.Y + y + closeControlRect.Y);
+            closeContainsPoint.Y += systemTrayHeight;
+
+            // Test top left point.
+            if (closeContainsArea.Contains(closeContainsPoint) == false)
+            {
+                bridge.SendErrorMessage("Resize close control must remain on screen.", Const.CommandResize);
+                return;
+            }
+
+            // Test bottom right point.
+            closeContainsPoint.X += CloseAreaSize;
+            closeContainsPoint.Y += CloseAreaSize;
+            if (closeContainsArea.Contains(closeContainsPoint) == false)
+            {
+                bridge.SendErrorMessage("Resize close control must remain on screen.", Const.CommandResize);
+                return;
+            }
 
             if (this.IsResized == false)
             {
                 base.Children.Remove(border);
-                OpenResizePoup(border, x, y, width, height);
+                OpenResizePoup(border, currentPoint.X + x, currentPoint.Y + y, width, height);
             }
             else
             {
-                this.resizePopup.HorizontalOffset = x;
-                this.resizePopup.VerticalOffset = y;
+                this.resizePopup.HorizontalOffset = currentPoint.X + x;
+                this.resizePopup.VerticalOffset = currentPoint.Y + y;
                 this.resizePopup.Width = width;
                 this.resizePopup.Height = height;
                 border.Width = resizePopup.ActualWidth;
