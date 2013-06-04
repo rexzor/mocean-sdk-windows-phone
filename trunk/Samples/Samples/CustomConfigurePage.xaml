@@ -29,6 +29,7 @@
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel>
                 <CheckBox x:Name="UseInternalBrowserCheckBox" Content="Use internal browser"/>
+                <CheckBox x:Name="UseLocationDetectionCheckBox" Content="Use location detection"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>

@@ -25,6 +25,8 @@ namespace com.moceanmobile.mast.samples.Delegate
             adView.AdResized += adView_AdResized;
             adView.AdCollapsed += adView_AdCollapsed;
             adView.LeavingApplication += adView_LeavingApplication;
+            adView.InternalBrowserOpened += adView_InternalBrowserOpened;
+            adView.InternalBrowserClosed += adView_InternalBrowserClosed;
             adView.LoggingEvent += adView_LoggingEvent;
             adView.ReceivedThirdPartyRequest += adView_ReceivedThirdPartyRequest;
             adView.PlayingVideo += adView_PlayingVideo;
@@ -86,6 +88,18 @@ namespace com.moceanmobile.mast.samples.Delegate
         private void adView_LeavingApplication(object sender, EventArgs e)
         {
             string entry = "adView_LeavingApplication";
+            addEntry(entry);
+        }
+
+        void adView_InternalBrowserClosed(object sender, EventArgs e)
+        {
+            string entry = "adView_InternalBrowserClosed";
+            addEntry(entry);
+        }
+
+        void adView_InternalBrowserOpened(object sender, EventArgs e)
+        {
+            string entry = "adView_InternalBrowserOpened";
             addEntry(entry);
         }
 
