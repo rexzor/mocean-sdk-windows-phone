@@ -55,8 +55,6 @@ namespace com.moceanmobile.mast
         private static string UserAgent = null;
         private static int CloseAreaSize = 50;
         
-        private PhoneApplicationPage phoneApplicationPage = null;
-
         /// <summary>
         /// Default inline ad constructor.
         /// Created instance to be used inline with other application content.
@@ -724,10 +722,35 @@ namespace com.moceanmobile.mast
                 this.expandPopup.UpdateLayout();
         }
 
+        private PhoneApplicationPage phoneApplicationPage = null;
+
+        private PhoneApplicationPage GetParentPage()
+        {
+            object obj = this.Parent;
+            while (obj != null)
+            {
+                if (obj is PhoneApplicationPage)
+                {
+                    return (PhoneApplicationPage)obj;
+                }
+
+                if (obj is FrameworkElement)
+                {
+                    obj = ((FrameworkElement)obj).Parent;
+                    continue;
+                }
+
+                break;
+            }
+
+            return null;
+        }
+
         private void MASTAdView_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             // TODO: Is this valid for all applications?
-            this.phoneApplicationPage = (PhoneApplicationPage)((PhoneApplicationFrame)System.Windows.Application.Current.RootVisual).Content;
+            //this.phoneApplicationPage = (PhoneApplicationPage)((PhoneApplicationFrame)System.Windows.Application.Current.RootVisual).Content;
+            this.phoneApplicationPage = GetParentPage();
             this.phoneApplicationPage.OrientationChanged += Page_OrientationChanged;
             this.phoneApplicationPage.BackKeyPress += PhoneApplicationPage_BackKeyPress;
 
@@ -2763,8 +2786,16 @@ namespace com.moceanmobile.mast
             {
                 bridge.SetMaxSize(pageWidth, pageHeight);
 
-                // The currentPoint needs to be based off the page in this case.
-                currentPoint = border.TransformToVisual(this.phoneApplicationPage).Transform(currentPoint);
+                try
+                {
+                    // The currentPoint needs to be based off the page in this case.
+                    System.Windows.Media.GeneralTransform transform = border.TransformToVisual(this.phoneApplicationPage);
+                    currentPoint = transform.Transform(currentPoint);
+                }
+                catch (Exception)
+                {
+                    LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position.  Possibly due to page navigation.");
+                }
             }
 
             // The currentPosition is relative to the maxSize.
@@ -2773,7 +2804,15 @@ namespace com.moceanmobile.mast
             bridge.SetCurrentPosition(currentPoint.X, currentPoint.Y, currentWidth, currentHeight);
 
             // Unlike currentPosition, default point represents where the developer placed the ad reagardless of state.
-            System.Windows.Point defaultPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(new System.Windows.Point(0, 0));
+            System.Windows.Point defaultPoint = new System.Windows.Point(0,0);
+            try
+            {
+                defaultPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(defaultPoint);
+            }
+            catch
+            {
+                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID default position.  Possibly due to page navigation.");
+            }
             double defaultWidth = base.ActualWidth;
             double defaultHeight = base.ActualHeight;
             bridge.SetDefaultPosition(defaultPoint.X, defaultPoint.Y, defaultWidth, defaultHeight);
@@ -3035,7 +3074,19 @@ namespace com.moceanmobile.mast
 
             if (bridge.ResizeProperties.AllowOffscreen == false)
             {
-                System.Windows.Point currentPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(new System.Windows.Point(0, 0));
+                System.Windows.Point currentPoint = new System.Windows.Point(0, 0);
+                try
+                {
+                    currentPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(currentPoint);
+                }
+                catch
+                {
+                    LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position before resize.  Possibly due to page navigation.");
+
+                    bridge.SendErrorMessage("Error calculating current position.", Const.CommandResize);
+                    return;
+                }
+
                 double desiredScreenX = currentPoint.X + x;
                 double desiredScreenY = currentPoint.Y + y;
                 double resultingScreenX = desiredScreenX;
