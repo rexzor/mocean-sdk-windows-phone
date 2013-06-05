@@ -19,6 +19,12 @@ namespace com.moceanmobile.mast
         public static string RICHMEDIA_SCRIPT_RESOURCE = "com.moceanmobile.mast.Resources.MASTMRAIDController.js";
         public static string CLOSE_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.MASTCloseButton.png";
 
+        // Internal browser toolbar images:
+        public static string IB_BACK_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.back.png";
+        public static string IB_FORWARD_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.next.png";
+        public static string IB_REFRESH_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.refresh.png";
+        public static string IB_OPEN_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.upload.png";
+
         public static int CLOSE_BUTTON_SIZE = 50;
         public static int INLINE_CLOSE_BUTTON_SIZE = 28;
 

@@ -779,13 +779,6 @@ namespace com.moceanmobile.mast
 
         private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (IsInternalBrowserOpen)
-            {
-                e.Cancel = true;
-                InternalBrowserBackOrClose();
-                return;
-            }
-
             switch (this.placementType)
             {
                 case mast.PlacementType.Inline:
@@ -1196,12 +1189,7 @@ namespace com.moceanmobile.mast
         #endregion
 
         #region Internal Browser
-
-        private Border previousExpandBorder = null;
-        private Border internalBrowserBorder = null;
-        private WebBrowser internalBrowser = null;
-        private int internalBrowserNavigationSteps = 0;
-
+        
         /// <summary>
         /// Determines if the instance currently has it's internal browser open.
         /// If the browser is open then there is an SDK controlled full sized popop control rendered on top of application content.
@@ -1210,101 +1198,51 @@ namespace com.moceanmobile.mast
         {
             get
             {
-                if (IsExpanded && (internalBrowserBorder != null) && (internalBrowserBorder.Parent != null))
+                Uri currentPage = this.phoneApplicationPage.NavigationService.Source;
+                if (currentPage != null)
                 {
-                    return true;
+                    if (currentPage.OriginalString.StartsWith(InternalBrowserPage))
+                        return true;
                 }
-
                 return false;
             }
         }
 
+        private static string InternalBrowserPage = "/MASTAdView;component/InternalBrowserPage.xaml";
+
         private void ShowInternalBrowser(string url)
         {
-            if (internalBrowserBorder == null)
-            {
-                internalBrowser = new WebBrowser();
-                internalBrowser.IsScriptEnabled = true;
+            string pageUrl = InternalBrowserPage;
+            pageUrl += "?url=" + Uri.EscapeDataString(url);
 
-                internalBrowser.Navigated += delegate(object sender, System.Windows.Navigation.NavigationEventArgs args)
+            this.phoneApplicationPage.NavigationService.Navigate(new Uri(pageUrl, UriKind.Relative));
+            
+            System.Collections.Generic.IEnumerable<System.Windows.Navigation.JournalEntry> backStack = 
+                this.phoneApplicationPage.NavigationService.BackStack;
+
+            foreach (System.Windows.Navigation.JournalEntry entry in backStack)
+            {
+                Uri uri = entry.Source;
+                if (uri.OriginalString.StartsWith(InternalBrowserPage))
                 {
-                    switch (args.NavigationMode)
-                    {
-                        case System.Windows.Navigation.NavigationMode.New:
-                        case System.Windows.Navigation.NavigationMode.Forward:
-                            ++internalBrowserNavigationSteps;
-                            break;
-                    }
-                };
+                    this.phoneApplicationPage.NavigationService.RemoveBackEntry();
+                    continue;
+                }
 
-                internalBrowserBorder = new Border();
-                internalBrowserBorder.SizeChanged += border_SizeChanged;
-                internalBrowserBorder.Child = internalBrowser;
-            }
-
-            if (IsExpanded && (this.expandCanvas.Children.Count > 0))
-            {
-                previousExpandBorder = (Border)this.expandCanvas.Children[0];
-                this.expandCanvas.Children.Clear();
-
-                if (mraidBridge != null)
-                    mraidBridge.SetViewable(false);
-
-                this.expandCanvas.Children.Add(internalBrowserBorder);
-            }
-            else
-            {
-                OpenExpandPopup(internalBrowserBorder);
+                break;
             }
 
             OnInternalBrowserOpened();
-
-            internalBrowserNavigationSteps = 0;
-            internalBrowser.Navigate(new Uri(url));
-        }
-
-        private void InternalBrowserBackOrClose()
-        {
-            --internalBrowserNavigationSteps;
-
-            if (internalBrowserNavigationSteps <= 0)
-            {
-                CloseInternalBrowser();
-                return;
-            }
-
-            try
-            {
-                internalBrowser.InvokeScript("eval", "history.go(-1)");
-                --internalBrowserNavigationSteps;
-            }
-            catch (Exception)
-            {
-                LogEvent(mast.LogLevel.Error, "Unable to navigate the internal browser back page.");
-                CloseInternalBrowser();
-            }
         }
 
         private void CloseInternalBrowser()
         {
-            if (IsExpanded == false)
-                return;
-
-            if (previousExpandBorder != null)
+            if (IsInternalBrowserOpen)
             {
-                this.expandCanvas.Children.Clear();
-                this.expandCanvas.Children.Add(previousExpandBorder);
-                this.expandCanvas.Children.Add(expandCloseBorder);
+                this.phoneApplicationPage.NavigationService.GoBack();
 
-                if (mraidBridge != null)
-                    mraidBridge.SetViewable(true);
+                OnInternalBrowserClosed();
             }
-            else
-            {
-                CollapseExpandPopup();
-            }
-
-            OnInternalBrowserClosed();
         }
 
         #endregion
