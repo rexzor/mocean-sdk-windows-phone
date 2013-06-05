@@ -66,6 +66,7 @@
       <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.Utils.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone" />
+    <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Xna.Framework" />
     <Reference Include="PhoneCodeContractsAssemblies">
       <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\PhoneCodeContractsAssemblies.dll</HintPath>
@@ -87,6 +88,9 @@
     <Compile Include="AdRequest.cs" />
     <Compile Include="AdTracking.cs" />
     <Compile Include="MASTAdViewInterstitial.cs" />
+    <Compile Include="InternalBrowserPage.xaml.cs">
+      <DependentUpon>InternalBrowserPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ThirdPartyDescriptor.cs" />
     <Compile Include="mraid\Const.cs" />
     <Compile Include="Defaults.cs" />
@@ -105,6 +109,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReadMe.txt" />
+    <EmbeddedResource Include="Resources\next.png" />
+    <EmbeddedResource Include="Resources\back.png" />
+    <EmbeddedResource Include="Resources\refresh.png" />
+    <EmbeddedResource Include="Resources\upload.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="InternalBrowserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
