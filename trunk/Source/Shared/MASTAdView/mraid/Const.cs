@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace com.moceanmobile.mast.mraid
 {
-    internal enum State
+    public enum State
     {
         Loading,
         Default,
@@ -14,13 +12,7 @@ namespace com.moceanmobile.mast.mraid
         Hidden,
     };
 
-    internal enum PlacementType
-    {
-        Inline,
-        Interstitial,
-    };
-
-    internal enum Feature
+    public enum Feature
     {
         SMS,
         Tel,
@@ -29,14 +21,14 @@ namespace com.moceanmobile.mast.mraid
         InlineVideo,
     };
 
-    internal enum ForceOrientation
+    public enum ForceOrientation
     {
         Portrait,
         Landscape,
         None,
     };
 
-    internal enum CustomClosePosition
+    public enum CustomClosePosition
     {
         TopLeft,
         TopCenter,
@@ -47,7 +39,13 @@ namespace com.moceanmobile.mast.mraid
         BottomRight,
     };
 
-    internal class Const
+    public enum PlacementType
+    {
+        Inline,
+        Interstitial,
+    };
+
+    public class Const
     {
         public const string StateLoading = "loading";
         public const string StateDefault = "default";

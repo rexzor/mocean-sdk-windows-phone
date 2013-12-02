@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net;
 
 namespace com.moceanmobile.mast
 {
-    internal class AdTracking
+    public class AdTracking
     {
         public static void InvokeTrackingURL(string url, string userAgent)
         {
@@ -16,8 +15,7 @@ namespace com.moceanmobile.mast
                 HttpWebRequest httpRequest = (HttpWebRequest)request;
 
                 httpRequest.Method = "GET";
-                httpRequest.UserAgent = userAgent;
-                httpRequest.AllowAutoRedirect = true;
+                //httpRequest.Headers[HttpRequestHeader.UserAgent] = userAgent;
 
                 httpRequest.BeginGetResponse(new AsyncCallback(RequestCallback), httpRequest);
             }
@@ -32,7 +30,8 @@ namespace com.moceanmobile.mast
                 if (httpRequest != null)
                 {
                     HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.EndGetResponse(ar);
-                    httpResponse.Close();
+
+                    // TODO: Test redirects just to make sure they happen properly using the portable class library
                 }
             }
             catch (Exception)

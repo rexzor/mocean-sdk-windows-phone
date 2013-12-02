@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace com.moceanmobile.mast.mraid
 {
-    internal class ExpandProperties
+    public class ExpandProperties
     {
         public static ExpandProperties PropertiesFromArgs(Dictionary<string, string> args)
         {

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace com.moceanmobile.mast
 {
     // invoked to inform the caller that the request failed due to connectivity, dns, timout, etc...
-    internal delegate void AdRequestFailed(AdRequest request, Exception exception);
+    public delegate void AdRequestFailed(AdRequest request, Exception exception);
 
     // invoked to inform the caller that the request failed due to an error response from the ad network
-    internal delegate void AdRequestError(AdRequest request, string errorCode, string errorMessage);
+    public delegate void AdRequestError(AdRequest request, string errorCode, string errorMessage);
 
     // invoked to inform the caller that the request has obtained an ad descriptor from the ad network
-    internal delegate void AdRequestCompleted(AdRequest request, AdDescriptor adDescriptor);
+    public delegate void AdRequestCompleted(AdRequest request, AdDescriptor adDescriptor);
 
     /// <summary>
     /// Represents a one time ad request.  Use the Create method to create and start the ad request.
@@ -21,7 +22,7 @@ namespace com.moceanmobile.mast
     /// The request and response parsing follow the Mocean Ad Server interface found on the following page:
     /// http://developer.moceanmobile.com/Mocean_Ad_Request_API
     /// </summary>
-    internal class AdRequest : IDisposable
+    public sealed class AdRequest : IDisposable
     {
         // creates and starts ad request
         public static AdRequest Create(int timeout, string adServerURL, string userAgent, Dictionary<String, String> parameters,
@@ -40,8 +41,8 @@ namespace com.moceanmobile.mast
         private AdRequestCompleted completedCallback;
         private AdRequestError errorCallback;
         private AdRequestFailed failedCallback;
-        
-        private System.Threading.Timer timeoutTimer;
+
+        private System.Threading.CancellationTokenSource timeoutTokenSource = null;
         private System.Net.HttpWebRequest webRequest = null;
         
         private AdRequest(int timeout, string adServerURL, string userAgent, Dictionary<String, String> parameters,
@@ -56,14 +57,13 @@ namespace com.moceanmobile.mast
             string requestURL = adServerURL + "?";
             foreach (KeyValuePair<String, String> param in parameters)
             {
-                requestURL += System.Net.HttpUtility.UrlEncode(param.Key) + "=" +
-                    System.Net.HttpUtility.UrlEncode(param.Value) + "&";
+                requestURL += WebUtility.UrlEncode(param.Key) + "=" +
+                    WebUtility.UrlEncode(param.Value) + "&";
             }
             requestURL = requestURL.Substring(0, requestURL.Length - 1);
 
             this.requestURL = requestURL;
         }
-
 
 
         public string URL
@@ -77,10 +77,16 @@ namespace com.moceanmobile.mast
             this.errorCallback = null;
             this.failedCallback = null;
 
-            if (this.timeoutTimer != null)
+            if (timeoutTokenSource != null)
             {
-                this.timeoutTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-                this.timeoutTimer = null;
+                try
+                {
+                    timeoutTokenSource.Cancel();
+                }
+                catch (Exception) {};
+
+                timeoutTokenSource.Dispose();
+                timeoutTokenSource = null;
             }
 
             if (this.webRequest != null)
@@ -94,30 +100,11 @@ namespace com.moceanmobile.mast
         {
             try
             {
-                System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(OnRequestWork), null);
-            }
-            catch (Exception ex)
-            {
-                if (this.failedCallback != null)
-                {
-                    this.failedCallback(this, ex);
-                }
-
-                Cancel();
-            }
-        }
-
-        // invoked from the thread pool
-        private void OnRequestWork(Object state)
-        {
-            try
-            {
-                this.timeoutTimer = new System.Threading.Timer(new System.Threading.TimerCallback(OnTimeout),
-                    null, this.timeout, System.Threading.Timeout.Infinite);
+                Task.Factory.StartNew(new Action(TimeoutTask));
 
                 this.webRequest = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(this.requestURL);
-                this.webRequest.UserAgent = this.userAgent;
-                
+                //this.webRequest.Headers[HttpRequestHeader.UserAgent] = this.userAgent;
+
                 IAsyncResult result = this.webRequest.BeginGetResponse(new AsyncCallback(OnRequestResponse), null);
             }
             catch (Exception ex)
@@ -130,7 +117,7 @@ namespace com.moceanmobile.mast
                 Cancel();
             }
         }
-
+  
         // invoke on request timeout
         private void OnTimeout(Object state)
         {
@@ -149,19 +136,34 @@ namespace com.moceanmobile.mast
             Cancel();
         }
 
+        // invoked as timeout task
+        private void TimeoutTask()
+        {
+            timeoutTokenSource = new CancellationTokenSource();
+            Task delayTask = Task.Delay(this.timeout, timeoutTokenSource.Token);
+
+            try
+            {
+                delayTask.Wait();
+            }
+            catch (Exception) { }
+
+            if (delayTask.Status == TaskStatus.RanToCompletion)
+            {
+                OnTimeout(null);
+            }
+        }
+
         // invoked on response
         private void OnRequestResponse(IAsyncResult ar)
         {
-            if (this.timeoutTimer != null)
-                this.timeoutTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-            
             try
             {
                 System.Net.HttpWebResponse response = (System.Net.HttpWebResponse)this.webRequest.EndGetResponse(ar);
 
                 System.IO.Stream responseStream = response.GetResponseStream();
 
-                System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(OnParseWork), responseStream);
+                Task.Factory.StartNew(new Action<object>(OnParseWork), responseStream);
             }
             catch (Exception ex)
             {
@@ -289,11 +291,16 @@ namespace com.moceanmobile.mast
 
         public void Dispose()
         {
-            if (this.timeoutTimer != null)
+            if (this.timeoutTokenSource != null)
             {
-                this.timeoutTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-                this.timeoutTimer.Dispose();
-                this.timeoutTimer = null;
+                try
+                {
+                    this.timeoutTokenSource.Cancel();
+                }
+                catch (Exception) { }
+
+                this.timeoutTokenSource.Dispose();
+                this.timeoutTokenSource = null;
             }
         }
     }

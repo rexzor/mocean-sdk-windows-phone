@@ -1,13 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
+using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.IO;
+
+#if MAST_PHONE
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Input;
+using System.Windows.Navigation;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using Microsoft.Phone.Controls;
+#elif MAST_STORE
+using Windows.Foundation;
+using Windows.Graphics.Display;
+using Windows.System;
+using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
+using WebBrowser = Windows.UI.Xaml.Controls.WebView;
+#endif
+
 using com.moceanmobile.mast.mraid;
 
 namespace com.moceanmobile.mast
 {
+    
     /// <summary>
     /// Possible log levels for SDK logging.
     /// </summary>
@@ -54,12 +82,13 @@ namespace com.moceanmobile.mast
     {
         private static string UserAgent = null;
         private static int CloseAreaSize = 50;
-        
+
         /// <summary>
         /// Default inline ad constructor.
         /// Created instance to be used inline with other application content.
         /// </summary>
-        public MASTAdView() : this(false)
+        public MASTAdView()
+            : this(false)
         {
 
         }
@@ -74,16 +103,24 @@ namespace com.moceanmobile.mast
         {
             base.Loaded += MASTAdView_Loaded;
             base.SizeChanged += MASTAdView_SizeChanged;
+#if MAST_PHONE
             base.Tap += MASTAdView_Tap;
+#elif MAST_STORE
+            base.Tapped += MASTAdView_Tapped;
+#endif
 
             InitializeAdContainers();
 
             if (string.IsNullOrEmpty(UserAgent))
             {
                 WebBrowser uaBrowser = new WebBrowser();
+#if MAST_PHONE
                 uaBrowser.LoadCompleted += UABrowser_LoadCompleted;
                 uaBrowser.NavigationFailed += UABrowser_NavigationFailed;
                 uaBrowser.IsScriptEnabled = true;
+#elif MAST_STORE
+                uaBrowser.NavigationCompleted += UABrowser_NavigationCompleted;
+#endif
                 uaBrowser.NavigateToString("<!DOCTYPE html><html><head><script type='text/javascript'/></head><body></body></html>");
             }
 
@@ -280,14 +317,14 @@ namespace com.moceanmobile.mast
                 get { return this.exception; }
             }
         }
-        
+
         /// <summary>
         /// OpeningURL CancelEventArgs
         /// Note:  The SDK opening of the URL can be canceled through the Cancel property.
         /// If canceled, the application is responsible for opening the URL or notifying the user that their
         /// interaction has been canceled.
         /// </summary>
-        public class OpeningURLEventArgs : System.ComponentModel.CancelEventArgs
+        public class OpeningURLEventArgs : CancelEventArgs
         {
             public OpeningURLEventArgs(string url)
             {
@@ -303,34 +340,34 @@ namespace com.moceanmobile.mast
                 get { return this.url; }
             }
         }
-                
+
         /// <summary>
         /// AdResized EventArgs
         /// </summary>
         public class AdResizedEventArgs : EventArgs
         {
-            public AdResizedEventArgs(System.Windows.Rect rect)
+            public AdResizedEventArgs(Rect rect)
             {
                 this.rect = rect;
             }
 
-            private readonly System.Windows.Rect rect;
+            private readonly Rect rect;
             /// <summary>
             /// The location of the screen where the ad has been resized too.
             /// Note that resizing doesn't affect inline layout and instead is rendered on top of existing content.
             /// </summary>
-            public System.Windows.Rect Rect
+            public Rect Rect
             {
                 get { return this.rect; }
             }
         }
-        
+
         /// <summary>
         /// LoggingEvent EventArgs
         /// Note:  The SDK logging of the event can be canceled through the Cancel property.
         /// If canceled, the application is responsible for logging the event as necessary.
         /// </summary>
-        public class LoggingEventEventArgs : System.ComponentModel.CancelEventArgs
+        public class LoggingEventEventArgs : CancelEventArgs
         {
             public LoggingEventEventArgs(LogLevel logLevel, string entry)
             {
@@ -356,7 +393,7 @@ namespace com.moceanmobile.mast
                 get { return this.entry; }
             }
         }
-        
+
         /// <summary>
         /// ThirdPartyRequest EventArgs
         /// </summary>
@@ -394,7 +431,7 @@ namespace com.moceanmobile.mast
         /// If canceled, the application is responsible for opening/playing the URL or notifying the user that their
         /// interaction has been canceled.
         /// </summary>
-        public class PlayingVideoEventArgs : System.ComponentModel.CancelEventArgs
+        public class PlayingVideoEventArgs : CancelEventArgs
         {
             public PlayingVideoEventArgs(string url)
             {
@@ -410,7 +447,7 @@ namespace com.moceanmobile.mast
                 get { return this.url; }
             }
         }
-        
+
         /// <summary>
         /// SavingCalendarEvent EventArgs
         /// Note:  The SDK saving of the event can be canceled through the Cancel property.
@@ -419,7 +456,7 @@ namespace com.moceanmobile.mast
         /// if the application has it's own calendar.  It could otherwise render a UI where the user could
         /// possibly copy the caledar event and later paste it to a new calendar entry.
         /// </summary>
-        public class SavingCalendarEventEventArgs : System.ComponentModel.CancelEventArgs
+        public class SavingCalendarEventEventArgs : CancelEventArgs
         {
             public SavingCalendarEventEventArgs(string calendarEvent)
             {
@@ -442,7 +479,7 @@ namespace com.moceanmobile.mast
         /// If canceled, the application is responsible for saving the photo or notifying the user that their
         /// interaction has been canceled.
         /// </summary>
-        public class SavingPhotoEventArgs : System.ComponentModel.CancelEventArgs
+        public class SavingPhotoEventArgs : CancelEventArgs
         {
             public SavingPhotoEventArgs(string url)
             {
@@ -458,7 +495,7 @@ namespace com.moceanmobile.mast
                 get { return this.url; }
             }
         }
-        
+
         /// <summary>
         /// ProcessedRichmediaRequest EventArgs
         /// </summary>
@@ -549,7 +586,7 @@ namespace com.moceanmobile.mast
                 this.AdExpanded(this, EventArgs.Empty);
         }
 
-        private void OnAdResized(System.Windows.Rect rect)
+        private void OnAdResized(Rect rect)
         {
             if (this.AdResized != null)
             {
@@ -712,8 +749,10 @@ namespace com.moceanmobile.mast
 
         private void UpdateLayouts()
         {
+#if MAST_PHONE
             if (this.phoneApplicationPage != null)
                 this.phoneApplicationPage.UpdateLayout();
+#endif
 
             if (this.resizePopup != null)
                 this.resizePopup.UpdateLayout();
@@ -722,16 +761,25 @@ namespace com.moceanmobile.mast
                 this.expandPopup.UpdateLayout();
         }
 
+#if MAST_PHONE
         private PhoneApplicationPage phoneApplicationPage = null;
 
         private PhoneApplicationPage GetParentPage()
+#elif MAST_STORE
+        private Page GetParentPage()
+#endif
         {
             object obj = this.Parent;
             while (obj != null)
             {
-                if (obj is PhoneApplicationPage)
+                if (obj is Page)
                 {
+#if MAST_PHONE
                     return (PhoneApplicationPage)obj;
+#elif MAST_STORE
+                    return (Page)obj;
+#endif
+                    
                 }
 
                 if (obj is FrameworkElement)
@@ -746,13 +794,16 @@ namespace com.moceanmobile.mast
             return null;
         }
 
-        private void MASTAdView_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void MASTAdView_Loaded(object sender, RoutedEventArgs e)
         {
+#if MAST_PHONE
             // TODO: Is this valid for all applications?
-            //this.phoneApplicationPage = (PhoneApplicationPage)((PhoneApplicationFrame)System.Windows.Application.Current.RootVisual).Content;
+            //this.phoneApplicationPage = (PhoneApplicationPage)((PhoneApplicationFrame)Application.Current.RootVisual).Content;
+
             this.phoneApplicationPage = GetParentPage();
             this.phoneApplicationPage.OrientationChanged += Page_OrientationChanged;
             this.phoneApplicationPage.BackKeyPress += PhoneApplicationPage_BackKeyPress;
+#endif
 
             PerformAdTracking();
 
@@ -762,7 +813,7 @@ namespace com.moceanmobile.mast
             }
         }
 
-        private void MASTAdView_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
+        private void MASTAdView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             this.imageBorder.Width = e.NewSize.Width;
             this.imageBorder.Height = e.NewSize.Height;
@@ -777,7 +828,7 @@ namespace com.moceanmobile.mast
             }
         }
 
-        private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
+        private void PhoneApplicationPage_BackKeyPress(object sender, CancelEventArgs e)
         {
             switch (this.placementType)
             {
@@ -810,6 +861,7 @@ namespace com.moceanmobile.mast
             }
         }
 
+#if MAST_PHONE
         private void Page_OrientationChanged(object sender, OrientationChangedEventArgs e)
         {
             if (this.IsExpanded)
@@ -831,43 +883,80 @@ namespace com.moceanmobile.mast
                 SetExpandOrientation(e.Orientation, bridge, border);
             }
         }
+#endif
 
-        private void SetExpandOrientation(Microsoft.Phone.Controls.PageOrientation orientation, Bridge bridge, Border border)
+#if MAST_PHONE
+        private void SetExpandOrientation(PageOrientation orientation, Bridge bridge, Border border)
+#elif MAST_STORE
+        private void SetExpandOrientation(DisplayOrientations orientation, Bridge bridge, Border border)
+#endif
         {
-            System.Windows.Media.RotateTransform transform = new System.Windows.Media.RotateTransform();
+            double pageWidth = 0;
+            double pageHeight = 0;
+#if MAST_PHONE
+            pageWidth = Application.Current.Host.Content.ActualWidth;
+            pageHeight = Application.Current.Host.Content.ActualHeight;
+#elif MAST_STORE
+            Page parentPage = GetParentPage();
+            if (parentPage == null)
+            {
+                parentPage = Windows.UI.Xaml.Window.Current.Content as Page;
+            }
+
+            pageWidth = parentPage.ActualWidth;
+            pageHeight = parentPage.ActualHeight;
+#endif
+
+            RotateTransform transform = new RotateTransform();
             switch (orientation)
             {
+#if MAST_PHONE
                 case PageOrientation.LandscapeLeft:
+#elif MAST_STORE
+                case DisplayOrientations.Landscape:
+#endif
                     transform.Angle = 90;
                     this.expandCanvas.RenderTransform = transform;
-                    this.expandPopup.HorizontalOffset = System.Windows.Application.Current.Host.Content.ActualWidth;
+                    this.expandPopup.HorizontalOffset = pageWidth;
                     this.expandPopup.VerticalOffset = 0;
-                    this.expandCanvas.Width = this.expandPopup.Width = System.Windows.Application.Current.Host.Content.ActualHeight;
-                    this.expandCanvas.Height = this.expandPopup.Height = System.Windows.Application.Current.Host.Content.ActualWidth;
+                    this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
+                    this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
                     break;
+#if MAST_PHONE
                 case PageOrientation.LandscapeRight:
+#elif MAST_STORE
+                case DisplayOrientations.LandscapeFlipped:
+#endif
                     transform.Angle = -90;
                     this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.HorizontalOffset = 0;
-                    this.expandPopup.VerticalOffset = System.Windows.Application.Current.Host.Content.ActualHeight;
-                    this.expandCanvas.Width = this.expandPopup.Width = System.Windows.Application.Current.Host.Content.ActualHeight;
-                    this.expandCanvas.Height = this.expandPopup.Height = System.Windows.Application.Current.Host.Content.ActualWidth;
+                    this.expandPopup.VerticalOffset = pageHeight;
+                    this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
+                    this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
                     break;
+#if MAST_PHONE
                 case PageOrientation.PortraitUp:
+#elif MAST_STORE
+                case DisplayOrientations.Portrait:
+#endif
                     transform = null;
                     this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.HorizontalOffset = 0;
                     this.expandPopup.VerticalOffset = 0;
-                    this.expandCanvas.Width = this.expandPopup.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
-                    this.expandCanvas.Height = this.expandPopup.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
+                    this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
+                    this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
                     break;
+#if MAST_PHONE
                 case PageOrientation.PortraitDown:
+#elif MAST_STORE
+                case DisplayOrientations.PortraitFlipped:
+#endif
                     transform.Angle = 180;
                     this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.HorizontalOffset = 0;
                     this.expandPopup.VerticalOffset = 0;
-                    this.expandCanvas.Width = this.expandPopup.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
-                    this.expandCanvas.Height = this.expandPopup.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
+                    this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
+                    this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
                     break;
             }
 
@@ -877,7 +966,11 @@ namespace com.moceanmobile.mast
             }
         }
 
-        private void MASTAdView_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+#if MAST_PHONE
+        private void MASTAdView_Tap(object sender, GestureEventArgs e)
+#elif MAST_STORE
+        private void MASTAdView_Tapped(object sender, TappedRoutedEventArgs e)
+#endif
         {
             if (this.adDescriptor == null)
                 return;
@@ -889,38 +982,49 @@ namespace com.moceanmobile.mast
             if (String.IsNullOrEmpty(url) == false)
             {
                 Uri uri = new Uri(url);
-                if (OnOpeningURL(url) && OpenURL(uri))
+                if (OnOpeningURL(url))
                 {
-                    e.Handled = true;
-                    return;
+                    if (OpenURL(uri))
+                    {
+                        e.Handled = true;
+                        return;
+                    }
                 }
             }
         }
 
-        private void UABrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+
+#if MAST_PHONE
+        private void UABrowser_LoadCompleted(object sender, NavigationEventArgs e)
         {
             WebBrowser webBrowser = sender as WebBrowser;
-            webBrowser.LoadCompleted -= UABrowser_LoadCompleted;
-            webBrowser.NavigationFailed -= UABrowser_NavigationFailed;
+            string ua = webBrowser.InvokeScript("eval", new string[] { "navigator.userAgent.toString()" }).ToString();
+#elif MAST_STORE
+        async private void UABrowser_NavigationCompleted(WebBrowser sender, WebViewNavigationCompletedEventArgs args)
+        {
+            string ua = null;
+            if (args.IsSuccess)
+            {
+                WebBrowser webBrowser = sender as WebBrowser;
+                ua = await webBrowser.InvokeScriptAsync("eval", new string[] { "navigator.userAgent.toString()" });
+            }
+#endif
 
-            string ua = (string)webBrowser.InvokeScript("eval", "navigator.userAgent.toString()");
             if (string.IsNullOrEmpty(UserAgent))
                 UserAgent = ua;
 
             ResumeInternalUpdate();
         }
 
-        private void UABrowser_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
+#if MAST_PHONE
+        private void UABrowser_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            WebBrowser webBrowser = sender as WebBrowser;
-            webBrowser.LoadCompleted -= UABrowser_LoadCompleted;
-            webBrowser.NavigationFailed -= UABrowser_NavigationFailed;
-            
             if (string.IsNullOrEmpty(UserAgent))
                 UserAgent = Defaults.ERROR_USER_AGENT;
 
             ResumeInternalUpdate();
         }
+#endif
 
         #endregion
 
@@ -928,7 +1032,9 @@ namespace com.moceanmobile.mast
 
         private Border imageBorder = new Border();
         private Image imageControl = new Image();
+#if MAST_ANIMATED_GIF
         private ImageTools.Controls.AnimatedImage animatedImageControl = new ImageTools.Controls.AnimatedImage();
+#endif
 
         /// <summary>
         /// Border used to wrap any image based ads.
@@ -946,6 +1052,7 @@ namespace com.moceanmobile.mast
             get { return this.imageControl; }
         }
 
+#if MAST_ANIMATED_GIF
         /// <summary>
         /// Control used to render any GIF based image ads (providing animation support).
         /// </summary>
@@ -953,7 +1060,8 @@ namespace com.moceanmobile.mast
         {
             get { return this.animatedImageControl; }
         }
-        
+#endif
+
         private Border textBorder = new Border();
         private TextBlock textControl = new TextBlock();
 
@@ -964,7 +1072,7 @@ namespace com.moceanmobile.mast
         {
             get { return this.textBorder; }
         }
-        
+
         /// <summary>
         /// Control used to render any text based ads (non-HTML).
         /// </summary>
@@ -1003,21 +1111,27 @@ namespace com.moceanmobile.mast
 
         private void InitializeAdContainers()
         {
-            this.imageControl.Stretch = System.Windows.Media.Stretch.Uniform;
+            this.imageControl.Stretch = Stretch.Uniform;
             this.imageBorder.Child = this.imageControl;
             this.imageBorder.SizeChanged += border_SizeChanged;
-            
-            this.textControl.TextAlignment = System.Windows.TextAlignment.Center;
-            this.textControl.TextWrapping = System.Windows.TextWrapping.Wrap;
+
+            this.textControl.TextAlignment = TextAlignment.Center;
+            this.textControl.TextWrapping = TextWrapping.Wrap;
             this.textBorder.Child = this.textControl;
             this.textBorder.SizeChanged += border_SizeChanged;
 
+#if MAST_PHONE
             this.webControl.IsGeolocationEnabled = this.allowBrowserGeolocation;
             this.webControl.IsScriptEnabled = true;
-            this.webControl.NavigationFailed += webControl_NavigationFailed;
+            this.webControl.LoadCompleted += webControl_LoadCompleted;
             this.webControl.Navigating += webControl_Navigating;
             this.webControl.Navigated += webControl_Navigated;
-            this.webControl.LoadCompleted += webControl_LoadCompleted;
+            this.webControl.NavigationFailed += webControl_NavigationFailed;      
+#elif MAST_STORE
+            this.webControl.NavigationStarting += webControl_NavigationStarting;
+            this.webControl.NavigationCompleted += webControl_NavigationCompleted;
+#endif
+
             this.webControl.ScriptNotify += webControl_ScriptNotify;
             this.webControl.SizeChanged += webControl_SizeChanged;
             this.webBorder.Child = this.webControl;
@@ -1025,15 +1139,19 @@ namespace com.moceanmobile.mast
 
             Canvas.SetZIndex(this.inlineCloseBorder, byte.MaxValue);
             this.inlineCloseBorder.SizeChanged += border_SizeChanged;
+#if MAST_PHONE
             this.inlineCloseBorder.Tap += closeControl_Tap;
+#elif MAST_STORE
+            this.inlineCloseBorder.Tapped += closeControl_Tapped;
+#endif
         }
 
-        private void border_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
+        private void border_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Border border = sender as Border;
             if (border != null)
             {
-                System.Windows.FrameworkElement borderChild = border.Child as System.Windows.FrameworkElement;
+                FrameworkElement borderChild = border.Child as FrameworkElement;
                 if (borderChild != null)
                 {
                     borderChild.Width = border.ActualWidth;
@@ -1057,12 +1175,15 @@ namespace com.moceanmobile.mast
 
         #region Expand Popup Control
 
-        private System.Windows.Controls.Primitives.Popup expandPopup = null;
+        private Popup expandPopup = null;
         private Canvas expandCanvas = new Canvas();
         private Border expandCloseBorder = new Border();
+
+#if MAST_PHONE
         private bool expandPopupHidesTray = false;
         private bool expandPopupHidesBar = false;
-        
+#endif
+
         /// <summary>
         /// Determines if the instance is currently expanded.
         /// If expanded then there is an SDK controlled full sized popop control rendered on top of application content.
@@ -1074,7 +1195,7 @@ namespace com.moceanmobile.mast
                 if (this.expandPopup == null)
                     return false;
 
-                return this.expandPopup.IsOpen;               
+                return this.expandPopup.IsOpen;
             }
         }
 
@@ -1082,23 +1203,34 @@ namespace com.moceanmobile.mast
         {
             if (expandPopup == null)
             {
-                this.expandPopup = new System.Windows.Controls.Primitives.Popup();
+                this.expandPopup = new Popup();
                 this.expandPopup.HorizontalOffset = 0;
                 this.expandPopup.VerticalOffset = 0;
+                this.expandPopup.HorizontalAlignment = HorizontalAlignment.Stretch;
+                this.expandPopup.VerticalAlignment = VerticalAlignment.Stretch;
+                this.expandPopup.SizeChanged += expandPopup_SizeChanged;
 
                 this.expandCanvas.RenderTransform = null;
                 this.expandCanvas.HorizontalAlignment = HorizontalAlignment.Stretch;
                 this.expandCanvas.VerticalAlignment = VerticalAlignment.Stretch;
-                this.expandCanvas.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+                this.expandCanvas.Background = new SolidColorBrush(Colors.Black);
                 this.expandCanvas.SizeChanged += expandCanvas_SizeChanged;
+#if MAST_PHONE
                 this.expandCanvas.Tap += MASTAdView_Tap;
+#elif MAST_STORE
+                this.expandCanvas.Tapped += MASTAdView_Tapped;
+#endif
 
                 this.expandCloseBorder.Width = CloseAreaSize;
                 this.expandCloseBorder.Height = CloseAreaSize;
                 this.expandCloseBorder.Padding = new Thickness(5);
-                this.expandCloseBorder.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent);
+                this.expandCloseBorder.Background = new SolidColorBrush(Colors.Transparent);
                 this.expandCloseBorder.SizeChanged += expandCloseBorder_SizeChanged;
+#if MAST_PHONE
                 this.expandCloseBorder.Tap += closeControl_Tap;
+#elif MAST_STORE
+                this.expandCloseBorder.Tapped += closeControl_Tapped;
+#endif
                 Canvas.SetZIndex(this.expandCloseBorder, byte.MaxValue);
 
                 this.expandPopup.Child = this.expandCanvas;
@@ -1108,6 +1240,7 @@ namespace com.moceanmobile.mast
             this.expandPopup.VerticalOffset = 0;
             this.expandCanvas.RenderTransform = null;
 
+#if MAST_PHONE
             this.expandPopupHidesTray = Microsoft.Phone.Shell.SystemTray.IsVisible;
             if (this.expandPopupHidesTray)
                 Microsoft.Phone.Shell.SystemTray.IsVisible = false;
@@ -1117,6 +1250,7 @@ namespace com.moceanmobile.mast
                 this.expandPopupHidesBar = true;
                 this.phoneApplicationPage.ApplicationBar.IsVisible = false;
             }
+#endif
 
             if (border != null)
             {
@@ -1124,8 +1258,21 @@ namespace com.moceanmobile.mast
                 this.expandCanvas.Children.Add(this.expandCloseBorder);
             }
 
-            this.expandCanvas.Width = this.expandPopup.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
-            this.expandCanvas.Height = this.expandPopup.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
+            double pageWidth = 0;
+            double pageHeight = 0;
+
+            Page parentPage = GetParentPage();
+            if (parentPage != null)
+            {
+                pageWidth = parentPage.ActualWidth;
+                pageHeight = parentPage.ActualHeight;
+            }
+
+            Panel contentPanel = parentPage.Content as Panel;
+            if (contentPanel != null)
+            {
+                contentPanel.Children.Add(this.expandPopup);
+            }
 
             this.expandPopup.IsOpen = true;
         }
@@ -1140,12 +1287,20 @@ namespace com.moceanmobile.mast
             if (this.expandCanvas.Children.Count > 0)
                 border = (Border)expandCanvas.Children[0];
 
+            if (this.expandPopup.Parent != null)
+            {
+                Panel contentPanel = this.expandPopup.Parent as Panel;
+                contentPanel.Children.Remove(this.expandPopup);
+            }
+
+#if MAST_PHONE
             if (this.expandPopupHidesTray)
                 Microsoft.Phone.Shell.SystemTray.IsVisible = this.expandPopupHidesTray;
 
             if (this.expandPopupHidesBar)
                 this.phoneApplicationPage.ApplicationBar.IsVisible = this.expandPopupHidesBar;
-            
+#endif
+
             this.expandPopup.IsOpen = false;
             this.expandCanvas.Children.Clear();
 
@@ -1155,13 +1310,19 @@ namespace com.moceanmobile.mast
             return border;
         }
 
-        private void expandCanvas_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
+        private void expandPopup_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            this.expandCanvas.Width = e.NewSize.Width;
+            this.expandCanvas.Height = e.NewSize.Height;
+        }
+
+        private void expandCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Canvas canvas = sender as Canvas;
             if (canvas == null)
                 return;
 
-            foreach (System.Windows.FrameworkElement element in this.expandCanvas.Children)
+            foreach (FrameworkElement element in this.expandCanvas.Children)
             {
                 if (element == this.expandCloseBorder)
                     continue;
@@ -1174,7 +1335,7 @@ namespace com.moceanmobile.mast
             Canvas.SetTop(this.expandCloseBorder, 0);
         }
 
-        private void expandCloseBorder_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
+        private void expandCloseBorder_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Border border = sender as Border;
             FrameworkElement child = border.Child as FrameworkElement;
@@ -1185,11 +1346,11 @@ namespace com.moceanmobile.mast
             child.Width = e.NewSize.Width - border.Padding.Left - border.Padding.Right;
             child.Height = e.NewSize.Height - border.Padding.Top - border.Padding.Bottom;
         }
-        
+
         #endregion
 
         #region Internal Browser
-        
+
         /// <summary>
         /// Determines if the instance currently has it's internal browser open.
         /// If the browser is open then there is an SDK controlled full sized popop control rendered on top of application content.
@@ -1198,12 +1359,16 @@ namespace com.moceanmobile.mast
         {
             get
             {
+#if MAST_PHONE
                 Uri currentPage = this.phoneApplicationPage.NavigationService.Source;
                 if (currentPage != null)
                 {
                     if (currentPage.OriginalString.StartsWith(InternalBrowserPage))
                         return true;
                 }
+#elif MAST_STORE
+
+#endif
                 return false;
             }
         }
@@ -1212,15 +1377,16 @@ namespace com.moceanmobile.mast
 
         private void ShowInternalBrowser(string url)
         {
+#if MAST_PHONE
             string pageUrl = InternalBrowserPage;
             pageUrl += "?url=" + Uri.EscapeDataString(url);
 
             this.phoneApplicationPage.NavigationService.Navigate(new Uri(pageUrl, UriKind.Relative));
-            
-            System.Collections.Generic.IEnumerable<System.Windows.Navigation.JournalEntry> backStack = 
+
+            IEnumerable<JournalEntry> backStack =
                 this.phoneApplicationPage.NavigationService.BackStack;
 
-            foreach (System.Windows.Navigation.JournalEntry entry in backStack)
+            foreach (JournalEntry entry in backStack)
             {
                 Uri uri = entry.Source;
                 if (uri.OriginalString.StartsWith(InternalBrowserPage))
@@ -1231,6 +1397,9 @@ namespace com.moceanmobile.mast
 
                 break;
             }
+#elif MAST_STORE
+
+#endif
 
             OnInternalBrowserOpened();
         }
@@ -1239,8 +1408,11 @@ namespace com.moceanmobile.mast
         {
             if (IsInternalBrowserOpen)
             {
+#if MAST_PHONE
                 this.phoneApplicationPage.NavigationService.GoBack();
+#elif MAST_STORE
 
+#endif
                 OnInternalBrowserClosed();
             }
         }
@@ -1249,7 +1421,7 @@ namespace com.moceanmobile.mast
 
         #region Resize Popup Control
 
-        private System.Windows.Controls.Primitives.Popup resizePopup = null;
+        private Popup resizePopup = null;
         private Canvas resizeCanvas = new Canvas();
         private Border resizeCloseBorder = new Border();
 
@@ -1272,17 +1444,21 @@ namespace com.moceanmobile.mast
         {
             if (resizePopup == null)
             {
-                this.resizePopup = new System.Windows.Controls.Primitives.Popup();
+                this.resizePopup = new Popup();
 
                 this.resizeCanvas.HorizontalAlignment = HorizontalAlignment.Stretch;
                 this.resizeCanvas.VerticalAlignment = VerticalAlignment.Stretch;
-                this.resizeCanvas.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+                this.resizeCanvas.Background = new SolidColorBrush(Colors.Black);
                 this.resizeCanvas.SizeChanged += resizeCanvas_SizeChanged;
 
                 this.resizeCloseBorder.Width = CloseAreaSize;
                 this.resizeCloseBorder.Height = CloseAreaSize;
-                this.resizeCloseBorder.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Transparent);
+                this.resizeCloseBorder.Background = new SolidColorBrush(Colors.Transparent);
+#if MAST_PHONE
                 this.resizeCloseBorder.Tap += closeControl_Tap;
+#elif MAST_STORE
+                this.resizeCloseBorder.Tapped += closeControl_Tapped;
+#endif
                 Canvas.SetZIndex(this.resizeCloseBorder, byte.MaxValue);
 
                 this.resizePopup.Child = this.resizeCanvas;
@@ -1323,13 +1499,13 @@ namespace com.moceanmobile.mast
             return border;
         }
 
-        private void resizeCanvas_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
+        private void resizeCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Canvas canvas = sender as Canvas;
             if (canvas == null)
                 return;
 
-            foreach (System.Windows.FrameworkElement element in this.resizeCanvas.Children)
+            foreach (FrameworkElement element in this.resizeCanvas.Children)
             {
                 if (element == this.resizeCloseBorder)
                     continue;
@@ -1343,9 +1519,17 @@ namespace com.moceanmobile.mast
 
         #region Close Control
 
+#if MAST_PHONE
         private System.Threading.Timer closeButtonDelayTimer = null;
+#elif MAST_STORE
+        private Windows.System.Threading.ThreadPoolTimer closeButtonDelayTimer = null;
+#endif
 
-        private void closeControl_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+#if MAST_PHONE
+        private void closeControl_Tap(object sender, GestureEventArgs e)
+#elif MAST_STORE
+        private void closeControl_Tapped(object sender, TappedRoutedEventArgs e)
+#endif
         {
             e.Handled = true;
 
@@ -1380,7 +1564,12 @@ namespace com.moceanmobile.mast
         {
             if (this.closeButtonDelayTimer != null)
             {
+#if MAST_PHONE
                 this.closeButtonDelayTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+#elif MAST_STORE
+                this.closeButtonDelayTimer.Cancel();
+                this.closeButtonDelayTimer = null;
+#endif
             }
 
             // Either way, both this and the two part "share" the same state info.
@@ -1411,32 +1600,51 @@ namespace com.moceanmobile.mast
                 }
                 else
                 {
+#if MAST_PHONE
                     if (this.closeButtonDelayTimer == null)
                     {
                         this.closeButtonDelayTimer = new System.Threading.Timer(new System.Threading.TimerCallback(OnCloseButtonDelayTimer));
                     }
 
                     this.closeButtonDelayTimer.Change(this.closeButtonDelay * 1000, System.Threading.Timeout.Infinite);
+#elif MAST_STORE
+                    this.closeButtonDelayTimer = Windows.System.Threading.ThreadPoolTimer.CreateTimer(OnCloseButtonDelayTimer,
+                        TimeSpan.FromSeconds(this.closeButtonDelay));
+#endif
                 }
             }
         }
 
+#if MAST_STORE
+        async
+#endif
         private void RenderCloseButton()
         {
-            System.Windows.Media.ImageSource imageSource = this.closeButtonCustomSource;
+            ImageSource imageSource = this.closeButtonCustomSource;
 
             if (imageSource == null)
             {
-                System.IO.Stream resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(Defaults.CLOSE_BUTTON_RESOURCE);
-                System.Windows.Media.Imaging.BitmapImage bitmapImage = new System.Windows.Media.Imaging.BitmapImage();
+                BitmapImage bitmapImage = new BitmapImage();
+
+                Assembly assembly = this.GetType().GetTypeInfo().Assembly;
+                System.IO.Stream resourceStream = assembly.GetManifestResourceStream(Defaults.CLOSE_BUTTON_RESOURCE);
+
+#if MAST_PHONE
                 bitmapImage.SetSource(resourceStream);
+#elif MAST_STORE
+                Windows.Storage.Streams.InMemoryRandomAccessStream imras = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+                await Windows.Storage.Streams.RandomAccessStream.CopyAsync(resourceStream.AsInputStream(), imras);
+                imras.Seek(0);
+                await bitmapImage.SetSourceAsync(imras);
+#endif
+
                 imageSource = bitmapImage;
             }
-            
+
             Image buttonImage = new Image();
-            buttonImage.Stretch = System.Windows.Media.Stretch.Uniform;
+            buttonImage.Stretch = Stretch.Uniform;
             buttonImage.Source = imageSource;
-            
+
             if (this.mraidBridge != null)
             {
                 switch (this.mraidBridge.State)
@@ -1476,7 +1684,7 @@ namespace com.moceanmobile.mast
 
         private void OnCloseButtonDelayTimer(object state)
         {
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(delegate
+            MainThreadDispatch(delegate
             {
                 RenderCloseButton();
             });
@@ -1505,7 +1713,7 @@ namespace com.moceanmobile.mast
             set { this.adServerURL = value; }
         }
 
-        private Dictionary<string, string> adRequestParameters = new Dictionary<string,string>();
+        private Dictionary<string, string> adRequestParameters = new Dictionary<string, string>();
         /// <summary>
         /// The current set of ad request parameters.
         /// The SDK will set various parameters based on configuration and other options.
@@ -1577,11 +1785,11 @@ namespace com.moceanmobile.mast
             set { this.closeButtonDelay = value; }
         }
 
-        private System.Windows.Media.ImageSource closeButtonCustomSource = null;
+        private ImageSource closeButtonCustomSource = null;
         /// <summary>
         /// The custom image source to use for customizing the close button.
         /// </summary>
-        public System.Windows.Media.ImageSource CloseButtonCustomSource
+        public ImageSource CloseButtonCustomSource
         {
             get { return this.closeButtonCustomSource; }
             set { this.closeButtonCustomSource = value; }
@@ -1604,14 +1812,18 @@ namespace com.moceanmobile.mast
         /// </summary>
         public bool AllowBrowserGeolocation
         {
+#if MAST_PHONE
             get { return this.allowBrowserGeolocation; }
-            set 
+            set
             {
                 this.allowBrowserGeolocation = value;
-                   
+
                 if (this.webControl != null)
                     this.webControl.IsGeolocationEnabled = true;
             }
+#elif MAST_STORE
+            get { return allowBrowserGeolocation; }
+#endif
         }
 
         #endregion
@@ -1640,14 +1852,19 @@ namespace com.moceanmobile.mast
                     {
                         OnLeavingApplication();
 
+#if MAST_PHONE
                         Microsoft.Phone.Tasks.WebBrowserTask task = new Microsoft.Phone.Tasks.WebBrowserTask();
                         task.Uri = uri;
                         task.Show();
+#elif MAST_STORE
+                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+#endif
                     }
                     return true;
 
                 case "mailto":
                     {
+#if MAST_PHONE
                         string to = uri.UserInfo + "@" + uri.Host;
                         string subject = string.Empty;
                         string body = string.Empty;
@@ -1680,11 +1897,15 @@ namespace com.moceanmobile.mast
                         task.Subject = subject;
                         task.Body = body;
                         task.Show();
+#elif MAST_STORE
+                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+#endif
                     }
                     return true;
 
                 case "tel":
                     {
+#if MAST_PHONE
                         string path = uri.AbsolutePath;
                         string[] pathParts = path.Split(new char[] { ';' });
                         string number = pathParts[0];
@@ -1694,11 +1915,15 @@ namespace com.moceanmobile.mast
                         Microsoft.Phone.Tasks.PhoneCallTask task = new Microsoft.Phone.Tasks.PhoneCallTask();
                         task.PhoneNumber = uri.UserInfo;
                         task.Show();
+#elif MAST_STORE
+                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+#endif
                     }
                     return true;
 
                 case "sms":
                     {
+#if MAST_PHONE
                         string number = uri.AbsolutePath;
                         string body = string.Empty;
 
@@ -1722,6 +1947,9 @@ namespace com.moceanmobile.mast
                         task.To = number;
                         task.Body = body;
                         task.Show();
+#elif MAST_STORE
+                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+#endif
                     }
                     return true;
 
@@ -1736,6 +1964,7 @@ namespace com.moceanmobile.mast
 
         #region Location Services
 
+#if MAST_PHONE
         System.Device.Location.GeoCoordinateWatcher geoCoordinateWatcher = null;
 
         /// <summary>
@@ -1806,7 +2035,7 @@ namespace com.moceanmobile.mast
 
             this.geoCoordinateWatcher = new System.Device.Location.GeoCoordinateWatcher(desiredAccuracy);
             this.geoCoordinateWatcher.MovementThreshold = movementThreshold;
-            
+
             this.geoCoordinateWatcher.StatusChanged += geoCoordinateWatcher_StatusChanged;
             this.geoCoordinateWatcher.PositionChanged += geoCoordinateWatcher_PositionChanged;
 
@@ -1820,7 +2049,7 @@ namespace com.moceanmobile.mast
 
             if (e.Status == System.Device.Location.GeoPositionStatus.Ready)
                 return;
-            
+
             if (e.Status == System.Device.Location.GeoPositionStatus.Disabled)
             {
                 this.geoCoordinateWatcher.Stop();
@@ -1848,16 +2077,21 @@ namespace com.moceanmobile.mast
             this.AdRequestParameters["lat"] = e.Position.Location.Latitude.ToString();
             this.AdRequestParameters["long"] = e.Position.Location.Longitude.ToString();
         }
+#endif
 
         #endregion
 
         #region Updating
 
-        private bool userAgentResume = false;
+#if MAST_PHONE
         private System.Threading.Timer updateTimer = null;
+#elif MAST_STORE
+        private Windows.System.Threading.ThreadPoolTimer updateTimer = null;
+#endif
         private AdRequest adRequest = null;
         private AdDescriptor adDescriptor = null;
         private bool invokeAdTracking = false;
+        private bool userAgentResume = false;
         private bool updateDeferred = false;
 
         /// <summary>
@@ -1876,6 +2110,7 @@ namespace com.moceanmobile.mast
         /// <param name="force"></param>
         public void Update(bool force)
         {
+#if MAST_PHONE
             if (updateTimer == null)
             {
                 updateTimer = new System.Threading.Timer(new System.Threading.TimerCallback(UpdateTimerCallback),
@@ -1890,6 +2125,19 @@ namespace com.moceanmobile.mast
             {
                 updateTimer.Change(0, this.updateInterval * 1000);
             }
+#elif MAST_STORE
+            if (updateTimer != null)
+            {
+                updateTimer.Cancel();
+                updateTimer = null;
+            }
+
+            if (this.updateInterval > 0)
+            {
+                updateTimer = Windows.System.Threading.ThreadPoolTimer.CreatePeriodicTimer(UpdateTimerCallback,
+                    TimeSpan.FromSeconds(this.updateInterval));
+            }
+#endif
 
             if (force)
             {
@@ -1918,7 +2166,7 @@ namespace com.moceanmobile.mast
                 if (IsResized)
                     CollapseResizePopup();
             }
-            
+
             InternalUpdate();
         }
 
@@ -1934,17 +2182,31 @@ namespace com.moceanmobile.mast
 
             if (updateTimer != null)
             {
+#if MAST_PHONE
                 updateTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+#elif MAST_STORE
+                updateTimer.Cancel();
+                updateTimer = null;
+#endif
             }
 
+#if MAST_PHONE
             this.LocationDetectionEnabled = false;
+#endif
 
             RemoveContent();
         }
 
+#if MAST_PHONE
         private void UpdateTimerCallback(object state)
+#elif MAST_STORE
+        private void UpdateTimerCallback(Windows.System.Threading.ThreadPoolTimer timer)
+#endif
         {
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(InternalUpdate);
+            MainThreadDispatch(delegate
+            {
+                InternalUpdate();
+            });
         }
 
         private void InternalUpdate()
@@ -1970,14 +2232,24 @@ namespace com.moceanmobile.mast
                 OnAdFailed(new InvalidOperationException(message));
                 return;
             }
-            
+
             Dictionary<string, string> args = new Dictionary<string, string>();
 
-            System.Windows.Size size = base.RenderSize;
+            Size size = base.RenderSize;
             if (this.placementType == mast.PlacementType.Interstitial)
             {
-                size.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
-                size.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
+                double pageWidth = 0;
+                double pageHeight = 0;
+
+                Page parentPage = GetParentPage();
+                if (parentPage != null)
+                {
+                    pageWidth = parentPage.ActualWidth;
+                    pageHeight = parentPage.ActualHeight;
+                }
+
+                size.Width = pageWidth;
+                size.Height = pageHeight;
             }
 
             // These can be overridden but set to good defaults.
@@ -2085,7 +2357,11 @@ namespace com.moceanmobile.mast
 
         #region Interstitial
 
+#if MAST_PHONE
         private System.Threading.Timer interstitialCloseTimer = null;
+#elif MAST_STORE
+        private Windows.System.Threading.ThreadPoolTimer interstitialCloseTimer = null;
+#endif
 
         /// <summary>
         /// Shows the interstitial ad container.
@@ -2108,13 +2384,14 @@ namespace com.moceanmobile.mast
                 this.mraidBridge.SetState(State.Default);
             }
 
+            PrepareCloseButton();
+
+#if MAST_PHONE
             if (interstitialCloseTimer == null)
             {
                 interstitialCloseTimer = new System.Threading.Timer(new System.Threading.TimerCallback(InterstitialCloseTimerCallback),
                     null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             }
-
-            PrepareCloseButton();
 
             if (this.interstitialDuration < 1)
             {
@@ -2123,6 +2400,22 @@ namespace com.moceanmobile.mast
             }
 
             interstitialCloseTimer.Change(this.interstitialDuration * 1000, System.Threading.Timeout.Infinite);
+#elif MAST_STORE
+
+            if (this.interstitialCloseTimer != null)
+            {
+                this.interstitialCloseTimer.Cancel();
+                this.interstitialCloseTimer = null;
+            }
+
+            if (this.interstitialDuration < 1)
+            {
+                return;
+            }
+
+            this.interstitialCloseTimer = Windows.System.Threading.ThreadPoolTimer.CreateTimer(InterstitialCloseTimerCallback,
+                TimeSpan.FromSeconds(this.interstitialDuration));
+#endif
         }
 
         private int interstitialDuration = 0;
@@ -2141,7 +2434,14 @@ namespace com.moceanmobile.mast
         public void CloseInterstitial()
         {
             if (interstitialCloseTimer != null)
+            {
+#if MAST_PHONE
                 interstitialCloseTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+#elif MAST_STORE
+                interstitialCloseTimer.Cancel();
+                interstitialCloseTimer = null;
+#endif
+            }
 
             CollapseExpandPopup();
 
@@ -2152,9 +2452,16 @@ namespace com.moceanmobile.mast
             }
         }
 
+#if MAST_PHONE
         private void InterstitialCloseTimerCallback(object state)
+#elif MAST_STORE
+        private void InterstitialCloseTimerCallback(Windows.System.Threading.ThreadPoolTimer timer)
+#endif
         {
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(CloseInterstitial);
+            MainThreadDispatch(delegate
+            {
+                CloseInterstitial();
+            });
         }
 
         #endregion
@@ -2168,16 +2475,16 @@ namespace com.moceanmobile.mast
         /// <param name="adDescriptor">The AdDescriptor to render.</param>
         public void RenderWithAdDescriptor(AdDescriptor adDescriptor)
         {
+            
             if (adDescriptor.Type.StartsWith("image", StringComparison.OrdinalIgnoreCase))
             {
-                System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(LoadImageAd), adDescriptor);
+                Task.Factory.StartNew(new Action<object>(LoadImageAd), adDescriptor);
                 return;
             }
 
             if (adDescriptor.Type.StartsWith("text", StringComparison.OrdinalIgnoreCase))
             {
-                System.Windows.Deployment.Current.Dispatcher.BeginInvoke((Action<AdDescriptor>)RenderTextAd,
-                    new object[] { adDescriptor });
+                MainThreadDispatch((Action<AdDescriptor>)RenderTextAd, new object[] { adDescriptor });
 
                 return;
             }
@@ -2188,13 +2495,13 @@ namespace com.moceanmobile.mast
                 {
                     if (string.IsNullOrWhiteSpace(adDescriptor.Image) == false)
                     {
-                        System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(LoadImageAd), adDescriptor);
+                        Task.Factory.StartNew(new Action<object>(LoadImageAd), adDescriptor);
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(adDescriptor.Text) == false)
                     {
-                        System.Windows.Deployment.Current.Dispatcher.BeginInvoke((Action<AdDescriptor>)RenderTextAd,
+                        MainThreadDispatch((Action<AdDescriptor>)RenderTextAd,
                             new object[] { adDescriptor });
 
                         return;
@@ -2204,7 +2511,7 @@ namespace com.moceanmobile.mast
                 {
                     if (adDescriptor.Content.Contains("client_side_external_campaign") == true)
                     {
-                        ThirdPartyDescriptor thirdPartyDescriptor = 
+                        ThirdPartyDescriptor thirdPartyDescriptor =
                             ThirdPartyDescriptor.DescriptorFromClientSideExtrnalCampaign(adDescriptor.Content);
 
                         OnReceivedThirdPartyRequest(thirdPartyDescriptor.Properties, thirdPartyDescriptor.Params);
@@ -2223,8 +2530,8 @@ namespace com.moceanmobile.mast
                 return;
             }
 
-            // any other content is to be rendered as html/rich media.
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke((Action<AdDescriptor, string>)RenderMRAIDAd,
+            // any other content is to be rendered as html/rich 
+            MainThreadDispatch((Action<AdDescriptor, string>)RenderMRAIDAd,
                     new object[] { adDescriptor, contentString });
         }
 
@@ -2239,12 +2546,10 @@ namespace com.moceanmobile.mast
 
             try
             {
-                System.Net.WebRequest request = System.Net.WebRequest.Create(adDescriptor.Image);
+                WebRequest request = (HttpWebRequest)WebRequest.Create(adDescriptor.Image);
+                //request.Headers[HttpRequestHeader.UserAgent] = UserAgent;
 
-                if (request is System.Net.HttpWebRequest)
-                    ((System.Net.HttpWebRequest)request).UserAgent = UserAgent;
-
-                request.BeginGetResponse(new AsyncCallback(LoadImageAdResponse), new object[]{request, adDescriptor});
+                request.BeginGetResponse(new AsyncCallback(LoadImageAdResponse), new object[] { request, adDescriptor });
             }
             catch (Exception ex)
             {
@@ -2254,12 +2559,13 @@ namespace com.moceanmobile.mast
 
         private void LoadImageAdResponse(IAsyncResult ar)
         {
-            System.Net.WebRequest request = ((object[])ar.AsyncState)[0] as System.Net.WebRequest;
+            WebRequest request = ((object[])ar.AsyncState)[0] as WebRequest;
             AdDescriptor adDescriptor = ((object[])ar.AsyncState)[1] as AdDescriptor;
 
-            System.Net.WebResponse response = request.EndGetResponse(ar);
+            WebResponse response = request.EndGetResponse(ar);
             System.IO.Stream stream = response.GetResponseStream();
 
+#if MAST_ANIMATED_GIF
             bool isGIF = false;
             byte[] buffer = new byte[3];
             if (stream.Read(buffer, 0, buffer.Length) == buffer.Length)
@@ -2281,11 +2587,13 @@ namespace com.moceanmobile.mast
                 extendedImage.SetSource(stream);
                 return;
             }
+#endif
 
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke((Action<AdDescriptor, System.IO.Stream>)RenderImageAd,
+            MainThreadDispatch((Action<AdDescriptor, System.IO.Stream>)RenderImageAd,
                 new object[] { adDescriptor, stream });
         }
 
+#if MAST_ANIMATED_GIF
         private void extendedImage_LoadingFailed(object sender, UnhandledExceptionEventArgs e)
         {
             string message = "Can not load extended image (GIF).  Exception:" + e;
@@ -2295,17 +2603,28 @@ namespace com.moceanmobile.mast
 
         private void extendedImage_LoadingCompleted(object sender, EventArgs e)
         {
-            System.Windows.Deployment.Current.Dispatcher.BeginInvoke((Action<AdDescriptor, ImageTools.ExtendedImage>)RenderImageAd,
+            MainThreadDispatch((Action<AdDescriptor, ImageTools.ExtendedImage>)RenderImageAd,
                 new object[] { adDescriptor, sender });
         }
+#endif
 
         // called from main thread/dispatcher
+#if MAST_STORE
+        async
+#endif
         private void RenderImageAd(AdDescriptor adDescriptor, System.IO.Stream imageStream)
         {
             try
             {
-                System.Windows.Media.Imaging.BitmapImage imageSource = new System.Windows.Media.Imaging.BitmapImage();
+                BitmapImage imageSource = new BitmapImage();
+#if MAST_PHONE
                 imageSource.SetSource(imageStream);
+#elif MAST_STORE
+                Windows.Storage.Streams.InMemoryRandomAccessStream imras = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+                await Windows.Storage.Streams.RandomAccessStream.CopyAsync(imageStream.AsInputStream(), imras);
+                imras.Seek(0);
+                await imageSource.SetSourceAsync(imras);
+#endif
                 this.imageControl.Source = imageSource;
             }
             catch (Exception ex)
@@ -2315,7 +2634,7 @@ namespace com.moceanmobile.mast
                 OnAdFailed(new InvalidOperationException(message));
                 return;
             }
-            
+
             this.imageBorder.Child = this.imageControl;
 
             this.invokeAdTracking = true;
@@ -2339,6 +2658,7 @@ namespace com.moceanmobile.mast
             OnAdReceived();
         }
 
+#if MAST_ANIMATED_GIF
         // called from main thread/dispatcher
         private void RenderImageAd(AdDescriptor adDescriptor, ImageTools.ExtendedImage extendedImage)
         {
@@ -2366,6 +2686,7 @@ namespace com.moceanmobile.mast
 
             OnAdReceived();
         }
+#endif
 
         #endregion
 
@@ -2408,16 +2729,16 @@ namespace com.moceanmobile.mast
         private Border twoPartWebBorder = null;
         private WebBrowser twoPartWebBrowser = null;
         private Bridge twoPartMraidBridge = null;
-        
+
         private bool RenderMRAIDTwoPartExpand(string url)
         {
             // TODO: For now commenting all of this out.  Need to find a better way of 
             // injecting the bridge without having to load the URL as a string.
             //// Fetch the URL contents and inject MRAID bridge code then load into the browser.
-            //System.Net.HttpWebRequest twoPartRequest = null;
+            //HttpWebRequest twoPartRequest = null;
             //try
             //{
-            //    twoPartRequest = System.Net.HttpWebRequest.CreateHttp(url);
+            //    twoPartRequest = HttpWebRequest.CreateHttp(url);
             //    twoPartRequest.AllowAutoRedirect = true;
             //    twoPartRequest.UserAgent = UserAgent;
 
@@ -2425,7 +2746,7 @@ namespace com.moceanmobile.mast
             //    {
             //        try
             //        {
-            //            System.Net.WebResponse response = twoPartRequest.EndGetResponse(ar);
+            //            WebResponse response = twoPartRequest.EndGetResponse(ar);
             //            System.IO.Stream stream = response.GetResponseStream();
 
             //            System.IO.StreamReader streamReader = new System.IO.StreamReader(stream);
@@ -2463,7 +2784,7 @@ namespace com.moceanmobile.mast
 
             //                content = content.Insert(insertScriptAt, mraidScript);
 
-            //                System.Windows.Deployment.Current.Dispatcher.BeginInvoke(delegate
+            //                Deployment.Current.Dispatcher.BeginInvoke(delegate
             //                {
             //                    this.twoPartWebBrowser.NavigateToString(content);
             //                });
@@ -2471,11 +2792,11 @@ namespace com.moceanmobile.mast
             //        }
             //        catch (Exception ex)
             //        {
-            //            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(delegate
+            //            Deployment.Current.Dispatcher.BeginInvoke(delegate
             //            {
             //                ((BridgeHandler)this).mraidClose(this.mraidBridge);
             //            });
-                        
+
             //            LogEvent(mast.LogLevel.Error, "Exception while trying to load two part creative. Ex:" + ex.Message);
             //        }
             //    }, null);
@@ -2487,19 +2808,24 @@ namespace com.moceanmobile.mast
             //}
 
             this.twoPartExpand = true;
-            
+
             this.twoPartWebBrowser = new WebBrowser();
+#if MAST_PHONE
             this.twoPartWebBrowser.IsGeolocationEnabled = this.allowBrowserGeolocation;
             this.twoPartWebBrowser.IsScriptEnabled = true;
-            this.twoPartWebBrowser.NavigationFailed += webControl_NavigationFailed;
+            this.twoPartWebBrowser.LoadCompleted += webControl_LoadCompleted;
             this.twoPartWebBrowser.Navigating += webControl_Navigating;
             this.twoPartWebBrowser.Navigated += webControl_Navigated;
-            this.twoPartWebBrowser.LoadCompleted += webControl_LoadCompleted;
+            this.twoPartWebBrowser.NavigationFailed += webControl_NavigationFailed;
+#elif MAST_STORE
+            this.twoPartWebBrowser.NavigationStarting += webControl_NavigationStarting;
+            this.twoPartWebBrowser.NavigationCompleted += webControl_NavigationCompleted;
+#endif
             this.twoPartWebBrowser.ScriptNotify += webControl_ScriptNotify;
             this.twoPartWebBrowser.SizeChanged += webControl_SizeChanged;
-            
+
             this.twoPartWebBorder = new Border();
-            this.twoPartWebBorder.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+            this.twoPartWebBorder.Background = new SolidColorBrush(Colors.Black);
             this.twoPartWebBorder.Child = this.twoPartWebBrowser;
             this.twoPartWebBorder.SizeChanged += border_SizeChanged;
 
@@ -2516,16 +2842,22 @@ namespace com.moceanmobile.mast
         // called from the main thread/dispatcher
         private void RenderMRAIDAd(AdDescriptor adDescriptor, string mraidHtml)
         {
-            System.IO.Stream resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(Defaults.RICHMEDIA_SCRIPT_RESOURCE);
+            Assembly assembly = this.GetType().GetTypeInfo().Assembly;
+            string[] names = assembly.GetManifestResourceNames();
+            System.IO.Stream resourceStream = assembly.GetManifestResourceStream(Defaults.RICHMEDIA_SCRIPT_RESOURCE);
             System.IO.StreamReader resourceStreamReader = new System.IO.StreamReader(resourceStream);
             string mraidScript = resourceStreamReader.ReadToEnd();
 
-            string htmlContent = string.Format(Defaults.RICHMEDIA_FORMAT, mraidScript, mraidHtml);
-            
-            this.webControl.Base = string.Empty;
-            this.webControl.NavigateToString(htmlContent);
+            //mraidHtml = "<div align='center'><script src=\"mraid.js\"></script><script type='text/javascript'>function showAd(){} function openUrl(){mraid.open('https://itunes.apple.com/us/app/find-my-friends/id466122094?mt=8&uo=4');} if (mraid.getState() == 'loading'){mraid.addEventListener('ready',showAd);}else{showAd();}</script><span style='size:10px;' onclick='openUrl();'>Open</span></div>";
 
+            string htmlContent = string.Format(Defaults.RICHMEDIA_FORMAT, mraidScript, mraidHtml);
+
+#if MAST_PHONE
+            this.webControl.Base = string.Empty;
+#endif
             this.mraidBridge = new Bridge(this, this.webControl);
+
+            this.webControl.NavigateToString(htmlContent);
 
             this.invokeAdTracking = true;
             this.adDescriptor = adDescriptor;
@@ -2546,12 +2878,28 @@ namespace com.moceanmobile.mast
             OnAdReceived();
         }
 
-        private void webControl_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
+#if MAST_PHONE
+        private void webControl_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
 
         }
 
+        private void webControl_Navigated(object sender, NavigationEventArgs e)
+        {
+            //WebBrowser webBrowser = (WebBrowser)sender;
+            //string content = webBrowser.SaveToString();
+
+            //Bridge bridge = this.mraidBridge;
+            //if (webBrowser == this.twoPartWebBrowser)
+            //    bridge = this.twoPartMraidBridge;
+        }
+#endif
+
+#if MAST_PHONE
         private void webControl_Navigating(object sender, NavigatingEventArgs e)
+#elif MAST_STORE
+        private void webControl_NavigationStarting(WebBrowser sender, WebViewNavigationStartingEventArgs e)
+#endif
         {
             WebBrowser webBrowser = (WebBrowser)sender;
 
@@ -2593,18 +2941,12 @@ namespace com.moceanmobile.mast
             if (scheme.StartsWith("http"))
                 e.Cancel = true;
         }
-        
-        private void webControl_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
-        {
-            //WebBrowser webBrowser = (WebBrowser)sender;
-            //string content = webBrowser.SaveToString();
 
-            //Bridge bridge = this.mraidBridge;
-            //if (webBrowser == this.twoPartWebBrowser)
-            //    bridge = this.twoPartMraidBridge;
-        }
-
-        private void webControl_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+#if MAST_PHONE
+        private void webControl_LoadCompleted(object sender, NavigationEventArgs e)
+#elif MAST_STORE
+        private void webControl_NavigationCompleted(WebBrowser sender, WebViewNavigationCompletedEventArgs args)
+#endif
         {
             WebBrowser webBrowser = (WebBrowser)sender;
             //string content = webBrowser.SaveToString();
@@ -2621,7 +2963,7 @@ namespace com.moceanmobile.mast
             MRAIDControllerInit(webBrowser, bridge);
         }
 
-        private void webControl_ScriptNotify(object sender, Microsoft.Phone.Controls.NotifyEventArgs e)
+        private void webControl_ScriptNotify(object sender, NotifyEventArgs e)
         {
             //System.Diagnostics.Debug.WriteLine("ScriptNotify:" + e.Value);
 
@@ -2636,6 +2978,12 @@ namespace com.moceanmobile.mast
                 return;
 
             Uri uri = new Uri(e.Value);
+
+            if ("console://localhost?window.onload() triggered." == e.Value)
+            {
+                //MRAIDControllerInit(webBrowser, bridge);
+                return;
+            }
 
             if (bridge.State != State.Loading)
             {
@@ -2652,7 +3000,11 @@ namespace com.moceanmobile.mast
             try
             {
                 WebBrowser browser = sender as WebBrowser;
+#if MAST_PHONE
                 browser.InvokeScript("eval", new string[] { "window.scrollTo(0,0);" });
+#elif MAST_STORE
+                browser.InvokeScriptAsync("eval", new string[] { "window.scrollTo(0,0);" }).AsTask().RunSynchronously();
+#endif
             }
             catch (Exception)
             {
@@ -2678,9 +3030,19 @@ namespace com.moceanmobile.mast
                     break;
             }
 
+            double pageWidth = 0;
+            double pageHeight = 0;
+
+            Page parentPage = GetParentPage();
+            if (parentPage != null)
+            {
+                pageWidth = parentPage.ActualWidth;
+                pageHeight = parentPage.ActualHeight;
+            }
+
             ExpandProperties expandProperties = new ExpandProperties();
-            expandProperties.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
-            expandProperties.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
+            expandProperties.Width = pageWidth;
+            expandProperties.Height = pageHeight;
             bridge.SetExpandProperties(expandProperties);
 
             OrientationProperties orientationProperties = new OrientationProperties();
@@ -2707,17 +3069,32 @@ namespace com.moceanmobile.mast
         {
             UpdateLayouts();
 
-            double screenWidth = System.Windows.Application.Current.Host.Content.ActualWidth;
-            double screenHeight = System.Windows.Application.Current.Host.Content.ActualHeight;
-            double pageWidth = this.phoneApplicationPage.RenderSize.Width;
-            double pageHeight = this.phoneApplicationPage.RenderSize.Height;
+            double screenWidth = 0;
+            double screenHeight = 0;
+            double pageWidth = 0;
+            double pageHeight = 0;
+
+#if MAST_PHONE
+            screenWidth = Application.Current.Host.Content.ActualWidth;
+            screenHeight = Application.Current.Host.Content.ActualHeight;
+#elif MAST_STORE
+            screenWidth = Window.Current.Bounds.Width;
+            screenHeight = Window.Current.Bounds.Height;
+#endif
+
+            Page parentPage = GetParentPage();
+            if (parentPage != null)
+            {
+                pageWidth = parentPage.ActualWidth;
+                pageHeight = parentPage.ActualHeight;
+            }
 
             // Represents the entire screen.
-            bridge.SetScreenSize(screenWidth, screenHeight);           
+            bridge.SetScreenSize(screenWidth, screenHeight);
 
             // When expanded the full screen is the max size, else the max size is constrained
             // to the page since the status bar (tray) and application bar may take up space.
-            System.Windows.Point currentPoint = new System.Windows.Point(0, 0);
+            Point currentPoint = new Point(0, 0);
             if (bridge.State == State.Expanded)
             {
                 bridge.SetMaxSize(screenWidth, screenHeight);
@@ -2731,12 +3108,16 @@ namespace com.moceanmobile.mast
                 try
                 {
                     // The currentPoint needs to be based off the page in this case.
-                    System.Windows.Media.GeneralTransform transform = border.TransformToVisual(this.phoneApplicationPage);
+                    GeneralTransform transform = border.TransformToVisual(GetParentPage());
+#if MAST_PHONE
                     currentPoint = transform.Transform(currentPoint);
+#elif MAST_STORE
+                    currentPoint = transform.TransformPoint(currentPoint);
+#endif
                 }
                 catch (Exception)
                 {
-                    LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position.  Possibly due to page navigation.");
+                    LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position.  Possibly due to page ");
                 }
             }
 
@@ -2746,14 +3127,18 @@ namespace com.moceanmobile.mast
             bridge.SetCurrentPosition(currentPoint.X, currentPoint.Y, currentWidth, currentHeight);
 
             // Unlike currentPosition, default point represents where the developer placed the ad reagardless of state.
-            System.Windows.Point defaultPoint = new System.Windows.Point(0,0);
+            Point defaultPoint = new Point(0, 0);
             try
             {
+#if MAST_PHONE
                 defaultPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(defaultPoint);
+#elif MAST_STORE
+                defaultPoint = base.TransformToVisual(GetParentPage()).TransformPoint(defaultPoint);
+#endif
             }
             catch
             {
-                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID default position.  Possibly due to page navigation.");
+                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID default position.  Possibly due to page ");
             }
             double defaultWidth = base.ActualWidth;
             double defaultHeight = base.ActualHeight;
@@ -2761,7 +3146,7 @@ namespace com.moceanmobile.mast
 
             // TODO: May need to move this logic to post-load or elsewhere... not sure if it's proper to invoke
             // as often as this may be called for size updates.
-            bool viewable = base.Visibility == System.Windows.Visibility.Visible;
+            bool viewable = base.Visibility == Visibility.Visible;
             if (this.placementType == mast.PlacementType.Interstitial)
                 viewable = this.IsExpanded;
 
@@ -2786,7 +3171,7 @@ namespace com.moceanmobile.mast
             Border border = this.webBorder;
             if (bridge == this.twoPartMraidBridge)
                 border = this.twoPartWebBorder;
-            
+
             if (this.placementType == mast.PlacementType.Interstitial)
             {
                 OnCloseButtonPressed();
@@ -2895,11 +3280,11 @@ namespace com.moceanmobile.mast
 
                     bridge.SendErrorMessage("Can not expand while state is loading.", Const.CommandExpand);
                     return;
-                
+
                 case State.Default:
                 case State.Hidden:
                     break;
-                
+
                 case State.Expanded:
                     bridge.SendErrorMessage("Can not expand while state is expanded.", Const.CommandExpand);
                     return;
@@ -2954,11 +3339,19 @@ namespace com.moceanmobile.mast
                     break;
 
                 case ForceOrientation.Portrait:
+#if MAST_PHONE
                     SetExpandOrientation(PageOrientation.PortraitUp, bridge, border);
+#elif MAST_STORE
+                    SetExpandOrientation(DisplayOrientations.Portrait, bridge, border);
+#endif
                     break;
 
                 case ForceOrientation.Landscape:
-                    SetExpandOrientation(PageOrientation.LandscapeLeft, bridge, border);
+#if MAST_PHONE
+                    SetExpandOrientation(PageOrientation.Landscape, bridge, border);
+#elif MAST_STORE
+                    SetExpandOrientation(DisplayOrientations.Landscape, bridge, border);
+#endif
                     break;
             }
         }
@@ -2995,8 +3388,20 @@ namespace com.moceanmobile.mast
                     break;
             }
 
-            double screenWidth = this.phoneApplicationPage.RenderSize.Width;
-            double screenHeight = this.phoneApplicationPage.RenderSize.Height;
+            double screenWidth = 0;
+            double screenHeight = 0;
+
+#if MAST_PHONE
+            screenWidth = this.phoneApplicationPage.RenderSize.Width;
+            screenHeight = this.phoneApplicationPage.RenderSize.Height;
+#elif MAST_STORE
+            Page parentPage = GetParentPage();
+            if (parentPage != null)
+            {
+                screenWidth = parentPage.ActualWidth;
+                screenHeight = parentPage.ActualHeight;
+            }
+#endif
 
             double x = bridge.ResizeProperties.OffsetX;
             double y = bridge.ResizeProperties.OffsetY;
@@ -3014,25 +3419,32 @@ namespace com.moceanmobile.mast
                 return;
             }
 
-            System.Windows.Point currentPoint = new System.Windows.Point(0, 0);
+            Point currentPoint = new Point(0, 0);
             try
             {
+#if MAST_PHONE
                 currentPoint = base.TransformToVisual(this.phoneApplicationPage).Transform(currentPoint);
+#elif MAST_STORE
+                currentPoint = base.TransformToVisual(GetParentPage()).TransformPoint(currentPoint);
+#endif
             }
             catch
             {
-                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position before resize.  Possibly due to page navigation.");
+                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID current position before resize.  Possibly due to page ");
 
                 bridge.SendErrorMessage("Error calculating current position.", Const.CommandResize);
                 return;
             }
 
             double systemTrayHeight = 0;
+
+#if MAST_PHONE
             if (Microsoft.Phone.Shell.SystemTray.IsVisible)
             {
                 // TODO: Hack, not sure where this constant is defined if it is.
                 systemTrayHeight += 32;
             }
+#endif
 
             currentPoint.Y += systemTrayHeight;
 
@@ -3081,7 +3493,7 @@ namespace com.moceanmobile.mast
             // Determine where the close control area will be.  This MUST be on screen.
             // By default it is in the top right but the ad can specify where it should be.
             // The ad MUST provide the graphic for it or some other means to close the resize.
-            Rect closeControlRect = new Rect(width - CloseAreaSize, y, 
+            Rect closeControlRect = new Rect(width - CloseAreaSize, y,
                 CloseAreaSize, CloseAreaSize);
 
             switch (bridge.ResizeProperties.CustomClosePosition)
@@ -3091,7 +3503,7 @@ namespace com.moceanmobile.mast
                     break;
 
                 case CustomClosePosition.TopCenter:
-                    closeControlRect = new Rect(width/2 - CloseAreaSize/2, 0, 
+                    closeControlRect = new Rect(width / 2 - CloseAreaSize / 2, 0,
                         CloseAreaSize, CloseAreaSize);
                     break;
 
@@ -3100,22 +3512,22 @@ namespace com.moceanmobile.mast
                     break;
 
                 case CustomClosePosition.BottomLeft:
-                    closeControlRect = new Rect(0, height - CloseAreaSize, 
+                    closeControlRect = new Rect(0, height - CloseAreaSize,
                         CloseAreaSize, CloseAreaSize);
                     break;
 
                 case CustomClosePosition.BottomCenter:
-                    closeControlRect = new Rect(width/2 - CloseAreaSize/2, height - CloseAreaSize, 
+                    closeControlRect = new Rect(width / 2 - CloseAreaSize / 2, height - CloseAreaSize,
                         CloseAreaSize, CloseAreaSize);
                     break;
 
                 case CustomClosePosition.BottomRight:
-                    closeControlRect = new Rect(width - CloseAreaSize, height - CloseAreaSize, 
+                    closeControlRect = new Rect(width - CloseAreaSize, height - CloseAreaSize,
                         CloseAreaSize, CloseAreaSize);
                     break;
 
                 case CustomClosePosition.Center:
-                    closeControlRect = new Rect(width / 2 - CloseAreaSize / 2, height/2 - CloseAreaSize/2, 
+                    closeControlRect = new Rect(width / 2 - CloseAreaSize / 2, height / 2 - CloseAreaSize / 2,
                         CloseAreaSize, CloseAreaSize);
                     break;
             }
@@ -3176,13 +3588,17 @@ namespace com.moceanmobile.mast
 
             if (OnPlayingVideo(url) == false)
                 return;
-
+            
             OnLeavingApplication();
 
+#if MAST_PHONE
             // TODO: Would use the media player but that seems to only support local media, not web URIs.
             Microsoft.Phone.Tasks.WebBrowserTask task = new Microsoft.Phone.Tasks.WebBrowserTask();
             task.Uri = new Uri(url);
             task.Show();
+#elif MAST_STORE
+            
+#endif
         }
 
         void BridgeHandler.mraidCreateCalendarEvent(Bridge bridge, string calendarEvent)
@@ -3213,16 +3629,19 @@ namespace com.moceanmobile.mast
 
             try
             {
-                System.Net.HttpWebRequest request = System.Net.WebRequest.CreateHttp(url);
+                HttpWebRequest request = WebRequest.CreateHttp(url);
                 request.BeginGetResponse(delegate(IAsyncResult ar)
                 {
                     try
                     {
-                        System.Net.WebResponse response = request.EndGetResponse(ar);
+                        WebResponse response = request.EndGetResponse(ar);
                         System.IO.Stream stream = response.GetResponseStream();
-
+#if MAST_PHONE
                         Microsoft.Xna.Framework.Media.MediaLibrary mediaLibrary = new Microsoft.Xna.Framework.Media.MediaLibrary();
                         mediaLibrary.SavePicture(string.Empty, stream);
+#elif MAST_STORE
+                        
+#endif
                     }
                     catch (Exception ex)
                     {
@@ -3240,6 +3659,40 @@ namespace com.moceanmobile.mast
 
         #endregion
 
+        #region Threading
+
+#if MAST_STORE
+        async
+#endif
+        protected void MainThreadDispatch(Action action)
+        {
+#if MAST_PHONE
+            Deployment.Current.Dispatcher.BeginInvoke(action);
+#elif MAST_STORE
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, delegate
+            {
+                action.Invoke();
+            });
+#endif
+        }
+
+#if MAST_STORE
+        async
+#endif
+        protected void MainThreadDispatch(Delegate d, params object[] args)
+        {
+#if MAST_PHONE
+            Deployment.Current.Dispatcher.BeginInvoke(d, args);
+#elif MAST_STORE
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, delegate
+            {
+                d.DynamicInvoke(args);
+            });
+#endif
+        }
+
+        #endregion
+
         #region IDisposable
 
         /// <summary>
@@ -3249,31 +3702,45 @@ namespace com.moceanmobile.mast
         /// </summary>
         public void Dispose()
         {
+#if MAST_PHONE
             if (this.geoCoordinateWatcher != null)
             {
                 this.geoCoordinateWatcher.Stop();
                 this.geoCoordinateWatcher.Dispose();
                 this.geoCoordinateWatcher = null;
             }
+#endif
 
             if (this.interstitialCloseTimer != null)
             {
+#if MAST_PHONE
                 this.interstitialCloseTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
                 this.interstitialCloseTimer.Dispose();
+#elif MAST_STORE
+                interstitialCloseTimer.Cancel();
+#endif
                 this.interstitialCloseTimer = null;
             }
 
             if (this.closeButtonDelayTimer != null)
             {
+#if MAST_PHONE
                 this.closeButtonDelayTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
                 this.closeButtonDelayTimer.Dispose();
+#elif MAST_STORE
+                closeButtonDelayTimer.Cancel();
+#endif
                 this.closeButtonDelayTimer = null;
             }
 
             if (this.updateTimer != null)
             {
+#if MAST_PHONE
                 this.updateTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
                 this.updateTimer.Dispose();
+#elif MAST_STORE
+                updateTimer.Cancel();
+#endif
                 this.updateTimer = null;
             }
         }

@@ -1,0 +1,135 @@
+﻿<Page
+    x:Class="com.moceanmobile.mast.samples.SamplePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:com.moceanmobile.mast.samples"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.TopAppBar>
+        <AppBar Padding="10,0,10,0" Opened="TopAppBar_Opened">
+            <AppBar.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="140"/>
+                    <Setter Property="Height" Value="60"/>
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Width" Value="200"/>
+                    <Setter Property="Height" Value="60"/>
+                    <Setter Property="Margin" Value="10"/>
+                    <Setter Property="FontSize" Value="36"/>
+                </Style>
+            </AppBar.Resources>
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button x:Name="Back" Content="Back" Click="Back_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBox x:Name="ZoneText" PlaceholderText="Zone"/>
+                    <Button x:Name="RefreshButton" Content="Refresh" Click="RefreshButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.TopAppBar>
+
+    <Page.BottomAppBar>
+        <AppBar Padding="10,0,10,0" Opened="BottomAppBar_Opened" Visibility="Collapsed">
+            <AppBar.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="140"/>
+                    <Setter Property="Height" Value="60"/>
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Width" Value="200"/>
+                    <Setter Property="Height" Value="60"/>
+                    <Setter Property="Margin" Value="10"/>
+                    <Setter Property="FontSize" Value="36"/>
+                </Style>
+            </AppBar.Resources>
+            <Grid>
+                <StackPanel x:Name="BottomAdViewRefreshPanel" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
+                    <TextBox x:Name="BottomZoneText" PlaceholderText="Zone"/>
+                    <Button x:Name="BottomRefreshButton" Content="Refresh" Click="BottomRefreshButton_Click"/>
+                </StackPanel>
+                <StackPanel x:Name="CustomConfigurePanel" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
+                    <Button x:Name="CustomConfigureButton" Content="Configure" Click="CustomConfigureButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.BottomAppBar>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Frame x:Name="sampleFrame" Navigated="sampleFrame_Navigated"/>
+        <Popup x:Name="CustomPopup" IsOpen="False" SizeChanged="CustomPopup_SizeChanged" Opened="CustomPopup_Opened">
+            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <StackPanel Margin="10">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Margin" Value="20,0,0,0"/>
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Margin" Value="10,0,10,10"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <CheckBox x:Name="UseInternalBrowserCheckBox" Content="Use internal browser"/>
+                    <CheckBox x:Name="UseLocationDetectionCheckBox" Content="Use location detection"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="left margin"/>
+                            <TextBox x:Name="xTextBox" InputScope="Number"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1">
+                            <TextBlock Text="top margin"/>
+                            <TextBox x:Name="yTextBox" InputScope="Number"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="0">
+                            <TextBlock Text="width"/>
+                            <TextBox x:Name="widthTextBox" InputScope="Number"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1">
+                            <TextBlock Text="height"/>
+                            <TextBox x:Name="heightTextBox" InputScope="Number"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="0">
+                            <TextBlock Text="max width"/>
+                            <TextBox x:Name="maxWidthTextBox" InputScope="Number"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="1">
+                            <TextBlock Text="max height"/>
+                            <TextBox x:Name="maxHeightTextBox" InputScope="Number"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="3" Grid.Column="0">
+                            <TextBlock Text="min width"/>
+                            <TextBox x:Name="minWidthTextBox" InputScope="Number"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="3" Grid.Column="1">
+                            <TextBlock Text="min height"/>
+                            <TextBox x:Name="minHeightTextBox" InputScope="Number"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+                <Grid VerticalAlignment="Bottom" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="CancelButton" Grid.Column="0" HorizontalAlignment="Center" Content="Cancel" Click="CustomCancelButton_Click"/>
+                    <Button x:Name="DoneButton" Grid.Column="1" Content="Done" HorizontalAlignment="Center" Click="CustomDoneButton_Click"/>
+                </Grid>
+            </Grid>
+        </Popup>
+    </Grid>
+</Page>

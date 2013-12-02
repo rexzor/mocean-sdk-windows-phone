@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace com.moceanmobile.mast
 {
-    internal class ThirdPartyDescriptor
+    public class ThirdPartyDescriptor
     {
         public static ThirdPartyDescriptor DescriptorFromClientSideExtrnalCampaign(string content)
         {
@@ -16,7 +15,7 @@ namespace com.moceanmobile.mast
 
             if ((startIndex == -1) || (endIndex == -1))
                 return null;
-
+            
             ThirdPartyDescriptor thirdPartyDescriptor = new ThirdPartyDescriptor();
 
             int length = endIndex - startIndex + end.Length;

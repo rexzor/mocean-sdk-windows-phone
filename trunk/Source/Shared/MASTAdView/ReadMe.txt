@@ -1,4 +1,4 @@
-﻿MASTAdView SDK 3.0
+﻿MASTAdView SDK 3.1
 Copyright (c) 2011, 2012, 2013 Mocean Mobile.  All rights reserved.
 
 SDK Information:
