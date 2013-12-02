@@ -5,7 +5,7 @@ using System.Text;
 
 namespace com.moceanmobile.mast
 {
-    internal class Defaults
+    public class Defaults
     {
         public static string VERSION = "3.1.0beta";
 

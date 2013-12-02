@@ -1,0 +1,23 @@
+﻿<Page
+    x:Class="com.moceanmobile.mast.samples.Delegate.Generic"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:com.moceanmobile.mast.samples.Simple"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mast="using:com.moceanmobile.mast"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <mast:MASTAdView x:Name="adView" HorizontalAlignment="Stretch" Height="100" Background="Gray" Zone="88269"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1">
+            <TextBlock x:Name="textBlock" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </ScrollViewer>
+    </Grid>
+</Page>

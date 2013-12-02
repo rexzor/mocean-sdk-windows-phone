@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+#if MAST_PHONE
 using Microsoft.Phone.Controls;
+#elif MAST_STORE
+using WebBrowser = Windows.UI.Xaml.Controls.WebView;
+#endif
 
 namespace com.moceanmobile.mast.mraid
 {
-    internal interface BridgeHandler
+    public interface BridgeHandler
     {
         void mraidClose(Bridge bridge);
         void mraidOpen(Bridge bridge, string url);
@@ -20,7 +24,7 @@ namespace com.moceanmobile.mast.mraid
         void mraidStorePicture(Bridge bridge, string url);
     }
 
-    internal class Bridge
+    public class Bridge
     {
         private readonly BridgeHandler handler;
         private readonly WebBrowser browser;
@@ -29,6 +33,11 @@ namespace com.moceanmobile.mast.mraid
         {
             this.handler = handler;
             this.browser = browser;
+        }
+
+        public WebBrowser Browser
+        {
+            get { return this.browser; }
         }
 
         private State state = State.Loading;
@@ -329,27 +338,29 @@ namespace com.moceanmobile.mast.mraid
             return true;
         }
 
-        private object EvalJS(string js)
+        private void EvalJS(string js)
         {
-            object ret = EvalJS(this.browser, js);
-            return ret;
+            EvalJS(this.browser, js);
         }
 
-        public static object EvalJS(Microsoft.Phone.Controls.WebBrowser browser, string js)
+#if MAST_STORE
+        async
+#endif
+        public static void EvalJS(WebBrowser browser, string js)
         {
-            object ret = null;
-
             try
             {
-                ret = browser.InvokeScript("eval", new string[] { js });
+#if MAST_PHONE
+                browser.InvokeScript("eval", new string[] { js });
+#elif MAST_STORE
+                await browser.InvokeScriptAsync("eval", new string[] { js });
+#endif
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("EvalJS:" + ex.Message);
                 // TODO: Bubble this up.
             }
-
-            return ret;
         }
     }
 }
