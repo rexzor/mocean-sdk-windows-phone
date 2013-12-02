@@ -90,9 +90,11 @@ namespace com.moceanmobile.mast.mraid
         public const string PropertiesWidth = "width";
         public const string PropertiesHeight = "height";
 
+        // TOOD: Need entries for expand properties and need to update the classes to make use of them.
+
         public const string ResizePropertiesCustomClosePosition = "customClosePosition";
         public const string ResizePropertiesOffsetX = "offsetX";
-        public const string ResizePropertiesOffsetY = "offsetX";
+        public const string ResizePropertiesOffsetY = "offsetY";
         public const string ResizePropertiesAllowOffscreen = "allowOffscreen";
 
         public const string ResizePropertiesCCPositionTopLeft = "top-left";
