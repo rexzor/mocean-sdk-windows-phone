@@ -42,37 +42,37 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZLib.Phone">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ICSharpCode.SharpZLib.Phone.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ICSharpCode.SharpZLib.Phone.dll</HintPath>
     </Reference>
     <Reference Include="ImageTools">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.dll</HintPath>
     </Reference>
     <Reference Include="ImageTools.Controls">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.Controls.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.Controls.dll</HintPath>
     </Reference>
     <Reference Include="ImageTools.Filtering">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.Filtering.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.Filtering.dll</HintPath>
     </Reference>
     <Reference Include="ImageTools.IO.Bmp">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.IO.Bmp.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.IO.Bmp.dll</HintPath>
     </Reference>
     <Reference Include="ImageTools.IO.Gif">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.IO.Gif.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.IO.Gif.dll</HintPath>
     </Reference>
     <Reference Include="ImageTools.IO.Png">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.IO.Png.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.IO.Png.dll</HintPath>
     </Reference>
     <Reference Include="ImageTools.Utils">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.Utils.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\ImageTools.Utils.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Xna.Framework" />
     <Reference Include="PhoneCodeContractsAssemblies">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\PhoneCodeContractsAssemblies.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\PhoneCodeContractsAssemblies.dll</HintPath>
     </Reference>
     <Reference Include="SharpZipLib.WindowsPhone7">
-      <HintPath>..\..\ThirdParty\ImageTools 0.30\bin\Phone\SharpZipLib.WindowsPhone7.dll</HintPath>
+      <HintPath>..\..\..\ThirdParty\ImageTools 0.30\bin\Phone\SharpZipLib.WindowsPhone7.dll</HintPath>
     </Reference>
     <Reference Include="System.Device" />
     <Reference Include="System.Servicemodel.Web" />
@@ -84,41 +84,75 @@
     <Reference Include="mscorlib.extensions" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdDescriptor.cs" />
-    <Compile Include="AdRequest.cs" />
-    <Compile Include="AdTracking.cs" />
-    <Compile Include="MASTAdViewInterstitial.cs" />
+    <Compile Include="..\..\Shared\MASTAdView\AdDescriptor.cs">
+      <Link>AdDescriptor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\AdRequest.cs">
+      <Link>AdRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\AdTracking.cs">
+      <Link>AdTracking.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\Defaults.cs">
+      <Link>Defaults.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\MASTAdView.cs">
+      <Link>MASTAdView.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\MASTAdViewInterstitial.cs">
+      <Link>MASTAdViewInterstitial.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\mraid\Bridge.cs">
+      <Link>mraid\Bridge.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\mraid\Const.cs">
+      <Link>mraid\Const.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\mraid\ExpandProperties.cs">
+      <Link>mraid\ExpandProperties.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\mraid\OrientationProperties.cs">
+      <Link>mraid\OrientationProperties.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\mraid\ResizeProperties.cs">
+      <Link>mraid\ResizeProperties.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\MASTAdView\ThirdPartyDescriptor.cs">
+      <Link>ThirdPartyDescriptor.cs</Link>
+    </Compile>
     <Compile Include="InternalBrowserPage.xaml.cs">
       <DependentUpon>InternalBrowserPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ThirdPartyDescriptor.cs" />
-    <Compile Include="mraid\Const.cs" />
-    <Compile Include="Defaults.cs" />
-    <Compile Include="MASTAdView.cs" />
-    <Compile Include="mraid\Bridge.cs" />
-    <Compile Include="mraid\ExpandProperties.cs" />
-    <Compile Include="mraid\OrientationProperties.cs" />
-    <Compile Include="mraid\ResizeProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\MASTMRAIDController.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\MASTCloseButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ReadMe.txt" />
-    <EmbeddedResource Include="Resources\next.png" />
-    <EmbeddedResource Include="Resources\back.png" />
-    <EmbeddedResource Include="Resources\refresh.png" />
-    <EmbeddedResource Include="Resources\upload.png" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="InternalBrowserPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Shared\MASTAdView\ReadMe.txt">
+      <Link>ReadMe.txt</Link>
+    </Content>
+    <EmbeddedResource Include="..\..\Shared\MASTAdView\Resources\back.png">
+      <Link>Resources\back.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Shared\MASTAdView\Resources\MASTCloseButton.png">
+      <Link>Resources\MASTCloseButton.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Shared\MASTAdView\Resources\MASTMRAIDController.js">
+      <Link>Resources\MASTMRAIDController.js</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Shared\MASTAdView\Resources\next.png">
+      <Link>Resources\next.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Shared\MASTAdView\Resources\refresh.png">
+      <Link>Resources\refresh.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Shared\MASTAdView\Resources\upload.png">
+      <Link>Resources\upload.png</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
