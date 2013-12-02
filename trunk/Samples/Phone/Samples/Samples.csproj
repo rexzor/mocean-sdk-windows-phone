@@ -247,7 +247,7 @@
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\MASTAdView\MASTAdView.csproj">
+    <ProjectReference Include="..\..\..\Source\Phone\MASTAdView\MASTAdView.csproj">
       <Project>{E1C3DF8C-B794-47C0-B81E-5D34E04FE158}</Project>
       <Name>MASTAdView</Name>
     </ProjectReference>

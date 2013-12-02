@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Phone
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{7498EDDB-0193-4E3F-A111-8CC476456277}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASTAdView", "..\Source\MASTAdView\MASTAdView.csproj", "{E1C3DF8C-B794-47C0-B81E-5D34E04FE158}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASTAdView", "..\..\Source\Phone\MASTAdView\MASTAdView.csproj", "{E1C3DF8C-B794-47C0-B81E-5D34E04FE158}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
