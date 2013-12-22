@@ -10,6 +10,6 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         
-        <mast:MASTAdView x:Name="adView" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Background="Gray" Zone="88269"/>
+        <mast:MASTAdView x:Name="adView" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Background="Gray" Zone="88269" LocationDetectionEnabled="True"/>
     </Grid>
 </Page>
