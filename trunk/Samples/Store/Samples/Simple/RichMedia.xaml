@@ -9,6 +9,6 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <mast:MASTAdView x:Name="adView" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Background="Gray" Zone="98463"/>
+        <mast:MASTAdView x:Name="adView" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Background="Gray" Zone="185394"/>
     </Grid>
 </Page>

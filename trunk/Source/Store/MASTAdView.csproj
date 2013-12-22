@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_CORE MAST_STORE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;MAST_STORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE MAST_STORE</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE;MAST_STORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -105,6 +105,13 @@
     <Content Include="..\Shared\MASTAdView\ReadMe.txt">
       <Link>ReadMe.txt</Link>
     </Content>
+    <EmbeddedResource Include="..\Shared\MASTAdView\Resources\cancel.png">
+      <Link>Resources\cancel.png</Link>
+    </EmbeddedResource>
+    <Page Include="InternalBrowserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <EmbeddedResource Include="..\Shared\MASTAdView\Resources\back.png">
       <Link>Resources\back.png</Link>
     </EmbeddedResource>
@@ -157,6 +164,9 @@
     </Compile>
     <Compile Include="..\Shared\MASTAdView\ThirdPartyDescriptor.cs">
       <Link>ThirdPartyDescriptor.cs</Link>
+    </Compile>
+    <Compile Include="InternalBrowserPage.xaml.cs">
+      <DependentUpon>InternalBrowserPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

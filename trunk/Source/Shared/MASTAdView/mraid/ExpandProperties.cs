@@ -19,7 +19,7 @@ namespace com.moceanmobile.mast.mraid
 
             if ((args.TryGetValue("height", out value)) &&  (double.TryParse(value, out dValue)))
             {
-                properties.width = dValue;
+                properties.height = dValue;
             }
 
             if ((args.TryGetValue("useCustomClose", out value)) && (value == Const.True))

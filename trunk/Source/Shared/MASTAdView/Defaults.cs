@@ -12,7 +12,11 @@ namespace com.moceanmobile.mast
         public static string AD_SERVER_URL = "http://ads.moceanads.com/ad";
 
         // This is the user agent string sent if unable to determine one from the browser control.
-        public static string ERROR_USER_AGENT = "MASTAdView/3.0 (Windows Phone, unable to determine ua)";
+#if MAST_PHONE
+        public static string ERROR_USER_AGENT = "MASTAdView/" + VERSION + " (Windows Phone, unable to determine ua)";
+#elif MAST_STORE
+        public static string ERROR_USER_AGENT = "MASTAdView/" + VERSION + " (Windows Store, unable to determine ua)";
+#endif
 
         public static int NETWORK_TIMEOUT_MILLISECONDS = 5000;
 
@@ -20,6 +24,7 @@ namespace com.moceanmobile.mast
         public static string CLOSE_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.MASTCloseButton.png";
 
         // Internal browser toolbar images:
+        public static string IB_CLOSE_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.cancel.png";
         public static string IB_BACK_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.back.png";
         public static string IB_FORWARD_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.next.png";
         public static string IB_REFRESH_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.refresh.png";
