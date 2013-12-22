@@ -2222,6 +2222,90 @@ namespace com.moceanmobile.mast
             this.AdRequestParameters["lat"] = e.Position.Location.Latitude.ToString();
             this.AdRequestParameters["long"] = e.Position.Location.Longitude.ToString();
         }
+
+#elif MAST_STORE
+
+        private Windows.Devices.Geolocation.Geolocator geolocator = null;
+
+        public bool LocationDetectionEnabled
+        {
+            get
+            {
+                if (this.geolocator == null)
+                    return false;
+
+                if (this.geolocator.LocationStatus == Windows.Devices.Geolocation.PositionStatus.Disabled)
+                    return false;
+
+                if (this.geolocator.LocationStatus == Windows.Devices.Geolocation.PositionStatus.NotAvailable)
+                    return false;
+
+                return true;
+            }
+
+            set
+            {
+                if (value)
+                {
+                    EnableLocationDetection(Windows.Devices.Geolocation.PositionAccuracy.Default, Defaults.LOCATION_DETECTION_MOVEMENT_THRESHOLD);
+                }
+                else
+                {
+                    if (this.geolocator != null)
+                    {
+                        this.geolocator.PositionChanged -= geolocator_PositionChanged;
+                        this.geolocator.StatusChanged -= geolocator_StatusChanged;
+                        this.geolocator = null;
+                    }
+                }
+            }
+        }
+
+        public void EnableLocationDetection(Windows.Devices.Geolocation.PositionAccuracy desiredAccuracy, double movementThreshold)
+        {
+            if (this.geolocator != null)
+            {
+                this.geolocator.PositionChanged -= geolocator_PositionChanged;
+                this.geolocator.StatusChanged -= geolocator_StatusChanged;
+                this.geolocator = null;
+            }
+
+            this.geolocator = new Windows.Devices.Geolocation.Geolocator();
+            this.geolocator.DesiredAccuracy = desiredAccuracy;
+            this.geolocator.MovementThreshold = movementThreshold;
+
+            this.geolocator.StatusChanged += geolocator_StatusChanged;
+            this.geolocator.PositionChanged += geolocator_PositionChanged;
+        }
+
+        private void geolocator_StatusChanged(Windows.Devices.Geolocation.Geolocator sender, Windows.Devices.Geolocation.StatusChangedEventArgs args)
+        {
+            if (sender != this.geolocator)
+                return;
+
+            if (args.Status != Windows.Devices.Geolocation.PositionStatus.Ready)
+            {
+                this.AdRequestParameters.Remove("lat");
+                this.AdRequestParameters.Remove("long");
+            }
+        }
+
+        private void geolocator_PositionChanged(Windows.Devices.Geolocation.Geolocator sender, Windows.Devices.Geolocation.PositionChangedEventArgs args)
+        {
+            if (sender != this.geolocator)
+                return;
+
+            if (args.Position.Coordinate == null)
+            {
+                this.AdRequestParameters.Remove("lat");
+                this.AdRequestParameters.Remove("long");
+                return;
+            }
+
+            this.AdRequestParameters["lat"] = args.Position.Coordinate.Point.Position.Latitude.ToString();
+            this.AdRequestParameters["long"] = args.Position.Coordinate.Point.Position.Longitude.ToString();
+        }
+
 #endif
 
         #endregion
