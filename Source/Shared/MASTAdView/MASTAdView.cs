@@ -102,6 +102,7 @@ namespace com.moceanmobile.mast
         public MASTAdView(bool interstitial)
         {
             base.Loaded += MASTAdView_Loaded;
+            base.Unloaded += MASTAdView_Unloaded;
             base.SizeChanged += MASTAdView_SizeChanged;
 #if MAST_PHONE
             base.Tap += MASTAdView_Tap;
@@ -111,22 +112,11 @@ namespace com.moceanmobile.mast
 
             InitializeAdContainers();
 
-            if (string.IsNullOrEmpty(UserAgent))
-            {
-                WebBrowser uaBrowser = new WebBrowser();
-#if MAST_PHONE
-                uaBrowser.LoadCompleted += UABrowser_LoadCompleted;
-                uaBrowser.NavigationFailed += UABrowser_NavigationFailed;
-                uaBrowser.IsScriptEnabled = true;
-#elif MAST_STORE
-                uaBrowser.NavigationCompleted += UABrowser_NavigationCompleted;
-#endif
-                uaBrowser.NavigateToString("<!DOCTYPE html><html><head><script type='text/javascript'/></head><body></body></html>");
-            }
-
             if (interstitial)
                 this.placementType = mast.PlacementType.Interstitial;
         }
+
+
 
         /// <summary>
         /// Returns the SDK version.
@@ -803,6 +793,8 @@ namespace com.moceanmobile.mast
             this.phoneApplicationPage = GetParentPage();
             this.phoneApplicationPage.OrientationChanged += Page_OrientationChanged;
             this.phoneApplicationPage.BackKeyPress += PhoneApplicationPage_BackKeyPress;
+#elif MAST_STORE
+            DisplayInformation.GetForCurrentView().OrientationChanged += MASTAdView_OrientationChanged;
 #endif
 
             PerformAdTracking();
@@ -811,6 +803,11 @@ namespace com.moceanmobile.mast
             {
                 Update();
             }
+        }
+
+        private void MASTAdView_Unloaded(object sender, RoutedEventArgs e)
+        {
+            RemoveContent();
         }
 
         private void MASTAdView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -864,6 +861,12 @@ namespace com.moceanmobile.mast
 #if MAST_PHONE
         private void Page_OrientationChanged(object sender, OrientationChangedEventArgs e)
         {
+            PageOrientation orientation = e.Orientation;
+#elif MAST_STORE
+        private void MASTAdView_OrientationChanged(DisplayInformation sender, object args)
+        {
+            DisplayOrientations orientation = sender.CurrentOrientation;
+#endif
             if (this.IsExpanded)
             {
                 Bridge bridge = this.mraidBridge;
@@ -874,59 +877,59 @@ namespace com.moceanmobile.mast
                     border = this.twoPartWebBorder;
                 }
 
-                if ((bridge != null) && (bridge.State == State.Expanded) &&
-                    (bridge.OrientationProperties.AllowOrientationChange == false))
+                if ((bridge != null) && (bridge.State == State.Expanded))
                 {
-                    return;
+                    if (bridge.OrientationProperties.AllowOrientationChange == false)
+                    {
+#if MAST_PHONE
+                        return;
+#elif MAST_STORE
+                        SetExpandOrientation(orientation, bridge, border, false);
+                        switch (bridge.OrientationProperties.ForceOrientation)
+                        {
+                            case ForceOrientation.None:
+                                break;
+                            
+                            case ForceOrientation.Portrait:
+                                SetExpandOrientation(DisplayOrientations.Portrait, bridge, border, false);
+                                break;
+                            
+                            case ForceOrientation.Landscape:
+                                SetExpandOrientation(DisplayOrientations.Landscape, bridge, border, false);
+                                break;
+                        }
+
+                        return;
+#endif
+                    }
                 }
 
-                SetExpandOrientation(e.Orientation, bridge, border);
+                SetExpandOrientation(orientation, bridge, border, false);
             }
         }
-#endif
 
 #if MAST_PHONE
-        private void SetExpandOrientation(PageOrientation orientation, Bridge bridge, Border border)
-#elif MAST_STORE
-        private void SetExpandOrientation(DisplayOrientations orientation, Bridge bridge, Border border)
-#endif
+        private void SetExpandOrientation(PageOrientation orientation, Bridge bridge, Border border, bool manual)
         {
             double pageWidth = 0;
             double pageHeight = 0;
-#if MAST_PHONE
+
             pageWidth = Application.Current.Host.Content.ActualWidth;
             pageHeight = Application.Current.Host.Content.ActualHeight;
-#elif MAST_STORE
-            Page parentPage = GetParentPage();
-            if (parentPage == null)
-            {
-                parentPage = Windows.UI.Xaml.Window.Current.Content as Page;
-            }
-
-            pageWidth = parentPage.ActualWidth;
-            pageHeight = parentPage.ActualHeight;
-#endif
 
             RotateTransform transform = new RotateTransform();
             switch (orientation)
             {
-#if MAST_PHONE
                 case PageOrientation.LandscapeLeft:
-#elif MAST_STORE
-                case DisplayOrientations.Landscape:
-#endif
                     transform.Angle = 90;
-                    this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.HorizontalOffset = pageWidth;
+                    this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.VerticalOffset = 0;
                     this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
                     this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
                     break;
-#if MAST_PHONE
-                case PageOrientation.LandscapeRight:
-#elif MAST_STORE
-                case DisplayOrientations.LandscapeFlipped:
-#endif
+
+            case PageOrientation.LandscapeRight:
                     transform.Angle = -90;
                     this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.HorizontalOffset = 0;
@@ -934,23 +937,17 @@ namespace com.moceanmobile.mast
                     this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
                     this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
                     break;
-#if MAST_PHONE
-                case PageOrientation.PortraitUp:
-#elif MAST_STORE
-                case DisplayOrientations.Portrait:
-#endif
+
+            case PageOrientation.PortraitUp:
+                    this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
+                    this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
                     transform = null;
                     this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.HorizontalOffset = 0;
                     this.expandPopup.VerticalOffset = 0;
-                    this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
-                    this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
                     break;
-#if MAST_PHONE
-                case PageOrientation.PortraitDown:
-#elif MAST_STORE
-                case DisplayOrientations.PortraitFlipped:
-#endif
+
+            case PageOrientation.PortraitDown:
                     transform.Angle = 180;
                     this.expandCanvas.RenderTransform = transform;
                     this.expandPopup.HorizontalOffset = 0;
@@ -962,9 +959,138 @@ namespace com.moceanmobile.mast
 
             if (bridge != null)
             {
-                MRAIDControllerLayoutUpdate(bridge, border);
+                MRAIDControllerLayoutUpdate(bridge, border, bridge.State);
             }
         }
+#elif MAST_STORE
+        private void SetExpandOrientation(DisplayOrientations orientation, Bridge bridge, Border border, bool manual)
+        {
+            DisplayOrientations displayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
+
+            double pageWidth = 0;
+            double pageHeight = 0;
+
+            Page parentPage = GetParentPage();
+            if (parentPage == null)
+            {
+                parentPage = Windows.UI.Xaml.Window.Current.Content as Page;
+            }
+
+            Rect r = Window.Current.Bounds;
+
+            pageWidth = parentPage.ActualWidth;
+            pageHeight = parentPage.ActualHeight;
+
+            if (OrientationsAligned(displayOrientation, orientation))
+            {
+                this.expandCanvas.RenderTransform = null;
+                this.expandPopup.HorizontalOffset = 0;
+                this.expandPopup.VerticalOffset = 0;
+
+                switch (orientation)
+                {
+                    case DisplayOrientations.Landscape:
+                    case DisplayOrientations.LandscapeFlipped:
+                        if (manual == false)
+                        {
+                            this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
+                        }
+                        else
+                        {
+                            this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
+                        }
+                        break;
+
+                    case DisplayOrientations.Portrait:
+                    case DisplayOrientations.PortraitFlipped:
+                        if (manual == false)
+                        {
+                            this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
+                        }
+                        else
+                        {
+                            this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                RotateTransform transform = new RotateTransform();
+                transform.Angle = 90;
+                this.expandCanvas.RenderTransform = transform;
+
+                switch (orientation)
+                {
+                    case DisplayOrientations.Landscape:
+                    case DisplayOrientations.LandscapeFlipped:
+                        if (manual)
+                        {
+                            this.expandPopup.HorizontalOffset = pageWidth;
+                            this.expandPopup.VerticalOffset = 0;
+                            this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
+                        }
+                        else
+                        {
+                            this.expandPopup.HorizontalOffset = pageHeight;
+                            this.expandPopup.VerticalOffset = 0;
+                            this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
+                        }
+                        break;
+
+                    case DisplayOrientations.Portrait:
+                    case DisplayOrientations.PortraitFlipped:
+                        if (manual)
+                        {
+                            this.expandPopup.HorizontalOffset = pageWidth;
+                            this.expandPopup.VerticalOffset = 0;
+                            this.expandCanvas.Width = this.expandPopup.Width = pageHeight;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageWidth;
+                        }
+                        else 
+                        {
+                            this.expandPopup.HorizontalOffset = pageHeight;
+                            this.expandPopup.VerticalOffset = 0;
+                            this.expandCanvas.Width = this.expandPopup.Width = pageWidth;
+                            this.expandCanvas.Height = this.expandPopup.Height = pageHeight;
+                        }
+                        break;
+                }
+            }
+
+            if (bridge != null)
+            {
+                MRAIDControllerLayoutUpdate(bridge, border, bridge.State);
+            }
+        }
+
+        private bool OrientationsAligned(DisplayOrientations a, DisplayOrientations b)
+        {
+            if (a == b)
+                return true;
+
+            DisplayOrientations landscapeMask = DisplayOrientations.Landscape | DisplayOrientations.LandscapeFlipped;
+            DisplayOrientations portraitMask = DisplayOrientations.Portrait | DisplayOrientations.Portrait;
+
+            if (((a & landscapeMask) > 0) && ((b & landscapeMask) > 0))
+            {
+                return true;
+            }
+            
+            if (((a & portraitMask) > 0) && ((b & portraitMask) > 0))
+            {
+                return true;
+            }
+
+            return false;
+        }
+#endif
 
 #if MAST_PHONE
         private void MASTAdView_Tap(object sender, GestureEventArgs e)
@@ -993,6 +1119,25 @@ namespace com.moceanmobile.mast
             }
         }
 
+        #endregion
+
+        #region User Agent
+
+        private void DetermineUserAgent()
+        {
+            if (string.IsNullOrEmpty(UserAgent))
+            {
+                WebBrowser uaBrowser = new WebBrowser();
+#if MAST_PHONE
+                uaBrowser.LoadCompleted += UABrowser_LoadCompleted;
+                uaBrowser.NavigationFailed += UABrowser_NavigationFailed;
+                uaBrowser.IsScriptEnabled = true;
+#elif MAST_STORE
+                uaBrowser.NavigationCompleted += UABrowser_NavigationCompleted;
+#endif
+                uaBrowser.NavigateToString("<!DOCTYPE html><html><head><script type='text/javascript'/></head><body></body></html>");
+            }
+        }
 
 #if MAST_PHONE
         private void UABrowser_LoadCompleted(object sender, NavigationEventArgs e)
@@ -1025,6 +1170,16 @@ namespace com.moceanmobile.mast
             ResumeInternalUpdate();
         }
 #endif
+
+        // Invoked after determining the user agent.
+        private void ResumeInternalUpdate()
+        {
+            if (this.userAgentResume == false)
+                return;
+
+            this.userAgentResume = false;
+            InternalUpdate();
+        }
 
         #endregion
 
@@ -1166,7 +1321,7 @@ namespace com.moceanmobile.mast
 
                 if ((border.Child is WebBrowser) && (bridge != null) && (bridge.State != State.Loading))
                 {
-                    MRAIDControllerLayoutUpdate(bridge, border);
+                    MRAIDControllerLayoutUpdate(bridge, border, bridge.State);
                 }
             }
         }
@@ -1206,9 +1361,6 @@ namespace com.moceanmobile.mast
                 this.expandPopup = new Popup();
                 this.expandPopup.HorizontalOffset = 0;
                 this.expandPopup.VerticalOffset = 0;
-                this.expandPopup.HorizontalAlignment = HorizontalAlignment.Stretch;
-                this.expandPopup.VerticalAlignment = VerticalAlignment.Stretch;
-                this.expandPopup.SizeChanged += expandPopup_SizeChanged;
 
                 this.expandCanvas.RenderTransform = null;
                 this.expandCanvas.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -1250,28 +1402,19 @@ namespace com.moceanmobile.mast
                 this.expandPopupHidesBar = true;
                 this.phoneApplicationPage.ApplicationBar.IsVisible = false;
             }
+
+            this.expandCanvas.Width = this.expandPopup.Width = System.Windows.Application.Current.Host.Content.ActualWidth;
+            this.expandCanvas.Height = this.expandPopup.Height = System.Windows.Application.Current.Host.Content.ActualHeight;
+#elif MAST_STORE
+
+            this.expandCanvas.Width = this.expandPopup.Width = Window.Current.Bounds.Width;
+            this.expandCanvas.Height = this.expandPopup.Height = Window.Current.Bounds.Height;
 #endif
 
             if (border != null)
             {
                 this.expandCanvas.Children.Add(border);
                 this.expandCanvas.Children.Add(this.expandCloseBorder);
-            }
-
-            double pageWidth = 0;
-            double pageHeight = 0;
-
-            Page parentPage = GetParentPage();
-            if (parentPage != null)
-            {
-                pageWidth = parentPage.ActualWidth;
-                pageHeight = parentPage.ActualHeight;
-            }
-
-            Panel contentPanel = parentPage.Content as Panel;
-            if (contentPanel != null)
-            {
-                contentPanel.Children.Add(this.expandPopup);
             }
 
             this.expandPopup.IsOpen = true;
@@ -1310,12 +1453,6 @@ namespace com.moceanmobile.mast
             return border;
         }
 
-        private void expandPopup_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            this.expandCanvas.Width = e.NewSize.Width;
-            this.expandCanvas.Height = e.NewSize.Height;
-        }
-
         private void expandCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Canvas canvas = sender as Canvas;
@@ -1351,6 +1488,10 @@ namespace com.moceanmobile.mast
 
         #region Internal Browser
 
+#if MAST_PHONE
+        private static string InternalBrowserPage = "/MASTAdView;component/InternalBrowserPage.xaml";
+#endif
+
         /// <summary>
         /// Determines if the instance currently has it's internal browser open.
         /// If the browser is open then there is an SDK controlled full sized popop control rendered on top of application content.
@@ -1367,13 +1508,15 @@ namespace com.moceanmobile.mast
                         return true;
                 }
 #elif MAST_STORE
-
+                Page page = GetParentPage();
+                if ((page != null) && (page.Frame.CurrentSourcePageType == typeof(InternalBrowserPage)))
+                {
+                    return true;
+                }
 #endif
                 return false;
             }
         }
-
-        private static string InternalBrowserPage = "/MASTAdView;component/InternalBrowserPage.xaml";
 
         private void ShowInternalBrowser(string url)
         {
@@ -1398,7 +1541,8 @@ namespace com.moceanmobile.mast
                 break;
             }
 #elif MAST_STORE
-
+            Page page = GetParentPage();
+            page.Frame.Navigate(typeof(InternalBrowserPage), url);
 #endif
 
             OnInternalBrowserOpened();
@@ -1411,7 +1555,8 @@ namespace com.moceanmobile.mast
 #if MAST_PHONE
                 this.phoneApplicationPage.NavigationService.GoBack();
 #elif MAST_STORE
-
+                Page page = GetParentPage();
+                page.Frame.GoBack();
 #endif
                 OnInternalBrowserClosed();
             }
@@ -2222,6 +2367,7 @@ namespace com.moceanmobile.mast
             if (string.IsNullOrEmpty(UserAgent))
             {
                 this.userAgentResume = true;
+                DetermineUserAgent();   
                 return;
             }
 
@@ -2280,16 +2426,6 @@ namespace com.moceanmobile.mast
                 new AdRequestFailed(adRequestFailed));
 
             LogEvent(LogLevel.Debug, "Ad request:" + this.adRequest.URL);
-        }
-
-        // Invoked after determining the user agent.
-        private void ResumeInternalUpdate()
-        {
-            if (this.userAgentResume == false)
-                return;
-
-            this.userAgentResume = false;
-            InternalUpdate();
         }
 
         private void CancelUpdate()
@@ -2475,7 +2611,6 @@ namespace com.moceanmobile.mast
         /// <param name="adDescriptor">The AdDescriptor to render.</param>
         public void RenderWithAdDescriptor(AdDescriptor adDescriptor)
         {
-            
             if (adDescriptor.Type.StartsWith("image", StringComparison.OrdinalIgnoreCase))
             {
                 Task.Factory.StartNew(new Action<object>(LoadImageAd), adDescriptor);
@@ -2995,6 +3130,9 @@ namespace com.moceanmobile.mast
             }
         }
 
+#if MAST_STORE
+        async
+#endif
         private void webControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             try
@@ -3003,7 +3141,7 @@ namespace com.moceanmobile.mast
 #if MAST_PHONE
                 browser.InvokeScript("eval", new string[] { "window.scrollTo(0,0);" });
 #elif MAST_STORE
-                browser.InvokeScriptAsync("eval", new string[] { "window.scrollTo(0,0);" }).AsTask().RunSynchronously();
+                await browser.InvokeScriptAsync("eval", new string[] { "window.scrollTo(0,0);" });
 #endif
             }
             catch (Exception)
@@ -3040,6 +3178,7 @@ namespace com.moceanmobile.mast
                 pageHeight = parentPage.ActualHeight;
             }
 
+            // TODO: Should initialize to screen size, not page size.
             ExpandProperties expandProperties = new ExpandProperties();
             expandProperties.Width = pageWidth;
             expandProperties.Height = pageHeight;
@@ -3051,23 +3190,23 @@ namespace com.moceanmobile.mast
             ResizeProperties resizeProperties = new ResizeProperties();
             bridge.SetResizeProperties(resizeProperties);
 
-            MRAIDControllerLayoutUpdate(bridge, (Border)webBrowser.Parent);
-
             if (this.twoPartExpand == false)
             {
+                MRAIDControllerLayoutUpdate(bridge, (Border)webBrowser.Parent, State.Default);
                 bridge.SetState(State.Default);
             }
             else
             {
+                MRAIDControllerLayoutUpdate(bridge, (Border)webBrowser.Parent, State.Expanded);
                 ((BridgeHandler)this).mraidExpand(bridge, null);
             }
 
             bridge.SendReady();
         }
-
-        private void MRAIDControllerLayoutUpdate(Bridge bridge, Border border)
+        
+        private void MRAIDControllerLayoutUpdate(Bridge bridge, Border border, State state)
         {
-            UpdateLayouts();
+            //UpdateLayouts();
 
             double screenWidth = 0;
             double screenHeight = 0;
@@ -3085,8 +3224,8 @@ namespace com.moceanmobile.mast
             Page parentPage = GetParentPage();
             if (parentPage != null)
             {
-                pageWidth = parentPage.ActualWidth;
-                pageHeight = parentPage.ActualHeight;
+                pageWidth = parentPage.RenderSize.Width;
+                pageHeight = parentPage.RenderSize.Height;
             }
 
             // Represents the entire screen.
@@ -3095,10 +3234,9 @@ namespace com.moceanmobile.mast
             // When expanded the full screen is the max size, else the max size is constrained
             // to the page since the status bar (tray) and application bar may take up space.
             Point currentPoint = new Point(0, 0);
-            if (bridge.State == State.Expanded)
+            if (state == State.Expanded)
             {
                 bridge.SetMaxSize(screenWidth, screenHeight);
-
                 // The currentPoint for expand is 0,0 here since it's full screen.
             }
             else
@@ -3138,7 +3276,7 @@ namespace com.moceanmobile.mast
             }
             catch
             {
-                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID default position.  Possibly due to page ");
+                LogEvent(mast.LogLevel.Debug, "Exception while calculating MRAID default position.");
             }
             double defaultWidth = base.ActualWidth;
             double defaultHeight = base.ActualHeight;
@@ -3178,6 +3316,8 @@ namespace com.moceanmobile.mast
                 return;
             }
 
+            bool collapsed = false;
+
             if (this.IsExpanded)
             {
                 CollapseExpandPopup();
@@ -3188,9 +3328,6 @@ namespace com.moceanmobile.mast
                     this.webBorder.Height = base.ActualHeight;
 
                     base.Children.Add(border);
-
-                    MRAIDControllerLayoutUpdate(bridge, border);
-                    bridge.SetState(State.Default);
                 }
                 else
                 {
@@ -3202,7 +3339,7 @@ namespace com.moceanmobile.mast
                     this.mraidBridge.SetState(State.Default);
                 }
 
-                OnAdCollapsed();
+                collapsed = true;
             }
 
             if (this.IsResized)
@@ -3214,16 +3351,16 @@ namespace com.moceanmobile.mast
 
                 base.Children.Add(border);
 
-                MRAIDControllerLayoutUpdate(bridge, border);
-                bridge.SetState(State.Default);
-
-                OnAdCollapsed();
-                return;
+                collapsed = true;
             }
 
-            // Nothing to close but reset state since the ad creative wanted a close.
-            MRAIDControllerLayoutUpdate(bridge, border);
+            MRAIDControllerLayoutUpdate(bridge, border, State.Default);
             bridge.SetState(State.Default);
+
+            if (collapsed)
+            {
+                OnAdCollapsed();
+            }
         }
 
         void BridgeHandler.mraidOpen(Bridge bridge, string url)
@@ -3245,7 +3382,7 @@ namespace com.moceanmobile.mast
             if (bridge == this.twoPartMraidBridge)
                 border = this.twoPartWebBorder;
 
-            MRAIDControllerLayoutUpdate(bridge, border);
+            MRAIDControllerLayoutUpdate(bridge, border, bridge.State);
         }
 
         void BridgeHandler.mraidUpdatedExpandProperties(Bridge bridge)
@@ -3305,7 +3442,7 @@ namespace com.moceanmobile.mast
                     base.Children.Remove(border);
                     OpenExpandPopup(border);
 
-                    MRAIDControllerLayoutUpdate(bridge, border);
+                    MRAIDControllerLayoutUpdate(bridge, border, State.Expanded);
                 }
                 else
                 {
@@ -3320,7 +3457,6 @@ namespace com.moceanmobile.mast
             bridge.SetState(State.Expanded);
 
             PrepareCloseButton();
-
             OnAdExpanded();
         }
 
@@ -3340,17 +3476,17 @@ namespace com.moceanmobile.mast
 
                 case ForceOrientation.Portrait:
 #if MAST_PHONE
-                    SetExpandOrientation(PageOrientation.PortraitUp, bridge, border);
+                    SetExpandOrientation(PageOrientation.PortraitUp, bridge, border, true);
 #elif MAST_STORE
-                    SetExpandOrientation(DisplayOrientations.Portrait, bridge, border);
+                    SetExpandOrientation(DisplayOrientations.Portrait, bridge, border, true);
 #endif
                     break;
 
                 case ForceOrientation.Landscape:
 #if MAST_PHONE
-                    SetExpandOrientation(PageOrientation.Landscape, bridge, border);
+                    SetExpandOrientation(PageOrientation.LandscapeLeft, bridge, border, true);
 #elif MAST_STORE
-                    SetExpandOrientation(DisplayOrientations.Landscape, bridge, border);
+                    SetExpandOrientation(DisplayOrientations.Landscape, bridge, border, true);
 #endif
                     break;
             }
@@ -3571,8 +3707,7 @@ namespace com.moceanmobile.mast
             Canvas.SetLeft(this.resizeCloseBorder, closeControlRect.Left);
             Canvas.SetTop(this.resizeCloseBorder, closeControlRect.Top);
 
-            MRAIDControllerLayoutUpdate(bridge, border);
-
+            MRAIDControllerLayoutUpdate(bridge, border, State.Resized);
             bridge.SetState(State.Resized);
 
             PrepareCloseButton();
@@ -3743,6 +3878,10 @@ namespace com.moceanmobile.mast
 #endif
                 this.updateTimer = null;
             }
+
+#if MAST_STORE
+            DisplayInformation.GetForCurrentView().OrientationChanged -= MASTAdView_OrientationChanged;
+#endif
         }
 
         #endregion

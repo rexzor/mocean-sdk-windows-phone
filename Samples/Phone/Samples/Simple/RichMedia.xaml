@@ -31,7 +31,7 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel>
-                <mast:MASTAdView x:Name="adView" Background="Gray" Zone="156037" LogLevel="Debug" HorizontalAlignment="Stretch" Height="50"/>
+                <mast:MASTAdView x:Name="adView" Background="Gray" Zone="185394" LogLevel="Debug" HorizontalAlignment="Stretch" Height="50"/>
             </StackPanel>
         </Grid>
     </Grid>

@@ -1,0 +1,48 @@
+﻿<Page
+    x:Class="com.moceanmobile.mast.InternalBrowserPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:com.moceanmobile.mast"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Loaded="Page_Loaded">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="75"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <WebView Grid.Row="0" Grid.ColumnSpan="5" x:Name="webBrowserControl"/>
+                <Button Grid.Row="1" Grid.Column="0" Width="80" HorizontalAlignment="Center" Click="closeButton_Click">
+                    <Image x:Name="closeImage"/>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="1" Width="80" HorizontalAlignment="Center" Click="backButton_Click">
+                    <Image x:Name="backImage"/>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="2" Width="80" HorizontalAlignment="Center" Click="forwardButton_Click">
+                    <Image x:Name="forwardImage"/>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="3" Width="80" HorizontalAlignment="Center" Click="refreshButton_Click">
+                    <Image x:Name="refreshImage"/>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="4" Width="80" HorizontalAlignment="Center" Click="openButton_Click">
+                    <Image x:Name="openImage"/>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>
