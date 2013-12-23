@@ -16,4 +16,5 @@ Release Notes:
 3.1.0
 - Updated to use shared code and support Windows 8.1 Store apps.
 - Windows Phone versions prior to 8 are no longer supported.
+- Event handlers were updated to allow for more portable code.
 
