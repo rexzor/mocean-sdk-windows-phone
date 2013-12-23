@@ -9,6 +9,8 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <mast:MASTAdView x:Name="adView" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Background="Gray" Zone="88269"/>
+        <!-- Note that if placing interstitials this way they need
+             to be collapsed since they won't function as inlinebanner ads. -->
+        <mast:MASTAdViewInterstitial x:Name="adView" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Background="Gray" Zone="88269" ShowCloseButton="True" CloseButtonDelay="3" Visibility="Collapsed"/>
     </Grid>
 </Page>

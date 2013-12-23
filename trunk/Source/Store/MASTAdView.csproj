@@ -147,6 +147,9 @@
     <Compile Include="..\Shared\MASTAdView\MASTAdView.cs">
       <Link>MASTAdView.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\MASTAdView\MASTAdViewInterstitial.cs">
+      <Link>MASTAdViewInterstitial.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\MASTAdView\mraid\Bridge.cs">
       <Link>mraid\Bridge.cs</Link>
     </Compile>
