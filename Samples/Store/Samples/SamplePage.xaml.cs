@@ -153,7 +153,7 @@ namespace com.moceanmobile.mast.samples
             MASTAdView adView = samplePage.FindName("adView") as MASTAdView;
 
             UseInternalBrowserCheckBox.IsChecked = adView.UseInteralBrowser;
-            //UseLocationDetectionCheckBox.IsChecked = adView.LocationDetectionEnabled;
+            UseLocationDetectionCheckBox.IsChecked = adView.LocationDetectionEnabled;
 
             xTextBox.Text = adView.Margin.Left.ToString();
             yTextBox.Text = adView.Margin.Right.ToString();
@@ -190,8 +190,8 @@ namespace com.moceanmobile.mast.samples
             if (UseInternalBrowserCheckBox.IsChecked.HasValue)
                 adView.UseInteralBrowser = (bool)UseInternalBrowserCheckBox.IsChecked;
 
-            //if (UseLocationDetectionCheckBox.IsChecked.HasValue)
-            //      adView.LocationDetectionEnabled = (bool)UseLocationDetectionCheckBox.IsChecked;
+            if (UseLocationDetectionCheckBox.IsChecked.HasValue)
+                  adView.LocationDetectionEnabled = (bool)UseLocationDetectionCheckBox.IsChecked;
 
             string value = xTextBox.Text;
             if (string.IsNullOrWhiteSpace(value))
