@@ -808,6 +808,10 @@ namespace com.moceanmobile.mast
         private void MASTAdView_Unloaded(object sender, RoutedEventArgs e)
         {
             RemoveContent();
+
+            CollapseExpandPopup();
+            CollapseResizePopup();
+            CloseInternalBrowser();
         }
 
         private void MASTAdView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -3139,7 +3143,10 @@ namespace com.moceanmobile.mast
                 return;
 
             if (("javascript" == scheme) || ("about" == scheme))
+            {
+                e.Cancel = true;
                 return;
+            }
 
             if (isTwoPart && scheme.StartsWith("http"))
             {
@@ -3628,7 +3635,7 @@ namespace com.moceanmobile.mast
             double width = bridge.ResizeProperties.Width;
             double height = bridge.ResizeProperties.Height;
 
-            if ((width >= screenWidth) || (height >= screenHeight))
+            if ((width >= screenWidth) && (height >= screenHeight))
             {
                 bridge.SendErrorMessage("Size must be smaller than the max size.", Const.CommandResize);
                 return;
