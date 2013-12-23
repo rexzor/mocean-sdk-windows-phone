@@ -7,7 +7,7 @@ namespace com.moceanmobile.mast
 {
     public class Defaults
     {
-        public static string VERSION = "3.1.0beta";
+        public static string VERSION = "3.1.0";
 
         public static string AD_SERVER_URL = "http://ads.moceanads.com/ad";
 
