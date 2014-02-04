@@ -1,0 +1,24 @@
+﻿<Page
+    x:Class="com.moceanmobile.mast.samples.Advanced.Animation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:com.moceanmobile.mast.samples.Simple"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mast="using:com.moceanmobile.mast"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <mast:MASTAdView x:Name="adView" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Background="Gray" Opacity="0" Zone="88269" AdReceived="adView_AdReceived">
+            <mast:MASTAdView.Resources>
+                <Storyboard x:Name="adViewFadeIn">
+                    <DoubleAnimation
+                    Storyboard.TargetName="adView"
+                    Storyboard.TargetProperty="Opacity"
+                    From="0.0" To="1.0" Duration="0:0:3"/>
+                </Storyboard>
+            </mast:MASTAdView.Resources>
+        </mast:MASTAdView>
+    </Grid>
+</Page>

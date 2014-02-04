@@ -1,0 +1,62 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="com.moceanmobile.mast.samples.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mast="clr-namespace:com.moceanmobile.mast;assembly=MASTAdView"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True" Loaded="PhoneApplicationPage_Loaded">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,12">
+            <TextBlock x:Name="ApplicationTitle" Text="Samples" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock x:Name="PageTitle" Text="Sample Listing" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <ScrollViewer Grid.Row="1">
+                <StackPanel Margin="0,10,0,10">
+                    <TextBlock Text="Simple"/>
+                    <HyperlinkButton NavigateUri="//Simple/Image.xaml" Style="{StaticResource SampleLinkStyle}">Image</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/AnimatedGIF.xaml" Style="{StaticResource SampleLinkStyle}">Animated GIF</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/Interstitial.xaml" Style="{StaticResource SampleLinkStyle}">Interstitial</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/RichMedia.xaml" Style="{StaticResource SampleLinkStyle}">Rich Media</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Simple/Text.xaml" Style="{StaticResource SampleLinkStyle}">Text</HyperlinkButton>
+                    <TextBlock Text="Advanced"/>
+                    <HyperlinkButton NavigateUri="//Advanced/Animation.xaml" Style="{StaticResource SampleLinkStyle}">Animation</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Advanced/Bottom.xaml" Style="{StaticResource SampleLinkStyle}">Bottom</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Advanced/Table.xaml" Style="{StaticResource SampleLinkStyle}">Table</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Advanced/TopAndBottom.xaml" Style="{StaticResource SampleLinkStyle}">Top and Bottom</HyperlinkButton>
+                    <TextBlock Text="Custom"/>
+                    <HyperlinkButton NavigateUri="//Custom/CustomAdSetup.xaml" Style="{StaticResource SampleLinkStyle}">Custom Ad Setup</HyperlinkButton>
+                    <TextBlock Text="Delegate"/>
+                    <HyperlinkButton NavigateUri="//Delegate/Generic.xaml"  Style="{StaticResource SampleLinkStyle}">Generic</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/MRAIDEvents.xaml" Style="{StaticResource SampleLinkStyle}">MRAID Events</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/ThirdPartyRequest.xaml" Style="{StaticResource SampleLinkStyle}">Third Party Request</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/Logging.xaml" Style="{StaticResource SampleLinkStyle}">Logging</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Delegate/NoContentZone.xaml" Style="{StaticResource SampleLinkStyle}">No Content Zone</HyperlinkButton>
+                    <TextBlock Text="Error"/>
+                    <HyperlinkButton NavigateUri="//Error/Hide.xaml" Style="{StaticResource SampleLinkStyle}">Hide</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Error/Image.xaml" Style="{StaticResource SampleLinkStyle}">Image</HyperlinkButton>
+                    <HyperlinkButton NavigateUri="//Error/Reset.xaml" Style="{StaticResource SampleLinkStyle}">Reset</HyperlinkButton>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+ 
+</phone:PhoneApplicationPage>

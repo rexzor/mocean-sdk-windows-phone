@@ -1,0 +1,38 @@
+﻿<Page
+    x:Class="com.moceanmobile.mast.samples.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Samples"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="0,10,0,10">
+                <TextBlock Text="Simple"/>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Simple.Image">Image</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Simple.Interstitial">Interstitial</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Simple.RichMedia">Rich Media</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Simple.Text">Text</HyperlinkButton>
+                <TextBlock Text="Advanced"/>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Advanced.Animation">Animation</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Advanced.Bottom">Bottom</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Advanced.Table">Table</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Advanced.TopAndBottom">Top and Bottom</HyperlinkButton>
+                <TextBlock Text="Custom"/>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Custom.CustomAdSetup">Custom Ad Setup</HyperlinkButton>
+                <TextBlock Text="Delegate"/>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Delegate.Generic">Generic</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Delegate.MRAIDEvents">MRAID Events</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Delegate.ThirdPartyRequest">Third Party Request</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Delegate.Logging">Logging</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Delegate.NoContentZone">No Content Zone</HyperlinkButton>
+                <TextBlock Text="Error"/>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Error.Hide">Hide</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Error.Image">Image</HyperlinkButton>
+                <HyperlinkButton Click="HyperlinkButton_Click" Tag="com.moceanmobile.mast.samples.Error.Reset">Reset</HyperlinkButton>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
