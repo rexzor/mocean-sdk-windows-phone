@@ -18,3 +18,7 @@ Release Notes:
 - Windows Phone versions prior to 8 are no longer supported.
 - Event handlers were updated to allow for more portable code.
 
+3.1.2
+- Adding validation to third party ad descriptors that attempts to ensure image and
+  text ads are rendered natively only if it appears the server's parsing was proper.
+

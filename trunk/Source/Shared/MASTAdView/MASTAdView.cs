@@ -2006,7 +2006,7 @@ namespace com.moceanmobile.mast
                         task.Uri = uri;
                         task.Show();
 #elif MAST_STORE
-                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+                        Launcher.LaunchUriAsync(uri).AsTask();
 #endif
                     }
                     return true;
@@ -2047,7 +2047,7 @@ namespace com.moceanmobile.mast
                         task.Body = body;
                         task.Show();
 #elif MAST_STORE
-                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+                        Launcher.LaunchUriAsync(uri).AsTask();
 #endif
                     }
                     return true;
@@ -2065,7 +2065,7 @@ namespace com.moceanmobile.mast
                         task.PhoneNumber = uri.UserInfo;
                         task.Show();
 #elif MAST_STORE
-                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+                        Launcher.LaunchUriAsync(uri).AsTask();
 #endif
                     }
                     return true;
@@ -2097,7 +2097,7 @@ namespace com.moceanmobile.mast
                         task.Body = body;
                         task.Show();
 #elif MAST_STORE
-                        Launcher.LaunchUriAsync(uri).AsTask().Wait();
+                        Launcher.LaunchUriAsync(uri).AsTask();
 #endif
                     }
                     return true;
@@ -2718,16 +2718,22 @@ namespace com.moceanmobile.mast
                 {
                     if (string.IsNullOrWhiteSpace(adDescriptor.Image) == false)
                     {
-                        Task.Factory.StartNew(new Action<object>(LoadImageAd), adDescriptor);
-                        return;
+                        if (verifyThirdPartyRendering(adDescriptor.Content, adDescriptor.URL, adDescriptor.Image))
+                        {
+                            Task.Factory.StartNew(new Action<object>(LoadImageAd), adDescriptor);
+                            return;
+                        }
                     }
 
                     if (string.IsNullOrWhiteSpace(adDescriptor.Text) == false)
                     {
-                        MainThreadDispatch((Action<AdDescriptor>)RenderTextAd,
-                            new object[] { adDescriptor });
+                        if (verifyThirdPartyRendering(adDescriptor.Content, adDescriptor.URL, adDescriptor.Text))
+                        {
+                            MainThreadDispatch((Action<AdDescriptor>)RenderTextAd,
+                                new object[] { adDescriptor });
 
-                        return;
+                            return;
+                        }
                     }
                 }
                 else if (string.IsNullOrWhiteSpace(adDescriptor.Content) == false)
@@ -2756,6 +2762,38 @@ namespace com.moceanmobile.mast
             // any other content is to be rendered as html/rich 
             MainThreadDispatch((Action<AdDescriptor, string>)RenderMRAIDAd,
                     new object[] { adDescriptor, contentString });
+        }
+
+        private bool verifyThirdPartyRendering(string content, string url, string imgOrText)
+        {
+            // May as well attempt to render image or text if there's no content to render.
+            if (string.IsNullOrEmpty(content))
+            {
+                return true;
+            }
+
+            // If there is any script content then the ad must be rendered in the web view.
+            if (content.Contains("<script"))
+            {
+                return false;
+            }
+
+            // The content must contain both the url and the image url or text content and
+            // after removing the length of those pieces should be a length representative
+            // of simple <a and <img wrapping fluff to be validated.
+            if (content.Contains(url) && content.Contains(imgOrText))
+            {
+                int length = content.Length;
+                length -= url.Length;
+                length -= imgOrText.Length;
+
+                if (length < Defaults.DESCRIPTOR_THIRD_PARTY_VALIDATOR_LENGTH)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion
