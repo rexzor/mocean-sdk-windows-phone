@@ -7,7 +7,7 @@ namespace com.moceanmobile.mast
 {
     public class Defaults
     {
-        public static string VERSION = "3.1.0";
+        public static string VERSION = "3.1.2";
 
         public static string AD_SERVER_URL = "http://ads.moceanads.com/ad";
 
@@ -19,6 +19,11 @@ namespace com.moceanmobile.mast
 #endif
 
         public static int NETWORK_TIMEOUT_MILLISECONDS = 5000;
+
+        // How much content is allowed after parsing out click url and image or text content before
+	    // falling through and rendering as html vs. native rendering.
+	    public static int DESCRIPTOR_THIRD_PARTY_VALIDATOR_LENGTH = 20;
+	
 
         public static string RICHMEDIA_SCRIPT_RESOURCE = "com.moceanmobile.mast.Resources.MASTMRAIDController.js";
         public static string CLOSE_BUTTON_RESOURCE = "com.moceanmobile.mast.Resources.MASTCloseButton.png";
